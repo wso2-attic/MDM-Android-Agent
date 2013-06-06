@@ -1,0 +1,44 @@
+package com.mdm;
+
+public class Battery {
+	int scale = -1;
+	int level = -1;
+    int voltage = -1;
+    int temp = -1;
+	private static Battery battery = null;
+	private Battery(){
+		
+	}
+	public static Battery getInstance(){
+		if(battery==null){
+			battery = new Battery();
+		}
+		return battery;
+	}
+    
+    public int getScale() {
+		return scale;
+	}
+	public void setScale(int scale) {
+		this.scale = scale;
+	}
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
+	public int getVoltage() {
+		return voltage;
+	}
+	public void setVoltage(int voltage) {
+		this.voltage = voltage;
+	}
+	public int getTemp() {
+		return temp;
+	}
+	public void setTemp(int temp) {
+		this.temp = temp;
+	}
+	
+}

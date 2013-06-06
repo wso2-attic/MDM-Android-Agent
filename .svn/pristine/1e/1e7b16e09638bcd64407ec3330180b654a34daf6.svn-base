@@ -1,0 +1,24 @@
+package com.mdm;
+
+import android.app.admin.DevicePolicyManager;
+import android.content.Context;
+
+public class DeviceAffectedFeatures {
+	DevicePolicyManager devicePolicyManager;
+	static final int ACTIVATION_REQUEST = 47; 
+	Context context;
+	
+	public DeviceAffectedFeatures(Context contex){
+		this.context = context;
+	}
+	void lockDevice(){
+	//	devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+	}
+	void resetPassword(){
+		
+	}
+	void wipeData(){
+		
+	}
+	
+}

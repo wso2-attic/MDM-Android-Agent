@@ -1,0 +1,101 @@
+package com.mdm;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageView;
+
+public class RegisterSuccessful extends Activity {
+	AsyncTask<Void, Void, Void> mRegisterTask;
+	static final int ACTIVATION_REQUEST = 47; // identifies our request id
+	DevicePolicyManager devicePolicyManager;
+	ComponentName demoDeviceAdmin;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_register_successful);
+		
+		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+		demoDeviceAdmin = new ComponentName(this, DemoDeviceAdminReceiver.class);
+		
+		final String regId = getIntent().getExtras().getString("regid");
+		Button button1 = (Button)findViewById(R.id.button1);
+		
+		ImageView optionBtn = (ImageView) findViewById(R.id.option_button);	
+		
+		optionBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(RegisterSuccessful.this,DisplayDeviceInfo.class);
+				startActivity(intent);
+			}
+		});
+		
+		button1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+		
+				final Context context = RegisterSuccessful.this;
+				mRegisterTask = new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                    	 Map<String, String> paramss = new HashMap<String, String>();
+                         paramss.put("regid", regId);
+                    	ServerUtilities.unregister(regId,context);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void result) {
+                    	devicePolicyManager.removeActiveAdmin(demoDeviceAdmin);
+                    	Intent intent = new Intent(RegisterSuccessful.this,Entry.class);
+                    	startActivity(intent);
+                    	finish();
+                        mRegisterTask = null;
+                    }
+
+                };
+                mRegisterTask.execute(null, null, null);
+				
+			}
+		});
+		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		/*getMenuInflater().inflate(R.menu.register_successful, menu);
+		return true;*/
+		MenuInflater inflater = getMenuInflater();
+    	inflater.inflate(R.menu.options_menu, menu);
+        return true;
+	}
+	 public boolean onOptionsItemSelected(MenuItem item) {
+	    	switch (item.getItemId()) {
+	    	case R.id.info:
+	    		Intent intent = new Intent(RegisterSuccessful.this,DisplayDeviceInfo.class);
+	    		startActivity(intent);
+	    		return true;
+	    	default:
+	    		return super.onOptionsItemSelected(item);
+	    	}
+	    }   
+
+}
