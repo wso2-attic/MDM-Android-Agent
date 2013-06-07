@@ -18,9 +18,12 @@ package com.mdm;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockActivity;
 import com.google.android.gcm.GCMRegistrar;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -29,32 +32,41 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
 
-public class AllReadyRegistered extends Activity {
+public class AllReadyRegistered extends SherlockActivity {
 	AsyncTask<Void, Void, Void> mRegisterTask;
 	static final int ACTIVATION_REQUEST = 47; // identifies our request id
 	DevicePolicyManager devicePolicyManager;
 	ComponentName demoDeviceAdmin;
 	String regId="";
 	private Button btnUnregister;
-	private ImageView optionBtn;
+	//private ImageView optionBtn;
 	private final int TAG_BTN_UNREGISTER = 0;
 	private final int TAG_BTN_OPTIONS = 1;
+	ActionBar actionbar;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_all_ready_registered);
-		
+		 getSupportActionBar().setDisplayShowCustomEnabled(true);
+		 getSupportActionBar().setCustomView(R.layout.custom_sherlock_bar);
+		 View homeIcon = findViewById(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.id.home : R.id.abs__home);
+		 ((View) homeIcon.getParent()).setVisibility(View.GONE);
+		 
 		 devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		 demoDeviceAdmin = new ComponentName(this, DemoDeviceAdminReceiver.class);
-		
+		 
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -69,9 +81,9 @@ public class AllReadyRegistered extends Activity {
 		btnUnregister.setTag(TAG_BTN_UNREGISTER);
 		btnUnregister.setOnClickListener(onClickListener_BUTTON_CLICKED);
 		
-		optionBtn = (ImageView) findViewById(R.id.option_button);	
-		optionBtn.setTag(TAG_BTN_OPTIONS);
-		optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);
+		//optionBtn = (ImageView) findViewById(R.id.option_button);	
+		//optionBtn.setTag(TAG_BTN_OPTIONS);
+		//optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);
 	}
 	
 	OnClickListener onClickListener_BUTTON_CLICKED = new OnClickListener() {
@@ -89,7 +101,7 @@ public class AllReadyRegistered extends Activity {
 				break;
 
 			case TAG_BTN_OPTIONS:
-				startOptionActivity();
+				//startOptionActivity();
 				break;
 
 			default:
@@ -144,14 +156,51 @@ public class AllReadyRegistered extends Activity {
 		intent.putExtra("regid", regId);
 		startActivity(intent);
 	}
-	@Override
+	
+	/*@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		/*getMenuInflater().inflate(R.menu.all_ready_registered, menu);
-		return true;*/
+		getMenuInflater().inflate(R.menu.all_ready_registered, menu);
+		return true;
 		MenuInflater inflater = getMenuInflater();
     	inflater.inflate(R.menu.options_menu, menu);
         return true;
-	}
+	}*/
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.sherlock_menu, menu);
+        return true;
+    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+    	switch (item.getItemId()) {
+    	case R.id.operation_setting:
+    		Intent intentOP = new Intent(AllReadyRegistered.this,AvailableOperationsActivity.class);
+    		intentOP.putExtra("from_activity_name", AllReadyRegistered.class.getSimpleName());
+    		intentOP.putExtra("regid", regId);
+			startActivity(intentOP);
+    		return true;
+    	case R.id.info_setting:
+    		Intent intentIN = new Intent(AllReadyRegistered.this,DisplayDeviceInfo.class);
+    		intentIN.putExtra("from_activity_name", AllReadyRegistered.class.getSimpleName());
+    		intentIN.putExtra("regid", regId);
+			startActivity(intentIN);
+			return true;
+    	case R.id.pin_setting:
+    		Intent intentPIN = new Intent(AllReadyRegistered.this,PinCodeActivity.class);
+    		intentPIN.putExtra("from_activity_name", AllReadyRegistered.class.getSimpleName());
+			intentPIN.putExtra("regid", regId);
+			startActivity(intentPIN);
+			return true;
+    	case R.id.ip_setting:
+    		Intent intentIP = new Intent(AllReadyRegistered.this,SettingsActivity.class);
+    		intentIP.putExtra("from_activity_name", AllReadyRegistered.class.getSimpleName());
+    		intentIP.putExtra("regid", regId);
+			startActivity(intentIP);
+			return true;
+    	default:
+    		return super.onOptionsItemSelected(item);
+    	}
+    } 
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -173,7 +222,7 @@ public class AllReadyRegistered extends Activity {
 	    return super.onKeyDown(keyCode, event);
 	}
 	
-	 public boolean onOptionsItemSelected(MenuItem item) {
+	 /*public boolean onOptionsItemSelected(MenuItem item) {
 	    	switch (item.getItemId()) {
 	    	case R.id.info:
 	    		Intent intent = new Intent(AllReadyRegistered.this,AgentSettingsActivity.class);
@@ -184,6 +233,6 @@ public class AllReadyRegistered extends Activity {
 	    	default:
 	    		return super.onOptionsItemSelected(item);
 	    	}
-	    }   
+	    }   */
 
 }

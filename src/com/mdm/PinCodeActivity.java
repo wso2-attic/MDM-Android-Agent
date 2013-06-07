@@ -62,7 +62,7 @@ public class PinCodeActivity extends Activity {
 		btnPin.setOnClickListener(onClickListener_BUTTON_CLICKED);
 		btnPin.setEnabled(false);
 		
-		if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AgentSettingsActivity.class.getSimpleName())){
+		if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AllReadyRegistered.class.getSimpleName())){
 			lblPin.setVisibility(View.GONE);
 			txtOldPin.setVisibility(View.VISIBLE);
 			txtPin.setHint("New PIN Code");
@@ -177,10 +177,10 @@ public class PinCodeActivity extends Activity {
 		editor.putString("pin", txtPin.getText().toString().trim());
 		editor.commit();
 
-		if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AgentSettingsActivity.class.getSimpleName())){
+		if(FROM_ACTIVITY != null && (FROM_ACTIVITY.equals(AllReadyRegistered.class.getSimpleName()) || FROM_ACTIVITY.equals(RegisterSuccessful.class.getSimpleName()))){
 			Toast.makeText(getApplicationContext(), "PIN Code changed successfully", Toast.LENGTH_SHORT).show();
-			Intent intent = new Intent(PinCodeActivity.this,AgentSettingsActivity.class);
-    		intent.putExtra("from_activity_name", MAIN_ACTIVITY);
+			Intent intent = new Intent(PinCodeActivity.this,AllReadyRegistered.class);
+    		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
     		intent.putExtra("regid", REG_ID);
     		startActivity(intent);
 		}else{
@@ -237,9 +237,15 @@ public class PinCodeActivity extends Activity {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AgentSettingsActivity.class.getSimpleName())) {
-    		Intent intent = new Intent(PinCodeActivity.this,AgentSettingsActivity.class);
-    		intent.putExtra("from_activity_name", MAIN_ACTIVITY);
+		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AllReadyRegistered.class.getSimpleName())) {
+    		Intent intent = new Intent(PinCodeActivity.this,AllReadyRegistered.class);
+    		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
+    		intent.putExtra("regid", REG_ID);
+    		startActivity(intent);
+    		return true;
+	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessful.class.getSimpleName())) {
+    		Intent intent = new Intent(PinCodeActivity.this,RegisterSuccessful.class);
+    		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
     		intent.putExtra("regid", REG_ID);
     		startActivity(intent);
     		return true;

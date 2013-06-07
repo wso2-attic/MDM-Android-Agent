@@ -12,15 +12,17 @@
  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
-*/
+ */
 package com.mdm;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.actionbarsherlock.app.SherlockActivity;
 import com.google.android.gcm.GCMRegistrar;
 
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -29,68 +31,77 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+//import android.view.Menu;
+//import android.view.MenuInflater;
+//import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.view.MenuInflater;
 
-public class RegisterSuccessful extends Activity {
+public class RegisterSuccessful extends SherlockActivity {
 	AsyncTask<Void, Void, Void> mRegisterTask;
 	static final int ACTIVATION_REQUEST = 47; // identifies our request id
 	DevicePolicyManager devicePolicyManager;
 	ComponentName demoDeviceAdmin;
-	String regId="";
+	String regId = "";
 	private Button btnUnregister;
 	private ImageView optionBtn;
 	private final int TAG_BTN_UNREGISTER = 0;
 	private final int TAG_BTN_OPTIONS = 1;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register_successful);
-		
+
+		getSupportActionBar().setDisplayShowCustomEnabled(true);
+		getSupportActionBar().setCustomView(R.layout.custom_sherlock_bar);
+		View homeIcon = findViewById(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.id.home
+				: R.id.abs__home);
+		((View) homeIcon.getParent()).setVisibility(View.GONE);
+
 		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		demoDeviceAdmin = new ComponentName(this, DemoDeviceAdminReceiver.class);
-		
-		//Starting device admin
-    	try{
-	    		if(!devicePolicyManager.isAdminActive(demoDeviceAdmin)){
-		        	Intent intent1 = new Intent(
-		    				DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-		    		intent1.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
-		    				demoDeviceAdmin);
-		    		intent1.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-		    				"This will enable device administration");
-		    		startActivityForResult(intent1, ACTIVATION_REQUEST);
-	    		}
-        	}catch(Exception ex){
-        		ex.printStackTrace();
-        	}
-    	
-    	
+
+		// Starting device admin
+		try {
+			if (!devicePolicyManager.isAdminActive(demoDeviceAdmin)) {
+				Intent intent1 = new Intent(
+						DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+				intent1.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+						demoDeviceAdmin);
+				intent1.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+						"This will enable device administration");
+				startActivityForResult(intent1, ACTIVATION_REQUEST);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("regid")){
+			if (extras.containsKey("regid")) {
 				regId = extras.getString("regid");
 			}
 		}
-		if(regId == null || regId.equals("")){
+		if (regId == null || regId.equals("")) {
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
-		btnUnregister = (Button)findViewById(R.id.btnUnregister);
+		btnUnregister = (Button) findViewById(R.id.btnUnregister);
 		btnUnregister.setTag(TAG_BTN_UNREGISTER);
 		btnUnregister.setOnClickListener(onClickListener_BUTTON_CLICKED);
-		
-		optionBtn = (ImageView) findViewById(R.id.option_button);	
-		optionBtn.setTag(TAG_BTN_OPTIONS);
-		optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);
-		
-		
+
+		//optionBtn = (ImageView) findViewById(R.id.option_button);
+		//optionBtn.setTag(TAG_BTN_OPTIONS);
+		//optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);
+
 	}
-	
+
 	OnClickListener onClickListener_BUTTON_CLICKED = new OnClickListener() {
 
 		@Override
@@ -106,7 +117,7 @@ public class RegisterSuccessful extends Activity {
 				break;
 
 			case TAG_BTN_OPTIONS:
-				startOptionActivity();
+				//startOptionActivity();
 				break;
 
 			default:
@@ -115,98 +126,140 @@ public class RegisterSuccessful extends Activity {
 
 		}
 	};
-	
-	public void startOptionActivity(){
-		Intent intent = new Intent(RegisterSuccessful.this,AgentSettingsActivity.class);
-		intent.putExtra("from_activity_name", RegisterSuccessful.class.getSimpleName());
+
+	public void startOptionActivity() {
+		Intent intent = new Intent(RegisterSuccessful.this,
+				AgentSettingsActivity.class);
+		intent.putExtra("from_activity_name",
+				RegisterSuccessful.class.getSimpleName());
 		intent.putExtra("regid", regId);
 		startActivity(intent);
 	}
-	
-	public void startUnRegistration(){
+
+	public void startUnRegistration() {
 		final Context context = RegisterSuccessful.this;
 		mRegisterTask = new AsyncTask<Void, Void, Void>() {
 
-            @Override
-            protected Void doInBackground(Void... params) {
-            	 Map<String, String> paramss = new HashMap<String, String>();
-                 paramss.put("regid", regId);
-            	ServerUtilities.unregister(regId,context);
-                return null;
-            }
-            
-            ProgressDialog progressDialog;
-            //declare other objects as per your need
-            @Override
-            protected void onPreExecute()
-            {
-                progressDialog= ProgressDialog.show(RegisterSuccessful.this, "Unregistering Device","Please wait", true);
+			@Override
+			protected Void doInBackground(Void... params) {
+				Map<String, String> paramss = new HashMap<String, String>();
+				paramss.put("regid", regId);
+				ServerUtilities.unregister(regId, context);
+				return null;
+			}
 
-                //do initialization of required objects objects here                
-            };  
+			ProgressDialog progressDialog;
 
-            @Override
-            protected void onPostExecute(Void result) {
-            	devicePolicyManager.removeActiveAdmin(demoDeviceAdmin);
-            	Intent intent = new Intent(RegisterSuccessful.this,Entry.class);
-            	startActivity(intent);
-            	finish();
-                mRegisterTask = null;
-                progressDialog.dismiss();
-            }
+			// declare other objects as per your need
+			@Override
+			protected void onPreExecute() {
+				progressDialog = ProgressDialog.show(RegisterSuccessful.this,
+						"Unregistering Device", "Please wait", true);
 
-        };
-        mRegisterTask.execute(null, null, null);
+				// do initialization of required objects objects here
+			};
+
+			@Override
+			protected void onPostExecute(Void result) {
+				devicePolicyManager.removeActiveAdmin(demoDeviceAdmin);
+				Intent intent = new Intent(RegisterSuccessful.this, Entry.class);
+				startActivity(intent);
+				finish();
+				mRegisterTask = null;
+				progressDialog.dismiss();
+			}
+
+		};
+		mRegisterTask.execute(null, null, null);
 	}
-	
+
 	@Override
-	 public void onBackPressed() {
+	public void onBackPressed() {
 		Intent i = new Intent();
-    	i.setAction(Intent.ACTION_MAIN);
-    	i.addCategory(Intent.CATEGORY_HOME);
-    	this.startActivity(i);
-        super.onBackPressed();
-    }
-	
-	  @Override
-		public boolean onKeyDown(int keyCode, KeyEvent event) {
-		    if (keyCode == KeyEvent.KEYCODE_BACK) {
-		    	Intent i = new Intent();
-		    	i.setAction(Intent.ACTION_MAIN);
-		    	i.addCategory(Intent.CATEGORY_HOME);
-		    	this.startActivity(i);
-		    	finish();
-		        return true;
-		    }
-		    else if (keyCode == KeyEvent.KEYCODE_HOME) {
-		    	/*Intent i = new Intent();
-		    	i.setAction(Intent.ACTION_MAIN);
-		    	i.addCategory(Intent.CATEGORY_HOME);
-		    	this.startActivity(i);*/
-		    	finish();
-		        return true;
-		    }
-		    return super.onKeyDown(keyCode, event);
+		i.setAction(Intent.ACTION_MAIN);
+		i.addCategory(Intent.CATEGORY_HOME);
+		this.startActivity(i);
+		super.onBackPressed();
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Intent i = new Intent();
+			i.setAction(Intent.ACTION_MAIN);
+			i.addCategory(Intent.CATEGORY_HOME);
+			this.startActivity(i);
+			finish();
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_HOME) {
+			/*
+			 * Intent i = new Intent(); i.setAction(Intent.ACTION_MAIN);
+			 * i.addCategory(Intent.CATEGORY_HOME); this.startActivity(i);
+			 */
+			finish();
+			return true;
 		}
+		return super.onKeyDown(keyCode, event);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		/*getMenuInflater().inflate(R.menu.register_successful, menu);
-		return true;*/
-		MenuInflater inflater = getMenuInflater();
-    	inflater.inflate(R.menu.options_menu, menu);
-        return true;
+		getSupportMenuInflater().inflate(R.menu.sherlock_menu, menu);
+		return true;
 	}
-	 public boolean onOptionsItemSelected(MenuItem item) {
-	    	switch (item.getItemId()) {
-	    	case R.id.info:
-	    		Intent intent = new Intent(RegisterSuccessful.this,AgentSettingsActivity.class);
-	    		intent.putExtra("from_activity_name", RegisterSuccessful.class.getSimpleName());
-	    		intent.putExtra("regid", regId);
-	    		return true;
-	    	default:
-	    		return super.onOptionsItemSelected(item);
-	    	}
-	    }   
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.operation_setting:
+			Intent intentOP = new Intent(RegisterSuccessful.this,
+					AvailableOperationsActivity.class);
+			intentOP.putExtra("from_activity_name",
+					RegisterSuccessful.class.getSimpleName());
+			intentOP.putExtra("regid", regId);
+			startActivity(intentOP);
+			return true;
+		case R.id.info_setting:
+			Intent intentIN = new Intent(RegisterSuccessful.this,
+					DisplayDeviceInfo.class);
+			intentIN.putExtra("from_activity_name",
+					RegisterSuccessful.class.getSimpleName());
+			intentIN.putExtra("regid", regId);
+			startActivity(intentIN);
+			return true;
+		case R.id.pin_setting:
+			Intent intentPIN = new Intent(RegisterSuccessful.this,
+					PinCodeActivity.class);
+			intentPIN.putExtra("from_activity_name",
+					RegisterSuccessful.class.getSimpleName());
+			intentPIN.putExtra("regid", regId);
+			startActivity(intentPIN);
+			return true;
+		case R.id.ip_setting:
+			Intent intentIP = new Intent(RegisterSuccessful.this,
+					SettingsActivity.class);
+			intentIP.putExtra("from_activity_name",
+					RegisterSuccessful.class.getSimpleName());
+			intentIP.putExtra("regid", regId);
+			startActivity(intentIP);
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	/*
+	 * @Override public boolean onCreateOptionsMenu(Menu menu) {
+	 * getMenuInflater().inflate(R.menu.register_successful, menu); return true;
+	 * MenuInflater inflater = getMenuInflater();
+	 * inflater.inflate(R.menu.options_menu, menu); return true; } public
+	 * boolean onOptionsItemSelected(MenuItem item) { switch (item.getItemId())
+	 * { case R.id.info: Intent intent = new
+	 * Intent(RegisterSuccessful.this,AgentSettingsActivity.class);
+	 * intent.putExtra("from_activity_name",
+	 * RegisterSuccessful.class.getSimpleName()); intent.putExtra("regid",
+	 * regId); return true; default: return super.onOptionsItemSelected(item); }
+	 * }
+	 */
 
 }

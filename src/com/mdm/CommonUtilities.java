@@ -27,7 +27,7 @@ public class CommonUtilities {
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    static String SERVER_URL = "http://10.200.3.62:9763/mdm/";
+    static String SERVER_URL = "http://10.200.3.61:9763/mdm/";
     
     public static String getSERVER_URL() {
 		return SERVER_URL;

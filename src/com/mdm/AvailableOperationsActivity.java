@@ -68,18 +68,23 @@ public class AvailableOperationsActivity extends Activity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) {
-	    		Intent intent = new Intent(AvailableOperationsActivity.this,AgentSettingsActivity.class);
-	    		intent.putExtra("from_activity_name", FROM_ACTIVITY);
-	    		intent.putExtra("regid", REG_ID);
-	    		startActivity(intent);
-	    		return true;
-	    }
-	    else if (keyCode == KeyEvent.KEYCODE_HOME) {
-	    	/*Intent i = new Intent();
+		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AllReadyRegistered.class.getSimpleName())) {
+    		Intent intent = new Intent(AvailableOperationsActivity.this,AllReadyRegistered.class);
+    		intent.putExtra("from_activity_name", AvailableOperationsActivity.class.getSimpleName());
+    		intent.putExtra("regid", REG_ID);
+    		startActivity(intent);
+    		return true;
+	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessful.class.getSimpleName())) {
+    		Intent intent = new Intent(AvailableOperationsActivity.this,RegisterSuccessful.class);
+    		intent.putExtra("from_activity_name", AvailableOperationsActivity.class.getSimpleName());
+    		intent.putExtra("regid", REG_ID);
+    		startActivity(intent);
+    		return true;
+	    }else if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    	Intent i = new Intent();
 	    	i.setAction(Intent.ACTION_MAIN);
 	    	i.addCategory(Intent.CATEGORY_HOME);
-	    	this.startActivity(i);*/
+	    	this.startActivity(i);
 	    	this.finish();
 	        return true;
 	    }
