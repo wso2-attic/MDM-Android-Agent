@@ -32,6 +32,7 @@
               <ImageView
                   android:id="@+id/option_button"
                   style="@style/TitleBarOption"
+                  android:visibility="gone"
                   android:layout_alignParentRight="true"
                   android:layout_centerVertical="true"
                   android:contentDescription="@string/string_content" />
@@ -59,7 +60,7 @@
           <!-- Logo Ends -->
       </LinearLayout>
       <!-- Header Ends -->
-      <!-- Footer Start -->
+      <!-- Footer Start 
 
       <LinearLayout
           android:id="@+id/footer"
@@ -70,7 +71,7 @@
           android:layout_margin="10dp"
           android:background="@drawable/repeat_bg" >
       </LinearLayout>
-      <!-- Footer Ends -->
+      Footer Ends -->
 
 
       <!-- Login Form -->
@@ -113,7 +114,6 @@
 	         android:id="@+id/textView1"
 	         android:layout_width="wrap_content"
 	         android:layout_height="wrap_content"
-	         android:layout_below="@+id/linearLayoutText"
 	         android:layout_centerHorizontal="true"
 	         android:textSize="16sp"
 	         android:textColor="#372c24"

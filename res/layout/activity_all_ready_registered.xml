@@ -4,11 +4,11 @@
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:fillViewport="true">
-  <RelativeLayout 
+   <RelativeLayout 
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content" android:background="#ffffff">
   		
-      <RelativeLayout android:id="@+id/layout_topbar"
+      <!--<RelativeLayout android:id="@+id/layout_topbar"
 		android:orientation="vertical" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:layout_alignParentTop="true">
       
@@ -30,7 +30,7 @@
 			    android:contentDescription="@string/string_content" />
 
 		</RelativeLayout>
-	</RelativeLayout>
+	</RelativeLayout>-->
 	
   		<!--  Header  Starts-->
   		<LinearLayout android:id="@+id/header"
@@ -48,7 +48,7 @@
   				<!-- Logo Ends -->
   		</LinearLayout>
   		<!--  Header Ends -->  
-  		<!-- Footer Start -->
+  		<!-- Footer Start
   		<LinearLayout android:id="@+id/footer"
   				android:layout_width="wrap_content"
   				android:layout_height="wrap_content"
@@ -57,14 +57,13 @@
   				android:layout_alignParentBottom="true"
   				android:layout_centerHorizontal="true">
   		</LinearLayout>
-  		<!-- Footer Ends -->
+  		 Footer Ends -->
   		
   		<!-- Login Form -->
 		  <RelativeLayout
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignParentLeft="true"
-         android:layout_below="@+id/layout_topbar"
          android:layout_marginTop="52dp"
          android:padding="10dp" >
 		  <!--  Email Label -->
