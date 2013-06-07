@@ -72,6 +72,7 @@
         </activity>
         <activity
             android:name="com.mdm.RegisterSuccessful"
+            android:theme="@style/Theme.Sherlock"
             android:label="@string/title_activity_register_successful"
             android:screenOrientation="portrait" >
         </activity>
@@ -122,6 +123,7 @@
         </activity>
         <activity
             android:name="com.mdm.AllReadyRegistered"
+            android:theme="@style/Theme.Sherlock"
             android:label="@string/title_activity_all_ready_registered"
             android:screenOrientation="portrait" >
         </activity>
