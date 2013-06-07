@@ -15,6 +15,9 @@
 */
 package com.mdm;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.R.bool;
 import android.os.Bundle;
 import android.app.Activity;
@@ -46,8 +49,36 @@ public class DisplayDeviceInfo extends Activity {
 		device_id.setText("IMEI:"+" "+deviceInfo.getDeviceId());
 		device.setText("Device:"+" "+deviceInfo.getDevice());
 		model.setText("Model:"+" "+deviceInfo.getDeviceModel());
-		operator.setText("Operator:"+" "+deviceInfo.getNetworkOperatorName());
-		sdk.setText("IMSI:"+" "+deviceInfo.getIMSINumber());
+		JSONArray jsonArray = null;
+		String operators = null;
+		if(deviceInfo.getNetworkOperatorName()!= null){
+			jsonArray = deviceInfo.getNetworkOperatorName();
+		}
+		
+		for (int i = 0; i < jsonArray.length(); i++) {
+   	    	 try {
+				if(jsonArray.getString(i) != null){
+					 if(i==(jsonArray.length()-1)){
+						 operators += jsonArray.getString(i);
+					 }else{
+						 operators += jsonArray.getString(i)+", ";
+					 }
+				 }
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		
+		if(operators.equals(null) || operators.equals("null")){
+			operators = "No Sim";
+		}
+		operator.setText("Operator:"+" "+operators);
+		if(deviceInfo.getIMSINumber() != null){
+			sdk.setText("IMSI:"+" "+deviceInfo.getIMSINumber());
+		}else{
+			sdk.setText("IMSI:"+" "+operators);
+		}
 		os.setText("OS:"+" "+deviceInfo.getOsVersion());
 		root.setText("Rooted:"+" "+(deviceInfo.isRooted()?"Yes":"No"));
 		
