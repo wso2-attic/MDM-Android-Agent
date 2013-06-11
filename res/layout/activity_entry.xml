@@ -23,6 +23,7 @@
 			    android:id="@+id/option_button"
 			    style="@style/TitleBarOption"
 			    android:layout_centerVertical="true"
+			    android:visibility="gone"
 			    android:layout_alignParentRight="true"
 			    android:contentDescription="@string/string_content" />
 
@@ -39,7 +40,7 @@
         android:gravity="center"
         android:text="Welcome" />
 
-    <LinearLayout
+    <!-- <LinearLayout
           android:id="@+id/footer"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
@@ -49,6 +50,6 @@
           android:layout_marginBottom="16dp"
           android:background="@drawable/repeat_bg"
           android:gravity="center" >
-      </LinearLayout>
+      </LinearLayout> -->
     
 </RelativeLayout> 

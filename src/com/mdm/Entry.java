@@ -98,13 +98,13 @@ public class Entry extends Activity {
     //    mDisplay = (TextView) findViewById(R.id.display);
         registerReceiver(mHandleMessageReceiver,
                 new IntentFilter(DISPLAY_MESSAGE_ACTION));
-        ImageView optionBtn = (ImageView) findViewById(R.id.option_button);	
+        //ImageView optionBtn = (ImageView) findViewById(R.id.option_button);	
 		errorMessage = (TextView) findViewById(R.id.textView1);
 		errorMessage.setText(getString(R.string.device_not_compatible_error));
 		if(!accessFlag){
 			errorMessage.setVisibility(View.VISIBLE);
 		}
-		optionBtn.setOnClickListener(new OnClickListener() {
+		/*optionBtn.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -113,7 +113,7 @@ public class Entry extends Activity {
 				intent.putExtra("from_activity_name", Entry.class.getSimpleName());
 				startActivity(intent);
 			}
-		});
+		});*/
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
