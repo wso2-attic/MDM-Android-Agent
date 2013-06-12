@@ -40,12 +40,13 @@ public class ProcessMessage {
             if(jobj.has("data")){
             	params.put("data", ((JSONObject)jobj.get("data")).toString());
             }
+            
+            operation = new Operation(context, mode, params, recepient);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
     	
-    	operation = new Operation(context, mode, params, recepient);
 	}
 	
 	public ProcessMessage(Context context, int mode, Intent intent) {
