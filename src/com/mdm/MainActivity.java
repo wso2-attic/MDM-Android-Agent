@@ -121,7 +121,7 @@ public class MainActivity extends Activity {
 	        @Override
 	        protected void onPostExecute(String result) {
 	    		//Direct to register successful class
-	        	Log.v("THE RESPONSE STATUS : ",result);
+	        	//Log.v("THE RESPONSE STATUS : ",result);
 	        	//if(result.contains("Succesful")){
 	            	Intent intent = new Intent(MainActivity.this,RegisterSuccessful.class);
 	            	intent.putExtra("regid", regId);

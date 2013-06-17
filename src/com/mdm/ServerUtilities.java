@@ -195,7 +195,7 @@ public final class ServerUtilities {
             conn.setRequestMethod(option);
             conn.setRequestProperty("Content-Type",
                     "application/x-www-form-urlencoded;charset=UTF-8");
-            conn.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
+            //conn.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
             conn.setRequestProperty("Accept","*/*");
             // post the request
             int status = 0;

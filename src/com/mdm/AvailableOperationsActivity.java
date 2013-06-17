@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -47,6 +48,9 @@ public class AvailableOperationsActivity extends Activity {
 		}
 		
 		ListView listView = (ListView) findViewById(R.id.listview);  
+		ColorDrawable grey = new ColorDrawable(this.getResources().getColor(R.color.light_grey));
+		listView.setDivider(grey);
+		listView.setDividerHeight(1);
 		listView.setAdapter(new IconicAdapter());
 	}
 
