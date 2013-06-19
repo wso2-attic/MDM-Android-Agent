@@ -38,6 +38,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.Browser;
 import android.util.Base64;
 import android.util.Log;
 
@@ -131,6 +132,31 @@ public class ApplicationManager extends Activity {
 		Uri packageURI = Uri.parse(packageName.toString());
 		Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);
 		context.startActivity(uninstallIntent);
+	}
+	
+	/**
+	 * Create a bookmark for any web app
+	 * 
+	 * @param url
+	 *            - Url should be passed in as a String
+	 *            - Title(Web app title) should be passed in as a String
+	 */
+	public void createWebAppBookmark(String url, String title){
+		  final Intent in = new Intent();
+		  final Intent shortcutIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+		  long urlHash = url.hashCode();
+		  long uniqueId = (urlHash << 32) | shortcutIntent.hashCode();
+		  shortcutIntent.putExtra(Browser.EXTRA_APPLICATION_ID, Long.toString(uniqueId));
+		  in.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
+		  in.putExtra(Intent.EXTRA_SHORTCUT_NAME, title);
+		  in.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE,
+		                    Intent.ShortcutIconResource.fromContext(
+		                            context,
+		                            R.drawable.ic_bookmark));
+		  in.setAction("com.android.launcher.action.INSTALL_SHORTCUT"); 
+		//or   in.setAction(Intent.ACTION_CREATE_SHORTCUT); 
+
+		  sendBroadcast(in);
 	}
 
 	/**
