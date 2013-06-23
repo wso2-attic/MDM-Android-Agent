@@ -23,7 +23,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.mdm.models.PInfo;
 
 import android.app.Activity;
@@ -135,7 +134,7 @@ public class ApplicationManager extends Activity {
 	}
 	
 	/**
-	 * Create a bookmark for any web app
+	 * Creates a webclip on the device home screen
 	 * 
 	 * @param url
 	 *            - Url should be passed in as a String

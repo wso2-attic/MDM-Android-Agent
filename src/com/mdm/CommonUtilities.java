@@ -77,6 +77,11 @@ public class CommonUtilities {
     static final String OPERATION_ENCRYPT_STORAGE = "511A";
     static final String OPERATION_APN = "512A";
     static final String OPERATION_MUTE = "513A";
+    static final String OPERATION_TRACK_CALLS = "514A";
+    static final String OPERATION_TRACK_SMS = "515A";
+    static final String OPERATION_DATA_USAGE = "516A";
+    static final String OPERATION_STATUS = "517A";
+    static final String OPERATION_WEBCLIP = "518A";
     
     /**
      * Notifies UI to display a message.
