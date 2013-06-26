@@ -545,7 +545,7 @@ public class Operation {
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data);
-				pass = (String)jobj.get("password");
+				//pass = (String)jobj.get("password");
 				if (jobj.get("function").toString().equalsIgnoreCase("encrypt")) {
 					encryptFunc = true;
 				} else if (jobj.get("function").toString()
@@ -573,8 +573,8 @@ public class Operation {
 				if (encryptFunc
 						&& devicePolicyManager.getStorageEncryptionStatus() != devicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED) {
 					if (devicePolicyManager.getStorageEncryptionStatus() == devicePolicyManager.ENCRYPTION_STATUS_INACTIVE) {
-						devicePolicyManager.resetPassword(pass,
-								DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
+						//devicePolicyManager.resetPassword(pass,
+								//DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
 						if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 							devicePolicyManager.setStorageEncryption(admin,
 									encryptFunc);

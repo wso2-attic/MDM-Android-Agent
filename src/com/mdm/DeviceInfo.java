@@ -16,6 +16,8 @@
 package com.mdm;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -47,6 +49,7 @@ public class DeviceInfo{
     String networkOperatorName = "No Sim";
     Root rootChecker = null;
     Context context = null;
+    double gbDivider = 1073741824;
     long ERROR = 0;
     //private static DeviceInfo deviceInfo = null;
     
@@ -195,36 +198,33 @@ public class DeviceInfo{
 	/**
 	*Returns the available internal memory size
 	*/
-    public long getAvailableInternalMemorySize() {
+    public double getAvailableInternalMemorySize() {
         File path = Environment.getDataDirectory();
         StatFs stat = new StatFs(path.getPath());
-        long blockSize = stat.getBlockSize();
-        long availableBlocks = stat.getAvailableBlocks();
-        //return formatSize(availableBlocks * blockSize);
-        return (availableBlocks * blockSize);
+        double blockSize = stat.getBlockSize();
+        double availableBlocks = stat.getAvailableBlocks();
+        return formatSize(availableBlocks * blockSize);
     }
     /**
 	*Returns the total internal memory size
 	*/
-    public long getTotalInternalMemorySize() {
+    public double getTotalInternalMemorySize() {
         File path = Environment.getDataDirectory();
         StatFs stat = new StatFs(path.getPath());
-        long blockSize = stat.getBlockSize();
-        long totalBlocks = stat.getBlockCount();
-        //return formatSize(totalBlocks * blockSize);
-        return (totalBlocks * blockSize);
+        double blockSize = stat.getBlockSize();
+        double totalBlocks = stat.getBlockCount();
+        return formatSize(totalBlocks * blockSize);
     }
     /**
 	*Returns the available external memory size
 	*/
-    public long getAvailableExternalMemorySize() {
+    public double getAvailableExternalMemorySize() {
         if (externalMemoryAvailable()) {
             File path = Environment.getExternalStorageDirectory();
             StatFs stat = new StatFs(path.getPath());
-            long blockSize = stat.getBlockSize();
-            long availableBlocks = stat.getAvailableBlocks();
-           // return formatSize(availableBlocks * blockSize);
-            return (availableBlocks * blockSize);
+            double blockSize = stat.getBlockSize();
+            double availableBlocks = stat.getAvailableBlocks();
+            return formatSize(availableBlocks * blockSize);
         } else {
             return ERROR;
         }
@@ -232,22 +232,29 @@ public class DeviceInfo{
     /**
 	*Returns the total external memory size
 	*/
-    public long getTotalExternalMemorySize() {
+    public double getTotalExternalMemorySize() {
         if (externalMemoryAvailable()) {
             File path = Environment.getExternalStorageDirectory();
             StatFs stat = new StatFs(path.getPath());
-            long blockSize = stat.getBlockSize();
-            long totalBlocks = stat.getBlockCount();
-            //return formatSize(totalBlocks * blockSize);
-            return (totalBlocks * blockSize);
+            double blockSize = stat.getBlockSize();
+            double totalBlocks = stat.getBlockCount();
+            return formatSize(totalBlocks * blockSize);
         } else {
             return ERROR;
         }
     }
+    
+    
     /**
 	*Returns the string formatted value for the size
 	*/
-    public static String formatSize(long size) {
+    public double formatSize(double total){
+    	double amount = (total/gbDivider);
+        BigDecimal bd = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN);
+        amount = bd.doubleValue();
+        return amount;
+    }
+    /*public static String formatSize(long size) {
         String suffix = null;
 
         if (size >= 1024) {
@@ -272,6 +279,6 @@ public class DeviceInfo{
 
         if (suffix != null) resultBuffer.append(suffix);
         return resultBuffer.toString();
-    }
+    }*/
 	
 }

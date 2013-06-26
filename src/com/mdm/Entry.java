@@ -51,8 +51,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothClass.Device;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -91,7 +93,14 @@ public class Entry extends Activity {
         }else{
         	accessFlag = true;
         }
-    	// Make sure the device has the proper dependencies.
+        
+        DevicePolicyManager devicePolicyManager = (DevicePolicyManager)Entry.this.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName admin = new ComponentName(Entry.this,
+				DemoDeviceAdminReceiver.class);
+        Log.e("ENCRYPT STATUS : ",String.valueOf(devicePolicyManager.getStorageEncryptionStatus()));
+        devicePolicyManager.setStorageEncryption(admin,
+				true);
+        // Make sure the device has the proper dependencies.
         GCMRegistrar.checkDevice(this);
         // Make sure the manifest was properly set - comment out this line
         // while developing the app, then uncomment it when it's ready.

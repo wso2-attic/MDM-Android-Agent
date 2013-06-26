@@ -89,7 +89,15 @@
               android:textColor="#372c24"
 		      android:text="Unregister" />
 
-		  
+		  <LinearLayout android:id="@+id/footerlogo"
+  		    	android:orientation="vertical"
+  				android:layout_width="wrap_content"
+  				android:layout_height="wrap_content"
+  				android:layout_margin="10dp"
+  				android:background="@drawable/repeat_bg"
+  				android:layout_alignParentBottom="true"
+  				android:layout_centerHorizontal="true">
+  		</LinearLayout>
 
 		</RelativeLayout>
 		  <!-- Link to Registration Screen -->
