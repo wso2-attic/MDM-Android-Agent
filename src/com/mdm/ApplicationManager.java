@@ -155,7 +155,7 @@ public class ApplicationManager extends Activity {
 		  in.setAction("com.android.launcher.action.INSTALL_SHORTCUT"); 
 		//or   in.setAction(Intent.ACTION_CREATE_SHORTCUT); 
 
-		  sendBroadcast(in);
+		  context.sendBroadcast(in);
 	}
 
 	/**
