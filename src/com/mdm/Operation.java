@@ -563,7 +563,11 @@ public class Operation {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("code", code);
 				params.put("msgID", token);
-				params.put("status", "200");
+				if(devicePolicyManager.getStorageEncryptionStatus() != devicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED){
+					params.put("status", "200");
+				}else{
+					params.put("status", "400");
+				}
 				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
 					ServerUtilities.pushData(params, context);
 				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
@@ -578,6 +582,8 @@ public class Operation {
 						if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 							devicePolicyManager.setStorageEncryption(admin,
 									encryptFunc);
+							Intent intent = new Intent(DevicePolicyManager.ACTION_START_ENCRYPTION);
+							((Activity) context).startActivityForResult(intent, 1);
 						}
 					}
 				} else if (!encryptFunc

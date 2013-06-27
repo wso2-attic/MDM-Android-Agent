@@ -93,13 +93,6 @@ public class Entry extends Activity {
         }else{
         	accessFlag = true;
         }
-        
-        DevicePolicyManager devicePolicyManager = (DevicePolicyManager)Entry.this.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        ComponentName admin = new ComponentName(Entry.this,
-				DemoDeviceAdminReceiver.class);
-        Log.e("ENCRYPT STATUS : ",String.valueOf(devicePolicyManager.getStorageEncryptionStatus()));
-        devicePolicyManager.setStorageEncryption(admin,
-				true);
         // Make sure the device has the proper dependencies.
         GCMRegistrar.checkDevice(this);
         // Make sure the manifest was properly set - comment out this line
