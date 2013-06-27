@@ -69,6 +69,7 @@ public class Operation {
 	int mode = 1;
 	private static final String TAG = "Operation Handler";
 	static final int ACTIVATION_REQUEST = 47;
+	static final int REQUEST_CODE_START_ENCRYPTION = 1;
 	Intent intent;
 	Map<String, String> params = new HashMap<String, String>();
 	SmsManager smsManager;
@@ -583,7 +584,8 @@ public class Operation {
 							devicePolicyManager.setStorageEncryption(admin,
 									encryptFunc);
 							Intent intent = new Intent(DevicePolicyManager.ACTION_START_ENCRYPTION);
-							((Activity) context).startActivityForResult(intent, 1);
+							intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+							context.startActivity(intent);
 						}
 					}
 				} else if (!encryptFunc
