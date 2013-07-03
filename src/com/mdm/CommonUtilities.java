@@ -27,14 +27,14 @@ public class CommonUtilities {
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    static String SERVER_URL = "http://10.200.1.142:9764/mdm/";
+    static String SERVER_URL = "http://10.200.1.142:9763/mdm/api/";
     
     public static String getSERVER_URL() {
 		return SERVER_URL;
 	}
 
 	public static void setSERVER_URL(String sERVER_URL) {
-		SERVER_URL = "http://"+sERVER_URL+":9763/mdm/";
+		SERVER_URL = "http://"+sERVER_URL+":9763/mdm/api/";
 	}
 
 	/**
@@ -82,6 +82,9 @@ public class CommonUtilities {
     static final String OPERATION_DATA_USAGE = "516A";
     static final String OPERATION_STATUS = "517A";
     static final String OPERATION_WEBCLIP = "518A";
+    static final String OPERATION_PASSWORD_POLICY = "519A";
+    static final String OPERATION_EMAIL_CONFIGURATION = "520A";
+    
     
     /**
      * Notifies UI to display a message.

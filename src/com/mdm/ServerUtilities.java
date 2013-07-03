@@ -197,6 +197,7 @@ public final class ServerUtilities {
                     "application/x-www-form-urlencoded;charset=UTF-8");
             //conn.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
             conn.setRequestProperty("Accept","*/*");
+            conn.setRequestProperty("Connection", "close");
             // post the request
             int status = 0;
             Log.v("Check verb",option);

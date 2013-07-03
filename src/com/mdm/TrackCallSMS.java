@@ -124,8 +124,9 @@ public class TrackCallSMS {
 								.getColumnIndex("address")));
 						jsonObj.put("date",
 								formatter.format(calendar.getTime()));
-						jsonObj.put("content",
-								cursor.getString(cursor.getColumnIndex("body")));
+						/*jsonObj.put("content",
+								cursor.getString(cursor.getColumnIndex("body")));*/
+						jsonObj.put("content","Testing SMS");
 						jsonArray.add(jsonObj);
 					} while (cursor.moveToPrevious());
 				}
