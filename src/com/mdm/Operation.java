@@ -792,14 +792,14 @@ public class Operation {
 				
 				if(jobj.get("requireAlphanumeric") != null){
 					alphanumeric = (String)jobj.get("requireAlphanumeric");
-					if(alphanumeric.equals("checked")){
+					if(alphanumeric.equals("true")){
 						devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC);
 					}
 				}
 				
 				if(jobj.get("allowSimple") != null){
 					complex = (String)jobj.get("allowSimple");
-					if(!complex.equals("checked")){
+					if(!complex.equals("true")){
 						devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
 					}
 				}
