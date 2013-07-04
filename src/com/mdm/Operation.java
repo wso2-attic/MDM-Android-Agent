@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -758,6 +759,72 @@ public class Operation {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}else if (code.equals(CommonUtilities.OPERATION_PASSWORD_POLICY)) {
+			ComponentName demoDeviceAdmin = new ComponentName(context,
+					DemoDeviceAdminReceiver.class);
+			
+			int attempts, length, history, specialChars;
+			String alphanumeric, complex;
+			long timout;
+			// data = intent.getStringExtra("data");
+			JSONParser jp = new JSONParser();
+			try {
+				JSONObject jobj = new JSONObject(data);
+				if(jobj.get("maxFailedAttempts") != null){
+					attempts = Integer.parseInt((String)jobj.get("maxFailedAttempts"));
+					devicePolicyManager.setMaximumFailedPasswordsForWipe(demoDeviceAdmin, attempts);
+				}
+				
+				if(jobj.get("minLength") != null){
+					length = Integer.parseInt((String)jobj.get("minLength"));
+					devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, length);
+				}
+				
+				if(jobj.get("pinHistory") != null){
+					history = Integer.parseInt((String)jobj.get("pinHistory"));
+					devicePolicyManager.setPasswordHistoryLength(demoDeviceAdmin, history);
+				}
+				
+				if(jobj.get("minComplexChars") != null){
+					specialChars = Integer.parseInt((String)jobj.get("minComplexChars"));
+					devicePolicyManager.setPasswordMinimumSymbols(demoDeviceAdmin, specialChars);
+				}
+				
+				if(jobj.get("requireAlphanumeric") != null){
+					alphanumeric = (String)jobj.get("requireAlphanumeric");
+					if(alphanumeric.equals("checked")){
+						devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC);
+					}
+				}
+				
+				if(jobj.get("allowSimple") != null){
+					complex = (String)jobj.get("allowSimple");
+					if(!complex.equals("checked")){
+						devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
+					}
+				}
+				
+				if(jobj.get("maxPINAgeInDays") != null){
+					int daysOfExp = Integer.parseInt((String)jobj.get("maxPINAgeInDays"));
+					timout =  (long) (daysOfExp * 24 * 60 * 60 * 1000);
+					devicePolicyManager.setPasswordExpirationTimeout(demoDeviceAdmin, timout);
+				}
+
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("code", code);
+				params.put("msgID", token);
+				params.put("status", "200");
+				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
+					ServerUtilities.pushData(params, context);
+				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
+					smsManager.sendTextMessage(recepient, null,
+							"Password Policies Successfully Set", null, null);
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
 

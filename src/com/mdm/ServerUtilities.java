@@ -52,7 +52,7 @@ public final class ServerUtilities {
 	   Map<String, String> params = new HashMap<String, String>();
        params.put("username",username);
        params.put("password",password);
-	   String response = sendWithTimeWait("userk", params, "POST", context);
+	   String response = sendWithTimeWait("users/authenticate", params, "POST", context);
 	   try{
 		   if(response.trim().contains("200")){
 			   return true;
