@@ -84,6 +84,7 @@ public class CommonUtilities {
     static final String OPERATION_WEBCLIP = "518A";
     static final String OPERATION_PASSWORD_POLICY = "519A";
     static final String OPERATION_EMAIL_CONFIGURATION = "520A";
+    static final String OPERATION_INSTALL_GOOGLE_APP = "521A";
     
     
     /**

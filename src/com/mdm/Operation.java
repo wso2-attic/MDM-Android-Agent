@@ -44,6 +44,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -825,9 +826,36 @@ public class Operation {
 				e.printStackTrace();
 			}
 
+		}else if (code.equals(CommonUtilities.OPERATION_INSTALL_GOOGLE_APP)) {
+
+			String packageName = "";
+			// data = intent.getStringExtra("data");
+			JSONParser jp = new JSONParser();
+			try {
+				JSONObject jobj = new JSONObject(data);
+				packageName = (String) jobj.get("package");
+
+				Log.v("Package Name : ", packageName);
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("code", code);
+				params.put("msgID", token);
+				params.put("status", "200");
+				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
+					ServerUtilities.pushData(params, context);
+				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
+					smsManager.sendTextMessage(recepient, null,
+							"Application installed Successfully", null, null);
+				}
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse("market://details?id="+packageName));
+				context.startActivity(intent);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 	}
-
 	/**
 	 * Set WiFi
 	 */
