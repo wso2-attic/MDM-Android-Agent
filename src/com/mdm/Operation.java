@@ -360,10 +360,8 @@ public class Operation {
 		} else if (code.equals(CommonUtilities.OPERATION_CLEAR_PASSWORD)) {
 			ComponentName demoDeviceAdmin = new ComponentName(context,
 					DemoDeviceAdminReceiver.class);
-			devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, 0);
-			String pass = "";
+			devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
 			// data = intent.getStringExtra("data");
-			JSONParser jp = new JSONParser();
 			try {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("code", code);
@@ -376,7 +374,7 @@ public class Operation {
 							"Lock code cleared Successfully", null, null);
 				}
 
-				devicePolicyManager.resetPassword(pass,
+				devicePolicyManager.resetPassword("",
 						DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
 				devicePolicyManager.lockNow();
 			} catch (Exception e) {
