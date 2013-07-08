@@ -182,12 +182,12 @@ public class Operation {
 									"Battery Level : "
 											+ phoneState.getBatteryLevel()
 											+ ", Total Memory : "
-											+ deviceInfo.formatSize(deviceInfo
+											+ deviceInfo.formatSizeGB(deviceInfo
 													.getTotalInternalMemorySize()
 													+ deviceInfo
 															.getTotalExternalMemorySize())
 											+ ", Available Memory : "
-											+ deviceInfo.formatSize(deviceInfo
+											+ deviceInfo.formatSizeGB(deviceInfo
 													.getAvailableInternalMemorySize()
 													+ deviceInfo
 															.getAvailableExternalMemorySize()),
@@ -357,17 +357,14 @@ public class Operation {
 				e.printStackTrace();
 			}
 
-		} else if (code.equals(CommonUtilities.OPERATION_CHANGE_LOCK_CODE)) {
+		} else if (code.equals(CommonUtilities.OPERATION_CLEAR_PASSWORD)) {
 			ComponentName demoDeviceAdmin = new ComponentName(context,
 					DemoDeviceAdminReceiver.class);
-			devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, 3);
-			String pass = "123";
+			devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, 0);
+			String pass = "";
 			// data = intent.getStringExtra("data");
 			JSONParser jp = new JSONParser();
 			try {
-				JSONObject jobj = new JSONObject(data);
-				pass = (String) jobj.get("password");
-
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("code", code);
 				params.put("msgID", token);
@@ -376,7 +373,7 @@ public class Operation {
 					ServerUtilities.pushData(params, context);
 				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
 					smsManager.sendTextMessage(recepient, null,
-							"Lock code changed Successfully", null, null);
+							"Lock code cleared Successfully", null, null);
 				}
 
 				devicePolicyManager.resetPassword(pass,
@@ -494,12 +491,15 @@ public class Operation {
 		} else if (code.equals(CommonUtilities.OPERATION_INSTALL_APPLICATION)) {
 
 			String appUrl = "";
+			String type = "enterprise";
 			// data = intent.getStringExtra("data");
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data);
 				appUrl = (String) jobj.get("url");
-
+				if(jobj.get("type")!=null){
+					type = (String) jobj.get("type");
+				}
 				Log.v("App URL : ", appUrl);
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("code", code);
@@ -511,7 +511,18 @@ public class Operation {
 					smsManager.sendTextMessage(recepient, null,
 							"Application installed Successfully", null, null);
 				}
-				appList.installApp(appUrl);
+				
+				if(type.equalsIgnoreCase("enterprise")){
+					appList.installApp(appUrl);
+				}else if(type.equalsIgnoreCase("market")){
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse("market://details?id="+appUrl));
+					context.startActivity(intent);
+				}else{
+					appList.installApp(appUrl);
+				}
+				
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -850,6 +861,36 @@ public class Operation {
 				Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.setData(Uri.parse("market://details?id="+packageName));
 				context.startActivity(intent);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}else if (code.equals(CommonUtilities.OPERATION_CHANGE_LOCK_CODE)) {
+			ComponentName demoDeviceAdmin = new ComponentName(context,
+					DemoDeviceAdminReceiver.class);
+			devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, 3);
+			String pass = "123";
+			// data = intent.getStringExtra("data");
+			JSONParser jp = new JSONParser();
+			try {
+				JSONObject jobj = new JSONObject(data);
+				pass = (String) jobj.get("password");
+
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("code", code);
+				params.put("msgID", token);
+				params.put("status", "200");
+				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
+					ServerUtilities.pushData(params, context);
+				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
+					smsManager.sendTextMessage(recepient, null,
+							"Lock code changed Successfully", null, null);
+				}
+
+				devicePolicyManager.resetPassword(pass,
+						DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
+				devicePolicyManager.lockNow();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

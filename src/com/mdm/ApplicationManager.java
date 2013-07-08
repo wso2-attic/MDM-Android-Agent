@@ -84,6 +84,25 @@ public class ApplicationManager extends Activity {
 		}
 		return res;
 	}
+	
+	public String getAppNameFromPackage(String packageName) {
+		boolean getSysPackages = true;
+		String appName = "";
+		List<PackageInfo> packs = context.getPackageManager()
+				.getInstalledPackages(0);
+		for (int i = 0; i < packs.size(); i++) {
+			PackageInfo p = packs.get(i);
+			if ((!getSysPackages) && (p.versionName == null)) {
+				continue;
+			}
+			
+			if(packageName.equals(p.packageName)){
+				appName = p.applicationInfo.loadLabel(
+						context.getPackageManager()).toString();
+			}
+		}
+		return appName;
+	}
 
 	public String encodeImage(Drawable drawable) {
 		Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();

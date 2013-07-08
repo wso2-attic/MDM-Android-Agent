@@ -50,6 +50,7 @@ public class DeviceInfo{
     Root rootChecker = null;
     Context context = null;
     double gbDivider = 1073741824;
+    double mbDivider = 1048576;
     long ERROR = 0;
     //private static DeviceInfo deviceInfo = null;
     
@@ -203,7 +204,7 @@ public class DeviceInfo{
         StatFs stat = new StatFs(path.getPath());
         double blockSize = stat.getBlockSize();
         double availableBlocks = stat.getAvailableBlocks();
-        return formatSize(availableBlocks * blockSize);
+        return formatSizeGB(availableBlocks * blockSize);
     }
     /**
 	*Returns the total internal memory size
@@ -213,7 +214,7 @@ public class DeviceInfo{
         StatFs stat = new StatFs(path.getPath());
         double blockSize = stat.getBlockSize();
         double totalBlocks = stat.getBlockCount();
-        return formatSize(totalBlocks * blockSize);
+        return formatSizeGB(totalBlocks * blockSize);
     }
     /**
 	*Returns the available external memory size
@@ -224,7 +225,7 @@ public class DeviceInfo{
             StatFs stat = new StatFs(path.getPath());
             double blockSize = stat.getBlockSize();
             double availableBlocks = stat.getAvailableBlocks();
-            return formatSize(availableBlocks * blockSize);
+            return formatSizeGB(availableBlocks * blockSize);
         } else {
             return ERROR;
         }
@@ -238,7 +239,7 @@ public class DeviceInfo{
             StatFs stat = new StatFs(path.getPath());
             double blockSize = stat.getBlockSize();
             double totalBlocks = stat.getBlockCount();
-            return formatSize(totalBlocks * blockSize);
+            return formatSizeGB(totalBlocks * blockSize);
         } else {
             return ERROR;
         }
@@ -248,8 +249,15 @@ public class DeviceInfo{
     /**
 	*Returns the string formatted value for the size
 	*/
-    public double formatSize(double total){
+    public double formatSizeGB(double total){
     	double amount = (total/gbDivider);
+        BigDecimal bd = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN);
+        amount = bd.doubleValue();
+        return amount;
+    }
+    
+    public double formatSizeMB(double total){
+    	double amount = (total/mbDivider);
         BigDecimal bd = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN);
         amount = bd.doubleValue();
         return amount;

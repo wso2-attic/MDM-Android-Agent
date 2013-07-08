@@ -68,7 +68,7 @@ public class CommonUtilities {
     static final String OPERATION_GET_APPLICATION_LIST = "502A";
     static final String OPERATION_LOCK_DEVICE = "503A";
     static final String OPERATION_WIPE_DATA = "504A";
-    static final String OPERATION_CHANGE_LOCK_CODE = "505A";
+    static final String OPERATION_CLEAR_PASSWORD = "505A";
     static final String OPERATION_NOTIFICATION = "506A";
     static final String OPERATION_WIFI = "507A";
     static final String OPERATION_DISABLE_CAMERA = "508A";
@@ -85,7 +85,7 @@ public class CommonUtilities {
     static final String OPERATION_PASSWORD_POLICY = "519A";
     static final String OPERATION_EMAIL_CONFIGURATION = "520A";
     static final String OPERATION_INSTALL_GOOGLE_APP = "522A";
-    
+    static final String OPERATION_CHANGE_LOCK_CODE = "526A";
     
     /**
      * Notifies UI to display a message.

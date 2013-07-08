@@ -15,6 +15,8 @@
 */
 package com.mdm;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,12 +45,15 @@ public class PhoneState {
 	Context context = null;
 	private long mStartRX = 0;
 	private long mStartTX = 0;
+	double mbDivider = 1048576;
 	//Data Usage API Init
 	TrafficSnapshot latest=null;
 	TrafficSnapshot previous=null;
+	ApplicationManager appList;
 	
 	public PhoneState(Context context){
 		this.context = context;
+		appList = new ApplicationManager(this.context);
 	}
 	/**
 	*Returns the device IP address
@@ -148,11 +153,11 @@ public class PhoneState {
 		JSONObject dataObj = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		String latestRX, latestTX,  previousRX, previousTX, deltaRX, deltaTX; 
-		latestRX = String.valueOf(latest.device.rx);
-		latestTX = String.valueOf(latest.device.tx);
+		latestRX = String.valueOf(formatSizeMB(latest.device.rx));
+		latestTX = String.valueOf(formatSizeMB(latest.device.tx));
 		try {
-			dataObj.put("totalupload", String.valueOf(latestRX));
-			dataObj.put("totaldownload", String.valueOf(latestTX));
+			dataObj.put("totalupload", latestRX);
+			dataObj.put("totaldownload", latestTX);
 		
 		if (previous!=null) {
 			previousRX = String.valueOf(previous.device.rx);
@@ -199,9 +204,9 @@ public class PhoneState {
 			StringBuilder buf=new StringBuilder(name);
 			try {
 				jsonObj.put("package", name);
-				jsonObj.put("name", name);
-				jsonObj.put("upload", latest_rec.tx);
-				jsonObj.put("download", latest_rec.rx);
+				jsonObj.put("name", appList.getAppNameFromPackage(name.toString()));
+				jsonObj.put("upload", formatSizeMB(latest_rec.tx));
+				jsonObj.put("download", formatSizeMB(latest_rec.rx));
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -231,4 +236,11 @@ public class PhoneState {
 		}
 		return jsonObj;
 	}
+	
+	 public double formatSizeMB(double total){
+	    	double amount = (total/mbDivider);
+	        BigDecimal bd = new BigDecimal(amount).setScale(2, RoundingMode.HALF_EVEN);
+	        amount = bd.doubleValue();
+	        return amount;
+	 }
 }
