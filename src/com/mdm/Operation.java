@@ -17,7 +17,9 @@ package com.mdm;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,9 +29,8 @@ import org.json.JSONStringer;
 import org.json.JSONTokener;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
-
 import com.mdm.models.PInfo;
-
+import com.mdm.api.*;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
@@ -53,6 +54,7 @@ import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 public class Operation {
@@ -672,22 +674,20 @@ public class Operation {
 			JSONObject dataObj = new JSONObject();
 
 			try {
-				dataObj.put("upload", deviceState.getDataUploadUsage());
-				dataObj.put("download", deviceState.getDataDownloadUsage());
 
 				Map<String, String> params = new HashMap<String, String>();
 
 				params.put("code", CommonUtilities.OPERATION_DATA_USAGE);
 				params.put("msgID", token);
 				params.put("status", "200");
-				params.put("data", dataObj.toString());
+				params.put("data", deviceState.takeDataUsageSnapShot().toString());
 				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
 					ServerUtilities.pushData(params, context);
 				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
 					smsManager.sendTextMessage(recepient, null,
 							dataObj.toString(), null, null);
 				}
-			} catch (JSONException e1) {
+			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -742,6 +742,7 @@ public class Operation {
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data);
+				Log.v("WEBCLIP DATA : ", data.toString());
 				appUrl = (String) jobj.get("url");
 				title = (String) jobj.get("title");
 				Log.v("Web App URL : ", appUrl);
@@ -920,4 +921,5 @@ public class Operation {
 		notificationManager.notify(0, notification);
 		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
 	}
+	
 }

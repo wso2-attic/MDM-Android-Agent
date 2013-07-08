@@ -15,6 +15,17 @@
 */
 package com.mdm;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.JSONArray;
+
+import com.mdm.api.TrafficRecord;
+import com.mdm.api.TrafficSnapshot;
+
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.BroadcastReceiver;
@@ -26,11 +37,15 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.util.Log;
+import android.view.View;
 
 public class PhoneState {
 	Context context = null;
 	private long mStartRX = 0;
 	private long mStartTX = 0;
+	//Data Usage API Init
+	TrafficSnapshot latest=null;
+	TrafficSnapshot previous=null;
 	
 	public PhoneState(Context context){
 		this.context = context;
@@ -72,18 +87,18 @@ public class PhoneState {
 	}
 	/**
 	*Returns the amount of uploaded data in bytes
-	*/
+	*//*
 	public long getDataUploadUsage(){
 		mStartTX = TrafficStats.getTotalTxBytes();
 		return mStartTX;
 	}
-	/**
+	*//**
 	*Returns the amount of downloaded data in bytes
-	*/
+	*//*
 	public long getDataDownloadUsage(){
 		mStartRX = TrafficStats.getTotalRxBytes();
 		return mStartRX;
-	}
+	}*/
 	/**
 	*Returns the device battery information
 	*/
@@ -122,5 +137,98 @@ public class PhoneState {
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         context.registerReceiver(batteryReceiver, filter);
 		return Battery.getInstance();*/
+	}
+	
+	/**
+	 * Generate Data Usage Report
+	 */
+	public JSONObject takeDataUsageSnapShot() {
+		previous=latest;
+		latest=new TrafficSnapshot(context);
+		JSONObject dataObj = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		String latestRX, latestTX,  previousRX, previousTX, deltaRX, deltaTX; 
+		latestRX = String.valueOf(latest.device.rx);
+		latestTX = String.valueOf(latest.device.tx);
+		try {
+			dataObj.put("totalupload", String.valueOf(latestRX));
+			dataObj.put("totaldownload", String.valueOf(latestTX));
+		
+		if (previous!=null) {
+			previousRX = String.valueOf(previous.device.rx);
+			previousTX = String.valueOf(previous.device.tx);
+			
+			deltaRX = String.valueOf(latest.device.rx-previous.device.rx);
+			deltaTX = String.valueOf(latest.device.tx-previous.device.tx);
+		}
+		
+		ArrayList<String> log=new ArrayList<String>();
+		HashSet<Integer> intersection=new HashSet<Integer>(latest.apps.keySet());
+		
+		if (previous!=null) {
+			intersection.retainAll(previous.apps.keySet());
+		}
+		
+		for (Integer uid : intersection) {
+			TrafficRecord latest_rec=latest.apps.get(uid);
+			TrafficRecord previous_rec=
+						(previous==null ? null : previous.apps.get(uid));
+			
+			jsonArray.add(getDataUseReport(latest_rec.tag, latest_rec, previous_rec, log));
+		}
+		
+		dataObj.put("appdata", jsonArray);
+		
+		Collections.sort(log);
+		
+		for (String row : log) {
+			Log.d("TrafficMonitor", row);
+		}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return dataObj;
+	}
+	
+	private JSONObject getDataUseReport(CharSequence name, TrafficRecord latest_rec,
+												TrafficRecord previous_rec,
+												ArrayList<String> rows) {
+		JSONObject jsonObj = new JSONObject();
+		if (latest_rec.rx>-1 || latest_rec.tx>-1) {
+			StringBuilder buf=new StringBuilder(name);
+			try {
+				jsonObj.put("package", name);
+				jsonObj.put("name", name);
+				jsonObj.put("upload", latest_rec.tx);
+				jsonObj.put("download", latest_rec.rx);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			buf.append("=");
+			buf.append(String.valueOf(latest_rec.rx));
+			buf.append(" received");
+			
+			if (previous_rec!=null) {
+				buf.append(" (delta=");
+				buf.append(String.valueOf(latest_rec.rx-previous_rec.rx));
+				buf.append(")");
+			}
+			
+			buf.append(", ");
+			buf.append(String.valueOf(latest_rec.tx));
+			buf.append(" sent");
+			
+			if (previous_rec!=null) {
+				buf.append(" (delta=");
+				buf.append(String.valueOf(latest_rec.tx-previous_rec.tx));
+				buf.append(")");
+			}
+			
+			rows.add(buf.toString());
+		}
+		return jsonObj;
 	}
 }
