@@ -515,6 +515,7 @@ public class Operation {
 				}else if(type.equalsIgnoreCase("Market")){
 					Intent intent = new Intent(Intent.ACTION_VIEW);
 					intent.setData(Uri.parse("market://details?id="+appUrl));
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					context.startActivity(intent);
 				}else{
 					appList.installApp(appUrl);
@@ -857,6 +858,7 @@ public class Operation {
 							"Application installed Successfully", null, null);
 				}
 				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				intent.setData(Uri.parse("market://details?id="+packageName));
 				context.startActivity(intent);
 			} catch (Exception e) {

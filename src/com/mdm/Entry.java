@@ -107,6 +107,7 @@ public class Entry extends Activity {
 		if(!accessFlag){
 			errorMessage.setVisibility(View.VISIBLE);
 		}
+
 		/*optionBtn.setOnClickListener(new OnClickListener() {
 			
 			@Override

@@ -149,6 +149,7 @@ public class ApplicationManager extends Activity {
 		}
 		Uri packageURI = Uri.parse(packageName.toString());
 		Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);
+		uninstallIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(uninstallIntent);
 	}
 	
