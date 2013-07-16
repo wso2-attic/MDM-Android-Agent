@@ -360,7 +360,7 @@ public class Operation {
 		} else if (code.equals(CommonUtilities.OPERATION_CLEAR_PASSWORD)) {
 			ComponentName demoDeviceAdmin = new ComponentName(context,
 					DemoDeviceAdminReceiver.class);
-			devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
+			
 			// data = intent.getStringExtra("data");
 			try {
 				Map<String, String> params = new HashMap<String, String>();
@@ -373,10 +373,10 @@ public class Operation {
 					smsManager.sendTextMessage(recepient, null,
 							"Lock code cleared Successfully", null, null);
 				}
-
-				devicePolicyManager.resetPassword("",
+				devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
+				devicePolicyManager.resetPassword(null,
 						DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
-				devicePolicyManager.lockNow();
+				devicePolicyManager.lockNow();devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -494,7 +494,7 @@ public class Operation {
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data);
-				appUrl = (String) jobj.get("url");
+				appUrl = (String) jobj.get("identity");
 				if(jobj.get("type")!=null){
 					type = (String) jobj.get("type");
 				}
@@ -510,9 +510,9 @@ public class Operation {
 							"Application installed Successfully", null, null);
 				}
 				
-				if(type.equalsIgnoreCase("enterprise")){
+				if(type.equalsIgnoreCase("Enterprise")){
 					appList.installApp(appUrl);
-				}else if(type.equalsIgnoreCase("market")){
+				}else if(type.equalsIgnoreCase("Market")){
 					Intent intent = new Intent(Intent.ACTION_VIEW);
 					intent.setData(Uri.parse("market://details?id="+appUrl));
 					context.startActivity(intent);
@@ -533,7 +533,7 @@ public class Operation {
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data);
-				packageName = (String) jobj.get("package");
+				packageName = (String) jobj.get("identity");
 
 				Log.v("Package Name : ", packageName);
 				Map<String, String> params = new HashMap<String, String>();

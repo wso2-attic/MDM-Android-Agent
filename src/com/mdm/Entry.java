@@ -93,8 +93,6 @@ public class Entry extends Activity {
         }else{
         	accessFlag = true;
         }
-        
-        Log.v("IM IN","Hiiiiiiiiiiiiiiiii");
         // Make sure the device has the proper dependencies.
         GCMRegistrar.checkDevice(this);
         // Make sure the manifest was properly set - comment out this line
@@ -172,7 +170,6 @@ public class Entry extends Activity {
             protected Void doInBackground(Void... params) {
             	try{
             		state =ServerUtilities.isRegistered(regId, context);
-            		 Log.v("IM IN","Hiiiiiiiiiiiiiiiii"+state);
             	}catch(Exception e){
             		e.printStackTrace();
             		//Toast.makeText(getApplicationContext(), "No Connection", Toast.LENGTH_LONG).show();

@@ -107,6 +107,7 @@ public final class ServerUtilities {
        params.put("platform", "Android");
        params.put("vendor", deviceInfo.getDeviceManufacturer());
        
+       //Calls the function "sendTimeWait" to do a HTTP post to our server using Android HTTPUrlConnection API
        String response = sendWithTimeWait("devices/register", params, "POST", context);
        return response;
    }
