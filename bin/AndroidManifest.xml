@@ -17,7 +17,7 @@
 
     <!-- Keeps the processor from sleeping when a message is received. -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-	<uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <!--
      Creates a custom permission so only this app can receive its messages.
 
@@ -43,12 +43,12 @@
     </uses-permission>
     <uses-permission android:name="android.permission.RECEIVE_SMS" >
     </uses-permission>
-     <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-     <uses-permission android:name="android.permission.READ_LOGS"/>
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
-    <uses-permission android:name="android.permission.WRITE_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_LOGS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" >
     </uses-permission>
@@ -77,9 +77,9 @@
         </activity>
         <activity
             android:name="com.mdm.RegisterSuccessful"
-            android:theme="@style/Theme.Sherlock"
             android:label="@string/title_activity_register_successful"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Sherlock" >
         </activity>
 
         <!-- Begin List of Receivers -->
@@ -128,9 +128,9 @@
         </activity>
         <activity
             android:name="com.mdm.AllReadyRegistered"
-            android:theme="@style/Theme.Sherlock"
             android:label="@string/title_activity_all_ready_registered"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Sherlock" >
         </activity>
         <activity
             android:name="com.mdm.Authentication"
@@ -167,8 +167,12 @@
         <activity
             android:name="com.mdm.PinCodeActivity"
             android:label="@string/title_activity_pin_code"
-            android:screenOrientation="portrait" 
-            android:windowSoftInputMode="stateUnchanged|adjustPan">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateUnchanged|adjustPan" >
+        </activity>
+        <activity
+            android:name="com.mdm.Notification"
+            android:label="@string/title_activity_notification" >
         </activity>
     </application>
 
