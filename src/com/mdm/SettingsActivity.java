@@ -17,7 +17,10 @@ package com.mdm;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -57,6 +60,12 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				SharedPreferences mainPref = SettingsActivity.this.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				Editor editor = mainPref.edit();
+				editor.putString("ip", ip.getText().toString().trim());
+				editor.commit();
+				
 				CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
 				Intent intent = new Intent(SettingsActivity.this,Entry.class);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -76,6 +85,13 @@ public class SettingsActivity extends Activity {
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessful.class.getSimpleName())) {
     		Intent intent = new Intent(SettingsActivity.this,RegisterSuccessful.class);
     		intent.putExtra("from_activity_name", SettingsActivity.class.getSimpleName());
+    		intent.putExtra("regid", REG_ID);
+    		startActivity(intent);
+    		return true;
+	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(Authentication.class.getSimpleName())) {
+    		Intent intent = new Intent(SettingsActivity.this,Authentication.class);
+    		intent.putExtra("from_activity_name", SettingsActivity.class.getSimpleName());
+    		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     		intent.putExtra("regid", REG_ID);
     		startActivity(intent);
     		return true;

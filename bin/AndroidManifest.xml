@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mdm"
     android:versionCode="1"
+    android:sharedUserLabel="@string/hello_world"
+  	android:sharedUserId="com.mdm"
     android:versionName="1.0" >
 
     <uses-sdk
@@ -136,6 +138,7 @@
             android:name="com.mdm.Authentication"
             android:label="@string/title_activity_authentication"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.Sherlock"
             android:windowSoftInputMode="stateUnchanged|adjustPan" >
         </activity>
         <activity
@@ -173,6 +176,10 @@
         <activity
             android:name="com.mdm.Notification"
             android:label="@string/title_activity_notification" >
+        </activity>
+        
+        <activity
+            android:name="com.wso2.wso2mobilevault.MainActivity" >
         </activity>
     </application>
 

@@ -21,7 +21,7 @@
     <string name="options_exit">Exit</string>
     <string name="app_name">WSO2 Agent</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="hello_world">Hello MDM</string>
     <string name="title_activity_display_device_info">DisplayDeviceInfo</string>
     <string name="url">http://192.168.6.6:8080/mdm/register</string>
     <string name="title_activity_register_successful">RegisterSuccessful</string>
@@ -41,6 +41,6 @@
     <string name="menu_item_operations">Operations</string>
     <string name="menu_item_phone_info">Phone Info</string>
     <string name="menu_item_pin">Change PIN</string>
-    <string name="menu_item_ip">Change IP</string>
+    <string name="menu_item_ip">Change Server Address</string>
 
 </resources>

@@ -63,43 +63,50 @@
 		
 		  <!--  Password Label -->
 		  <!-- Login button -->	
-		<RelativeLayout
-	         android:layout_width="wrap_content"
-	         android:layout_height="wrap_content"
-	         android:layout_alignParentLeft="true"
-	         android:layout_marginTop="10dp"
-	         android:padding="10dp" >
-  		<TextView
-		      android:layout_width="wrap_content"
-		      android:layout_height="wrap_content"
-		      android:layout_alignParentTop="true"
-		      android:layout_centerHorizontal="true"
-		      android:layout_marginTop="10dp"
-		      android:gravity="center_vertical"
-		      android:text="Device successfully registered"
-		      android:textSize="16sp"
-              android:textColor="#372c24" />
-  				
-		  <Button
-		      android:id="@+id/btnUnregister"
-		      android:layout_width="fill_parent"
-		      android:layout_height="wrap_content"
-		      android:layout_marginTop="50dip"
-		      android:textSize="16sp"
-              android:textColor="#372c24"
-		      android:text="Unregister" />
 
-		  <LinearLayout android:id="@+id/footerlogo"
-  		    	android:orientation="vertical"
-  				android:layout_width="wrap_content"
-  				android:layout_height="wrap_content"
-  				android:layout_margin="10dp"
-  				android:background="@drawable/repeat_bg"
-  				android:layout_alignParentBottom="true"
-  				android:layout_centerHorizontal="true">
-  		</LinearLayout>
+		<RelativeLayout
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentLeft="true"
+		    android:layout_marginTop="10dp"
+		    android:padding="10dp" >
+
+		    <TextView
+		        android:id="@+id/textView1"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentTop="true"
+		        android:layout_centerHorizontal="true"
+		        android:layout_margin="10dp"
+		        android:gravity="center"
+		        android:text="Device successfully registered, click to un-register from the MDM"
+		        android:textColor="#372c24"
+		        android:textSize="16sp" />
+
+		    <LinearLayout
+		        android:id="@+id/footerlogo"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentBottom="true"
+		        android:layout_centerHorizontal="true"
+		        android:layout_margin="10dp"
+		        android:background="@drawable/repeat_bg"
+		        android:orientation="vertical" >
+		    </LinearLayout>
+
+		    <Button
+		        android:id="@+id/btnUnregister"
+		        style="@style/ButtonText"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@+id/textView1"
+		        android:layout_centerHorizontal="true"
+		        android:layout_marginTop="19dp"
+		        android:background="@drawable/btn_orange"
+		        android:text="Unregister" />
 
 		</RelativeLayout>
+
 		  <!-- Link to Registration Screen -->
 		    
 

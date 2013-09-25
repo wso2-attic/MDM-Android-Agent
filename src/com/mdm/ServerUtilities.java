@@ -20,6 +20,7 @@ import static com.mdm.CommonUtilities.TAG;
 import com.google.android.gcm.GCMRegistrar;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -61,13 +62,13 @@ public final class ServerUtilities {
 	private static final int BACKOFF_MILLI_SECONDS = 2000;
 	private static final Random random = new Random();
 
-	static boolean isAuthenticate(String username, String password,
+	public static boolean isAuthenticate(String username, String password,
 			Context context) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", username);
 		params.put("password", password);
 		String response = sendWithTimeWait("users/authenticate", params,
-				"POST", context);
+				"POST", context).get("response");
 		try {
 			if (response.trim().contains("200")) {
 				return true;
@@ -80,24 +81,26 @@ public final class ServerUtilities {
 		}
 	}
 
-	static boolean isRegistered(String regId, Context context) {
+	public static boolean isRegistered(String regId, Context context) {
 		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> response = new HashMap<String, String>();
 		params.put("regid", regId);
-		String response = sendWithTimeWait("devices/isregistered", params,
+		response = sendWithTimeWait("devices/isregistered", params,
 				"POST", context);
+		String status = response.get("status");
 		try {
-			Log.v("Register State", response);
+			Log.v("Register State", response.get("response"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (response.trim().equals("registered")) {
+		if (response.get("response").trim().equals("registered") || status.trim().equals("200")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	static String register(String regId, Context context) {
+	public static String register(String regId, Context context) {
 		DeviceInfo deviceInfo = new DeviceInfo(context);
 		JSONObject jsObject = new JSONObject();
 		String osVersion = "";
@@ -126,28 +129,28 @@ public final class ServerUtilities {
 		// Calls the function "sendTimeWait" to do a HTTP post to our server
 		// using Android HTTPUrlConnection API
 		String response = sendWithTimeWait("devices/register", params, "POST",
-				context);
+				context).get("response");
 		return response;
 	}
 
-	static String unregister(String regId, Context context) {
+	public static String unregister(String regId, Context context) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
 		String response = sendWithTimeWait("devices/unregister", params,
-				"POST", context);
+				"POST", context).get("response");
 		return response;
 	}
 
-	static String pushData(Map<String, String> params, Context context) {
+	public static String pushData(Map<String, String> params, Context context) {
 		String response = sendWithTimeWait("notifications", params, "POST",
-				context);
+				context).get("response");
 		return response;
 	}
 
-	static String sendWithTimeWait(String epPostFix,
-			Map<String, String> params, String option, Context context) {
-		String response = null;
-		String responseFinal = null;
+	public static Map<String, String> sendWithTimeWait(String epPostFix,
+		Map<String, String> params, String option, Context context) {
+		Map<String, String> response = null;
+		Map<String, String> responseFinal = null;
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
 		for (int i = 1; i <= MAX_ATTEMPTS; i++) {
 			Log.d(TAG, "Attempt #" + i + " to register");
@@ -184,7 +187,7 @@ public final class ServerUtilities {
 		return responseFinal;
 	}
 	
-	final static HostnameVerifier WSO2MOBILE_HOST = new HostnameVerifier() {
+	public final static HostnameVerifier WSO2MOBILE_HOST = new HostnameVerifier() {
 		String[] allowHost = {"my.ultra.com", "your.ultra.com", "ours.ultra.com"}; 
 		
 		public boolean verify(String hostname, SSLSession session) {
@@ -202,16 +205,26 @@ public final class ServerUtilities {
 		
 	};
 
-	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+	public final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
 		public boolean verify(String hostname, SSLSession session) {
 			return true;
 		}
 	};
 
-	static String sendToServer(String epPostFix, Map<String, String> params,
+	public static Map<String, String> sendToServer(String epPostFix, Map<String, String> params,
 			String option, Context context) throws IOException {
 		String response = null;
+		Map<String, String> response_params = new HashMap<String, String>();
 		String endpoint = CommonUtilities.SERVER_URL + epPostFix;
+		
+		SharedPreferences mainPref = context.getSharedPreferences(
+				"com.mdm", Context.MODE_PRIVATE);
+		String ipSaved = mainPref.getString("ip", "");
+		
+		if(ipSaved != null && ipSaved != ""){
+			endpoint = "http://"+ipSaved+":9763/mdm/api/"+ epPostFix;
+		}
+		
 		URL url;
 		try {
 			url = new URL(endpoint);
@@ -269,7 +282,9 @@ public final class ServerUtilities {
 				Log.v("Response Statussss", status + "");
 				InputStream inStream = conn.getInputStream();
 				response = inputStreamAsString(inStream);
+				response_params.put("response",response);
 				Log.v("Response Messageeeee", response);
+				response_params.put("status", String.valueOf(status));
 			} else {
 				status = 200;
 			}
@@ -281,7 +296,7 @@ public final class ServerUtilities {
 				conn.disconnect();
 			}
 		}
-		return response;
+		return response_params;
 	}
 
 	private static void trustIFNetServer(Context context) {
@@ -359,7 +374,7 @@ public final class ServerUtilities {
 		}
 	}
 
-	static String inputStreamAsString(InputStream in) {
+	public static String inputStreamAsString(InputStream in) {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		StringBuilder builder = new StringBuilder();

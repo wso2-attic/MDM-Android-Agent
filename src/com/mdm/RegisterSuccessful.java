@@ -49,6 +49,7 @@ public class RegisterSuccessful extends SherlockActivity {
 	DevicePolicyManager devicePolicyManager;
 	ComponentName demoDeviceAdmin;
 	String regId = "";
+	Operation operation;
 	private Button btnUnregister;
 	private ImageView optionBtn;
 	private final int TAG_BTN_UNREGISTER = 0;
@@ -67,7 +68,7 @@ public class RegisterSuccessful extends SherlockActivity {
 
 		devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		demoDeviceAdmin = new ComponentName(this, DemoDeviceAdminReceiver.class);
-
+		operation = new Operation(RegisterSuccessful.this);
 		// Starting device admin
 		try {
 			if (!devicePolicyManager.isAdminActive(demoDeviceAdmin)) {
@@ -79,6 +80,7 @@ public class RegisterSuccessful extends SherlockActivity {
 						"This will enable device administration");
 				startActivityForResult(intent1, ACTIVATION_REQUEST);
 			}
+			operation.executePolicy();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}

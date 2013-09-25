@@ -58,6 +58,7 @@
 
       <LinearLayout
           android:id="@+id/footer"
+          android:orientation="vertical"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_alignParentBottom="true"
@@ -124,7 +125,7 @@
           android:layout_marginLeft="22dp"
           android:hint="Enter PIN Code"
           android:ems="10"
-          android:inputType="numberDecimal" >
+          android:inputType="textPassword|numberDecimal" >
       </EditText>
 
       <Button
@@ -134,8 +135,8 @@
           android:layout_margin="10dp"
           android:layout_centerHorizontal="true"
           android:layout_below="@+id/txtPinCode"
-          android:textSize="16sp"
-          android:textColor="#372c24"
+          style="@style/ButtonText"
+          android:background="@drawable/btn_orange"
           android:text="Set PIN Code" />
 
   </RelativeLayout>
