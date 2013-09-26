@@ -112,25 +112,7 @@ public class PolicyTester {
 	}
 
 	public boolean testPolicy(String code, String data) {
-		if (code.equals(CommonUtilities.OPERATION_LOCK_DEVICE)) {
-
-				JSONObject jobj = new JSONObject();
-				
-				try {
-					jobj.put("code", code);
-					if(IS_ENFORCE){
-						devicePolicyManager.lockNow();
-						jobj.put("status", true);
-					}else{
-						jobj.put("status", false);
-					}
-					finalArray.put(jobj);
-				} catch (JSONException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-
-		} else if (code.equals(CommonUtilities.OPERATION_CLEAR_PASSWORD)) {
+		if (code.equals(CommonUtilities.OPERATION_CLEAR_PASSWORD)) {
 			ComponentName demoDeviceAdmin = new ComponentName(context,
 					DemoDeviceAdminReceiver.class);
 			JSONObject jobj = new JSONObject();

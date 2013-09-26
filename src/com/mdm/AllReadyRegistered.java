@@ -31,6 +31,8 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.KeyEvent;
 //import android.view.Menu;
 //import android.view.MenuInflater;
@@ -146,6 +148,20 @@ public class AllReadyRegistered extends SherlockActivity {
 
         };
         mRegisterTask.execute(null, null, null);
+        
+        try {
+			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("policy", "");
+			editor.commit();
+			
+			editor.putString("registered","0");
+			editor.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void startOptionActivity(){

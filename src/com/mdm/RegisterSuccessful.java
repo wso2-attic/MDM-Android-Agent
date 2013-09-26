@@ -30,6 +30,8 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.KeyEvent;
 //import android.view.Menu;
 //import android.view.MenuInflater;
@@ -97,6 +99,19 @@ public class RegisterSuccessful extends SherlockActivity {
 		btnUnregister = (Button) findViewById(R.id.btnUnregister);
 		btnUnregister.setTag(TAG_BTN_UNREGISTER);
 		btnUnregister.setOnClickListener(onClickListener_BUTTON_CLICKED);
+		
+		try {
+			SharedPreferences mainPref = RegisterSuccessful.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("registered","1");
+			editor.commit();
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		//optionBtn = (ImageView) findViewById(R.id.option_button);
 		//optionBtn.setTag(TAG_BTN_OPTIONS);
@@ -173,6 +188,22 @@ public class RegisterSuccessful extends SherlockActivity {
 
 		};
 		mRegisterTask.execute(null, null, null);
+		
+		 try {
+				SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				Editor editor = mainPref.edit();
+				editor.putString("policy", "");
+				editor.commit();
+				
+				editor.putString("registered","0");
+				editor.commit();
+				
+			
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	@Override

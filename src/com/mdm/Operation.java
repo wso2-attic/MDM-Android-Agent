@@ -101,6 +101,9 @@ public class Operation {
 				editor.putString("policy",data);
 				editor.commit();
 				
+				if(mainPref.getString("policy_applied", "") == null || mainPref.getString("policy_applied", "").trim().equals("0") || mainPref.getString("policy_applied", "").trim().equals("")){
+					executePolicy();
+				}
 				/*JSONArray jArray =  new JSONArray(data);
 				for(int i = 0; i<jArray.length(); i++){
 					JSONObject policyObj = (JSONObject)jArray.getJSONObject(i);
@@ -144,6 +147,10 @@ public class Operation {
 				Editor editor = mainPref.edit();
 				editor.putString("policy",data);
 				editor.commit();
+				
+				if(mainPref.getString("policy_applied", "") == null || mainPref.getString("policy_applied", "").trim().equals("0") || mainPref.getString("policy_applied", "").trim().equals("")){
+					executePolicy();
+				}
 				/*JSONArray jArray =  new JSONArray(data);
 				for(int i = 0; i<jArray.length(); i++){
 					JSONObject policyObj = (JSONObject)jArray.getJSONObject(i);
@@ -166,11 +173,13 @@ public class Operation {
 	public void executePolicy(){
 		String policy;
 		JSONArray jArray = null;
+		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+				Context.MODE_PRIVATE);
 		
 		try{
-			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
-					Context.MODE_PRIVATE);
+			
 			policy = mainPref.getString("policy", "");
+
 			jArray = new JSONArray(policy);
 			for(int i = 0; i<jArray.length(); i++){
 				JSONObject policyObj = (JSONObject)jArray.getJSONObject(i);
@@ -178,10 +187,17 @@ public class Operation {
 					doTask(policyObj.getString("code"), policyObj.getString("data"), REQUEST_MODE_BUNDLE);
 				}
 			}
+			
+			Editor editor = mainPref.edit();
+			editor.putString("policy_applied","1");
+			editor.commit();
 			this.data = policy;
 			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "", REQUEST_MODE_NORMAL);
 		}catch(Exception ex){
 			ex.printStackTrace();
+			Editor editor = mainPref.edit();
+			editor.putString("policy_applied","0");
+			editor.commit();
 		}
 	}
 

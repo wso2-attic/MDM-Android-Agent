@@ -190,6 +190,13 @@ public class Entry extends Activity {
 
             @Override
             protected void onPostExecute(Void result) {
+            	SharedPreferences mainPref = context.getSharedPreferences(
+    					"com.mdm", Context.MODE_PRIVATE);
+    			String success = mainPref.getString("registered", "");
+    			if(success.trim().equals("1")){
+    				state = true;
+    			}
+    			
             	if(accessFlag){
 	            	if(state){
 	        			Intent intent = new Intent(Entry.this,AllReadyRegistered.class);

@@ -220,7 +220,6 @@ public class Authentication extends SherlockActivity {
             protected void onPostExecute(Void result) {
 
 				if(state){
-					Log.e("ADOO PIN : ", "PIN WADUNOOOOOOOO");
 					Intent intent = new Intent(Authentication.this,PinCodeActivity.class);
 					intent.putExtra("regid", regId);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
