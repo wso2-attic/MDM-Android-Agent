@@ -479,6 +479,7 @@ public class Operation {
 				bundle_params.put(""+policy_count,params.toString());
 			}
 				devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
+				devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, 0);
 				devicePolicyManager.resetPassword("",
 						DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
 				devicePolicyManager.lockNow();devicePolicyManager.setPasswordQuality(demoDeviceAdmin, DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
