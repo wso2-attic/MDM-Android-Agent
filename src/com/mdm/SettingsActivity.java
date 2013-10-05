@@ -28,17 +28,19 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
 	TextView ip;
 	Button optionBtn;
 	private String FROM_ACTIVITY = null;
 	private String REG_ID = "";
+	Context context;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
-		
+		context = SettingsActivity.this;
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			if(extras.containsKey("from_activity_name")){
@@ -52,7 +54,18 @@ public class SettingsActivity extends Activity {
 		
 		
 		ip = (TextView)findViewById(R.id.editText1);
+		SharedPreferences mainPref = context.getSharedPreferences(
+				"com.mdm", Context.MODE_PRIVATE);
+		String ipSaved = mainPref.getString("ip", "");
 		
+		if(ipSaved != null && ipSaved != ""){
+			ip.setText(ipSaved);
+			Intent intent = new Intent(SettingsActivity.this,Entry.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);	
+		}else{
+			ip.setText(CommonUtilities.SERVER_IP);
+		}
 		optionBtn = (Button) findViewById(R.id.button1);	
 		
 		optionBtn.setOnClickListener(new OnClickListener() {
@@ -60,16 +73,20 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				SharedPreferences mainPref = SettingsActivity.this.getSharedPreferences("com.mdm",
-						Context.MODE_PRIVATE);
-				Editor editor = mainPref.edit();
-				editor.putString("ip", ip.getText().toString().trim());
-				editor.commit();
-				
-				CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
-				Intent intent = new Intent(SettingsActivity.this,Entry.class);
-				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    			startActivity(intent);	
+				if(!ip.getText().toString().trim().equals("")){
+					SharedPreferences mainPref = SettingsActivity.this.getSharedPreferences("com.mdm",
+							Context.MODE_PRIVATE);
+					Editor editor = mainPref.edit();
+					editor.putString("ip", ip.getText().toString().trim());
+					editor.commit();
+					
+					CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
+					Intent intent = new Intent(SettingsActivity.this,Entry.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    			startActivity(intent);	
+				}else{
+					Toast.makeText(context, "Please enter Server Address, i.e : www.abc.com", Toast.LENGTH_LONG).show();
+				}
 			}
 		});
 	}

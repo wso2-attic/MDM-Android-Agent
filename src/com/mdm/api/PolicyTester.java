@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.mdm.AlertActivity;
 import com.mdm.ApplicationManager;
 import com.mdm.CommonUtilities;
 import com.mdm.DemoDeviceAdminReceiver;
@@ -17,6 +18,7 @@ import com.mdm.PhoneState;
 import com.mdm.ServerUtilities;
 import com.mdm.models.PInfo;
 
+import android.annotation.TargetApi;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -110,7 +112,8 @@ public class PolicyTester {
 			e.printStackTrace();
 		}
 	}
-
+	@SuppressWarnings("static-access")
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	public boolean testPolicy(String code, String data) {
 		if (code.equals(CommonUtilities.OPERATION_CLEAR_PASSWORD)) {
 			ComponentName demoDeviceAdmin = new ComponentName(context,
@@ -522,6 +525,81 @@ public class PolicyTester {
 				jobjx.put("code", code);
 				
 				finalArray.put(jobjx);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+		}else if (code
+				.equals(CommonUtilities.OPERATION_BLACKLIST_APPS)) {
+			ArrayList<PInfo> apps = appList.getInstalledApps(false); /*
+																	 * false =
+																	 * no system
+																	 * packages
+																	 */
+			// String apps[] = appList.getApplicationListasArray();
+			JSONArray jsonArray = new JSONArray();
+			int max = apps.size();
+			if (max > 10) {
+				//max = 10;
+			}
+			String apz = "";
+			Boolean flag = true;
+			JSONArray jArray = null;
+			try{
+				jArray = new JSONArray(data);
+				for (int i = 0; i < jArray.length(); i++) {
+					JSONObject appObj = (JSONObject) jArray
+							.getJSONObject(i);
+					String identity = (String) appObj.get("identity");
+					for (int j = 0; j < max; j++) {
+						JSONObject jsonObj = new JSONObject();
+						try {
+							jsonObj.put("name", apps.get(j).appname);
+							jsonObj.put("package", apps.get(j).pname);
+							if(identity.trim().equals(apps.get(j).pname)){
+								jsonObj.put("notviolated", false);
+								flag = false;
+								jsonObj.put("package", apps.get(j).pname);
+								if(i<(jArray.length()-1)){
+									if(apps.get(j).appname!=null)
+										apz += apps.get(j).appname + " ,\n";
+								}else{
+									if(apps.get(j).appname!=null)
+										apz += apps.get(j).appname;
+								}
+							}else{
+								jsonObj.put("notviolated", true);
+							}
+							
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						jsonArray.put(jsonObj);
+					}
+				}
+			}catch(Exception ex){
+				ex.printStackTrace();
+			}
+			
+			/*
+			 * for(int i=0;i<apps.length;i++){ jsonArray.add(apps[i]); }
+			 */
+			JSONObject appsObj = new JSONObject();
+			try {
+				appsObj.put("data", jsonArray);
+				appsObj.put("status", flag);
+				appsObj.put("code", code);
+				finalArray.put(appsObj);
+				
+				if(apz!=null || !apz.trim().equals("")){
+					Intent intent = new Intent(context, AlertActivity.class);
+					intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please uninstall them /n/n"+apz);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(intent);
+				}
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

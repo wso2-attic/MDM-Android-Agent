@@ -28,6 +28,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -48,6 +50,7 @@ public class Authentication extends SherlockActivity {
 	EditText password;
 	Activity activity;
 	Context context;
+	AsyncTask<Void, Void, String> mLicenseTask;
 	private final int TAG_BTN_AUTHENTICATE = 0;
 	private final int TAG_BTN_OPTIONS = 1;
 	@Override
@@ -71,8 +74,51 @@ public class Authentication extends SherlockActivity {
 		authenticate.setEnabled(false);
 		authenticate.setTag(TAG_BTN_AUTHENTICATE);
 		authenticate.setOnClickListener(onClickListener_BUTTON_CLICKED);
+		 mLicenseTask = new AsyncTask<Void, Void, String>() {
+
+	            @Override
+	            protected String doInBackground(Void... params) {
+	              //  boolean registered = ServerUtilities.register(context, regId);
+	            	String response="";
+	            	try{
+	            		response =ServerUtilities.getEULA(context);
+	            	}catch(Exception e){
+	            		e.printStackTrace();
+	            	}
+	                return response;
+	            }
+
+	            @Override
+	            protected void onPostExecute(String result) {
+	            	Log.v("REG IDDDD",regId);
+	            	if(result != null){
+	            		SharedPreferences mainPref = Authentication.this.getSharedPreferences("com.mdm",
+	    						Context.MODE_PRIVATE);
+	    				Editor editor = mainPref.edit();
+	    				editor.putString("eula", result);
+	    				editor.commit();
+	            	}
+	            	mLicenseTask = null;
+	            }
+
+	        };
+	       
+	       mLicenseTask.execute();
+	 
 		
-		showAlert(CommonUtilities.EULA_TEXT, CommonUtilities.EULA_TITLE);
+		
+		SharedPreferences mainPref = context.getSharedPreferences(
+				"com.mdm", Context.MODE_PRIVATE);
+		String isAgreed = mainPref.getString("isAgreed", "");
+		String eula = mainPref.getString("eula", "");
+		
+		if(!isAgreed.equals("1")){
+			if(eula != null && eula !=""){
+				showAlert(eula, CommonUtilities.EULA_TITLE);
+			}else{
+				showAlert(CommonUtilities.EULA_TEXT, CommonUtilities.EULA_TITLE);
+			}
+		}
 		DeviceInfo deviceInfo = new DeviceInfo(Authentication.this);
 		
 		/*optionBtn = (ImageView) findViewById(R.id.option_button);	
@@ -157,7 +203,7 @@ public class Authentication extends SherlockActivity {
 		dialog.setCancelable(false);
 		//TextView text = (TextView) dialog.findViewById(R.id.text);
 		WebView web = (WebView)dialog.findViewById(R.id.webview);
-		String html = "<html><body>"+message+ "/n/n" +message +"/n/n/n"+message+"</body></html>";
+		String html = "<html><body>"+message+"</body></html>";
 		String mime = "text/html";
 		String encoding = "utf-8";
 		web.getSettings().setJavaScriptEnabled(true);
@@ -169,6 +215,11 @@ public class Authentication extends SherlockActivity {
 		dialogButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				SharedPreferences mainPref = Authentication.this.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				Editor editor = mainPref.edit();
+				editor.putString("isAgreed", "1");
+				editor.commit();
 				dialog.dismiss();
 			}
 		});
@@ -176,7 +227,18 @@ public class Authentication extends SherlockActivity {
 		cancelButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				SharedPreferences mainPref = Authentication.this.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				Editor editor = mainPref.edit();
+				editor.putString("isAgreed", "0");
+				editor.commit();
 				finish();
+				/*
+				Intent intentIP = new Intent(Authentication.this,SettingsActivity.class);
+	    		intentIP.putExtra("from_activity_name", Authentication.class.getSimpleName());
+	    		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(intentIP);
+				dialog.dismiss();*/
 			}
 		});
 		
@@ -276,6 +338,12 @@ public class Authentication extends SherlockActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     	case R.id.ip_setting:
+    		SharedPreferences mainPref = Authentication.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("ip", "");
+			editor.commit();
+			
     		Intent intentIP = new Intent(Authentication.this,SettingsActivity.class);
     		intentIP.putExtra("from_activity_name", Authentication.class.getSimpleName());
     		intentIP.putExtra("regid", regId);

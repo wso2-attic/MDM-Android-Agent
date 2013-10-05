@@ -60,6 +60,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -77,10 +78,12 @@ import android.widget.Toast;
 public class Entry extends Activity {
 	TextView mDisplay;
 	AsyncTask<Void, Void, Void> mRegisterTask;
+	AsyncTask<Void, Void, String> mLicenseTask;
 	DeviceInfo info = null;
 	String regId = "";
 	boolean accessFlag = true;
 	TextView errorMessage;
+	Context context;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -88,11 +91,13 @@ public class Entry extends Activity {
 		checkNotNull(SERVER_URL, "SERVER_URL");
         checkNotNull(SENDER_ID, "SENDER_ID");
         info = new DeviceInfo(Entry.this);
+        context = Entry.this;
         if((info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO) && !info.isRooted()){
         	accessFlag = true;
         }else{
         	accessFlag = true;
         }
+		
         // Make sure the device has the proper dependencies.
         GCMRegistrar.checkDevice(this);
         // Make sure the manifest was properly set - comment out this line
@@ -165,6 +170,40 @@ public class Entry extends Activity {
             }
         }
         final Context context = this;
+        
+        mLicenseTask = new AsyncTask<Void, Void, String>() {
+
+            @Override
+            protected String doInBackground(Void... params) {
+              //  boolean registered = ServerUtilities.register(context, regId);
+            	String response="";
+            	try{
+            		response =ServerUtilities.getEULA(context);
+            	}catch(Exception e){
+            		e.printStackTrace();
+            	}
+                return response;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+            	Log.v("REG IDDDD",regId);
+            	if(result != null){
+            		SharedPreferences mainPref = Entry.this.getSharedPreferences("com.mdm",
+    						Context.MODE_PRIVATE);
+    				Editor editor = mainPref.edit();
+    				editor.putString("eula", result);
+    				editor.commit();
+            	}
+            	mLicenseTask = null;
+            }
+
+        };
+
+        mLicenseTask.execute();
+
+        
+        
         mRegisterTask = new AsyncTask<Void, Void, Void>() {
         	boolean state = false;
             @Override
@@ -173,6 +212,7 @@ public class Entry extends Activity {
             		state =ServerUtilities.isRegistered(regId, context);
             	}catch(Exception e){
             		e.printStackTrace();
+            		//HandleNetworkError(e);
             		//Toast.makeText(getApplicationContext(), "No Connection", Toast.LENGTH_LONG).show();
             	}
                 return null;
@@ -214,7 +254,10 @@ public class Entry extends Activity {
 	        		}
             	}
                 mRegisterTask = null;
-                progressDialog.dismiss();
+                if(progressDialog!=null && progressDialog.isShowing()){
+                	progressDialog.dismiss();
+                	progressDialog = null;
+                }
             }
 
         };
@@ -223,6 +266,9 @@ public class Entry extends Activity {
         }else{
         	//Toast.makeText(getApplicationContext(), getString(R.string.device_not_compatible_error), Toast.LENGTH_LONG).show();
         }
+        
+        
+       
 	}
 
 	@Override
@@ -235,6 +281,10 @@ public class Entry extends Activity {
 	protected void onDestroy() {
         if (mRegisterTask != null) {
             mRegisterTask.cancel(true);
+        }
+        
+        if(mLicenseTask!=null){
+        	mLicenseTask.cancel(true);
         }
         try{
         unregisterReceiver(mHandleMessageReceiver);
@@ -250,6 +300,85 @@ public class Entry extends Activity {
             throw new NullPointerException(
                     getString(R.string.error_config, name));
         }
+    }
+    
+    void HandleNetworkError(Exception e) {
+    	//Toast.makeText(context, "Connecting to server failed", Toast.LENGTH_LONG).show();
+    	if (mRegisterTask != null) {
+            mRegisterTask.cancel(true);
+        }
+    	Intent intentIP = new Intent(Entry.this,SettingsActivity.class);
+		intentIP.putExtra("from_activity_name", Authentication.class.getSimpleName());
+		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intentIP);
+    }
+    
+    @Override
+    protected void onResume() {
+    	// TODO Auto-generated method stub
+        mRegisterTask = new AsyncTask<Void, Void, Void>() {
+        	boolean state = false;
+            @Override
+            protected Void doInBackground(Void... params) {
+            	try{
+            		state =ServerUtilities.isRegistered(regId, context);
+            	}catch(Exception e){
+            		e.printStackTrace();
+            		//HandleNetworkError(e);
+            		//Toast.makeText(getApplicationContext(), "No Connection", Toast.LENGTH_LONG).show();
+            	}
+                return null;
+            }
+            
+            ProgressDialog progressDialog;
+            //declare other objects as per your need
+            @Override
+            protected void onPreExecute()
+            {
+                progressDialog= ProgressDialog.show(Entry.this, "Checking Registration Info","Please wait", true);
+
+                //do initialization of required objects objects here                
+            };     
+
+            @Override
+            protected void onPostExecute(Void result) {
+            	SharedPreferences mainPref = context.getSharedPreferences(
+    					"com.mdm", Context.MODE_PRIVATE);
+    			String success = mainPref.getString("registered", "");
+    			if(success.trim().equals("1")){
+    				state = true;
+    			}
+    			
+            	if(accessFlag){
+	            	if(state){
+	        			Intent intent = new Intent(Entry.this,AllReadyRegistered.class);
+	        			intent.putExtra("regid", regId);
+	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        			startActivity(intent);
+	        			finish();
+	        		}else{
+	        			Intent intent = new Intent(Entry.this,Authentication.class);
+	        			intent.putExtra("regid", regId);
+	        			Log.v("REGIDDDDD",regId);
+	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        			startActivity(intent);
+	        			finish();
+	        		}
+            	}
+                mRegisterTask = null;
+                if(progressDialog!=null && progressDialog.isShowing()){
+                	progressDialog.dismiss();
+                	progressDialog = null;
+                }
+            }
+
+        };
+        if(accessFlag){
+        	mRegisterTask.execute(null, null, null);
+        }else{
+        	//Toast.makeText(getApplicationContext(), getString(R.string.device_not_compatible_error), Toast.LENGTH_LONG).show();
+        }
+    	super.onResume();
     }
 
     private final BroadcastReceiver mHandleMessageReceiver =

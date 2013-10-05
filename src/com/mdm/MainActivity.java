@@ -104,8 +104,12 @@ public class MainActivity extends Activity {
 	        protected String doInBackground(Void... params) {
 	          //  boolean registered = ServerUtilities.register(context, regId);
 	        //	ServerUtilities.register(context, regId);
-	        	String result = ServerUtilities.register(regId, context);
-	        	
+	        	String result="";
+	        	try{
+	        	 result = ServerUtilities.register(regId, context);
+	        	}catch(Exception e){
+	        		e.printStackTrace();
+	        	}
 	        	return result;
 	        }
 	
@@ -155,7 +159,12 @@ public class MainActivity extends Activity {
 			        protected String doInBackground(Void... params) {
 			          //  boolean registered = ServerUtilities.register(context, regId);
 			        //	ServerUtilities.register(context, regId);
-			        	String result = ServerUtilities.register(regId, context);
+			        	String result="";
+			        	try{
+			        	 result = ServerUtilities.register(regId, context);
+			        	}catch(Exception e){
+			        		e.printStackTrace();
+			        	}
 			        	
 			        	return result;
 			        }

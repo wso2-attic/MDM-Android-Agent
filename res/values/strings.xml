@@ -42,5 +42,6 @@
     <string name="menu_item_phone_info">Phone Info</string>
     <string name="menu_item_pin">Change PIN</string>
     <string name="menu_item_ip">Change Server Address</string>
+    <string name="title_activity_alert">AlertActivity</string>
 
 </resources>

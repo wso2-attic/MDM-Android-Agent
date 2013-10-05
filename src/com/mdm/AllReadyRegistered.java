@@ -156,6 +156,12 @@ public class AllReadyRegistered extends SherlockActivity {
 			editor.putString("policy", "");
 			editor.commit();
 			
+			SharedPreferences mainPref2 = AllReadyRegistered.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor2 = mainPref.edit();
+			editor.putString("isAgreed", "0");
+			editor.commit();
+			
 			editor.putString("registered","0");
 			editor.commit();
 		} catch (Exception e) {
@@ -206,6 +212,12 @@ public class AllReadyRegistered extends SherlockActivity {
 			startActivity(intentPIN);
 			return true;
     	case R.id.ip_setting:
+    		SharedPreferences mainPref = AllReadyRegistered.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("ip", "");
+			editor.commit();
+			
     		Intent intentIP = new Intent(AllReadyRegistered.this,SettingsActivity.class);
     		intentIP.putExtra("from_activity_name", AllReadyRegistered.class.getSimpleName());
     		intentIP.putExtra("regid", regId);

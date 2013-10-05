@@ -27,13 +27,15 @@ public class CommonUtilities {
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-    static String SERVER_URL = "http://10.100.5.3:9763/mdm/api/";
+    static String SERVER_IP = "10.100.5.3";
+	static String SERVER_URL = "http://"+SERVER_IP+":9763/mdm/api/";
     
     public static String getSERVER_URL() {
 		return SERVER_URL;
 	}
 
 	public static void setSERVER_URL(String sERVER_URL) {
+		SERVER_IP = sERVER_URL;
 		SERVER_URL = "http://"+sERVER_URL+":9763/mdm/api/";
 	}
 
@@ -74,6 +76,7 @@ public class CommonUtilities {
 	public static final String OPERATION_WIFI = "507A";
 	public static final String OPERATION_DISABLE_CAMERA = "508A";
 	public static final String OPERATION_INSTALL_APPLICATION = "509A";
+	public static final String OPERATION_INSTALL_APPLICATION_BUNDLE = "509B";
 	public static final String OPERATION_UNINSTALL_APPLICATION = "510A";
 	public static final String OPERATION_ENCRYPT_STORAGE = "511A";
 	public static final String OPERATION_APN = "512A";
@@ -89,6 +92,7 @@ public class CommonUtilities {
 	public static final String OPERATION_CHANGE_LOCK_CODE = "526A";
 	public static final String OPERATION_POLICY_BUNDLE = "500P";
 	public static final String OPERATION_POLICY_MONITOR = "501P";
+	public static final String OPERATION_BLACKLIST_APPS = "528B";
     
     /**
      * Notifies UI to display a message.

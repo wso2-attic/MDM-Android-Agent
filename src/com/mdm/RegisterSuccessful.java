@@ -199,6 +199,12 @@ public class RegisterSuccessful extends SherlockActivity {
 				editor.putString("registered","0");
 				editor.commit();
 				
+				SharedPreferences mainPref2 = RegisterSuccessful.this.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				Editor editor2 = mainPref.edit();
+				editor.putString("isAgreed", "0");
+				editor.commit();
+				
 			
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -269,6 +275,12 @@ public class RegisterSuccessful extends SherlockActivity {
 			startActivity(intentPIN);
 			return true;
 		case R.id.ip_setting:
+			SharedPreferences mainPref = RegisterSuccessful.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("ip", "");
+			editor.commit();
+			
 			Intent intentIP = new Intent(RegisterSuccessful.this,
 					SettingsActivity.class);
 			intentIP.putExtra("from_activity_name",
