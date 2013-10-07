@@ -45,7 +45,7 @@ public class CommonUtilities {
     /**
      * Tag used on log messages.
      */
-    static final String TAG = "GCMDemo";
+    static final String TAG = "WSO2MobileMDM";
 
     /**
      * Intent used to display a message in the screen.
