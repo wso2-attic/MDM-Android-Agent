@@ -75,9 +75,10 @@ public final class ServerUtilities {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", username);
 		params.put("password", password);
-		String response = sendWithTimeWait("users/authenticate", params,
-				"POST", context).get("response");
+		String response = "";
 		try {
+			response = sendWithTimeWait("users/authenticate", params,
+					"POST", context).get("response");
 			if (response.trim().contains("200")) {
 				return true;
 			} else {
@@ -95,8 +96,9 @@ public final class ServerUtilities {
 		params.put("regid", regId);
 		response = sendWithTimeWait("devices/isregistered", params,
 				"POST", context);
-		String status = response.get("status");
+		String status="";
 		try {
+			status = response.get("status");
 			Log.v("Register State", response.get("response"));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -219,14 +221,26 @@ public final class ServerUtilities {
 	public static String unregister(String regId, Context context) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
-		String response = sendWithTimeWait("devices/unregister", params,
+		String response = "";
+		try{
+		response = sendWithTimeWait("devices/unregister", params,
 				"POST", context).get("response");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return response;
 	}
 
 	public static String pushData(Map<String, String> params, Context context) {
-		String response = sendWithTimeWait("notifications", params, "POST",
+		String response="";
+		try{
+		response = sendWithTimeWait("notifications", params, "POST",
 				context).get("response");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return response;
 	}
 

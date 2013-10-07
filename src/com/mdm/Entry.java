@@ -47,6 +47,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -57,6 +58,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -68,9 +70,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -224,9 +229,17 @@ public class Entry extends Activity {
             protected void onPreExecute()
             {
                 progressDialog= ProgressDialog.show(Entry.this, "Checking Registration Info","Please wait", true);
-
+                progressDialog.setCancelable(true);
+                progressDialog.setOnCancelListener(cancelListener);
                 //do initialization of required objects objects here                
-            };     
+            };    
+            
+            OnCancelListener cancelListener=new OnCancelListener(){
+                @Override
+                public void onCancel(DialogInterface arg0){
+                	showAlert("Could not connect to server please check your internet connection and try again", "Connection Error");
+                }
+            };
 
             @Override
             protected void onPostExecute(Void result) {
@@ -336,10 +349,18 @@ public class Entry extends Activity {
             protected void onPreExecute()
             {
                 progressDialog= ProgressDialog.show(Entry.this, "Checking Registration Info","Please wait", true);
-
+                progressDialog.setCancelable(true);
+                progressDialog.setOnCancelListener(cancelListener);
                 //do initialization of required objects objects here                
             };     
 
+            OnCancelListener cancelListener=new OnCancelListener(){
+                @Override
+                public void onCancel(DialogInterface arg0){
+                	showAlert("Could not connect to server please check your internet connection and try again", "Connection Error");
+                    //finish();
+                }
+            };
             @Override
             protected void onPostExecute(Void result) {
             	SharedPreferences mainPref = context.getSharedPreferences(
@@ -380,6 +401,30 @@ public class Entry extends Activity {
         }
     	super.onResume();
     }
+    
+    public void showAlert(String message, String title){
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message);
+        builder.setTitle(title);
+        builder.setCancelable(true);
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            	finish();
+                dialog.cancel();
+            }
+        });
+        /*builder1.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });*/
+
+        AlertDialog alert = builder.create();
+        alert.show();
+	}
+
 
     private final BroadcastReceiver mHandleMessageReceiver =
             new BroadcastReceiver() {
