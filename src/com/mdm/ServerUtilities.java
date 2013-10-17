@@ -237,6 +237,7 @@ public final class ServerUtilities {
 		try{
 		response = sendWithTimeWait("notifications", params, "POST",
 				context).get("response");
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

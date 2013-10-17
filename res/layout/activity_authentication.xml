@@ -71,7 +71,6 @@
 
           <EditText
               android:inputType="textPassword"
-              android:text=""
               android:id="@+id/editText2"
               android:layout_margin="5dp"
               android:textColor="@android:color/black"

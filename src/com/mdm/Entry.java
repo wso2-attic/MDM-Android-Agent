@@ -89,6 +89,7 @@ public class Entry extends Activity {
 	boolean accessFlag = true;
 	TextView errorMessage;
 	Context context;
+	ProgressDialog progressDialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -96,7 +97,13 @@ public class Entry extends Activity {
 		checkNotNull(SERVER_URL, "SERVER_URL");
         checkNotNull(SENDER_ID, "SENDER_ID");
         info = new DeviceInfo(Entry.this);
+        
         context = Entry.this;
+        
+        /*TouchDownConfig touchdown = new TouchDownConfig(context);
+        touchdown.register();
+        touchdown.performConfiguration("sdsdsd", "sdsd", "sdsdsd", "sdsdsdsd", true);
+		touchdown.performPolicySet();*/
         if((info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO) && !info.isRooted()){
         	accessFlag = true;
         }else{
@@ -223,7 +230,6 @@ public class Entry extends Activity {
                 return null;
             }
             
-            ProgressDialog progressDialog;
             //declare other objects as per your need
             @Override
             protected void onPreExecute()
@@ -267,10 +273,7 @@ public class Entry extends Activity {
 	        		}
             	}
                 mRegisterTask = null;
-                if(progressDialog!=null && progressDialog.isShowing()){
-                	progressDialog.dismiss();
-                	progressDialog = null;
-                }
+                
             }
 
         };
@@ -298,6 +301,11 @@ public class Entry extends Activity {
         
         if(mLicenseTask!=null){
         	mLicenseTask.cancel(true);
+        }
+        
+        if(progressDialog!=null && progressDialog.isShowing()){
+        	progressDialog.dismiss();
+        	progressDialog = null;
         }
         try{
         unregisterReceiver(mHandleMessageReceiver);
@@ -343,7 +351,7 @@ public class Entry extends Activity {
                 return null;
             }
             
-            ProgressDialog progressDialog;
+            
             //declare other objects as per your need
             @Override
             protected void onPreExecute()
@@ -387,15 +395,16 @@ public class Entry extends Activity {
 	        		}
             	}
                 mRegisterTask = null;
-                if(progressDialog!=null && progressDialog.isShowing()){
-                	progressDialog.dismiss();
-                	progressDialog = null;
-                }
+                
             }
 
         };
         if(accessFlag){
         	mRegisterTask.execute(null, null, null);
+        	if(progressDialog!=null && progressDialog.isShowing()){
+            	progressDialog.dismiss();
+            	progressDialog = null;
+            }
         }else{
         	//Toast.makeText(getApplicationContext(), getString(R.string.device_not_compatible_error), Toast.LENGTH_LONG).show();
         }

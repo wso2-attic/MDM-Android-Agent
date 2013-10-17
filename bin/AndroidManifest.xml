@@ -184,6 +184,7 @@
             android:screenOrientation="portrait"
             android:label="@string/title_activity_alert" >
         </activity>
+
     </application>
 
 </manifest>

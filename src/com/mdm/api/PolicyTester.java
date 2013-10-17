@@ -24,6 +24,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.media.AudioManager;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -38,6 +39,7 @@ public class PolicyTester {
 	DeviceInfo deviceInfo;
 	PhoneState deviceState;
 	String policy;
+	String usermessage = "";
 	JSONObject returnJSON = new JSONObject();
 	JSONArray finalArray = new JSONArray();
 	boolean IS_ENFORCE = false;
@@ -46,7 +48,7 @@ public class PolicyTester {
 	int POLICY_MONITOR_TYPE_ENFORCE_RETURN = 2;
 	int POLICY_MONITOR_TYPE_NO_ENFORCE_MESSAGE_RETURN = 3;
 	
-
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	public PolicyTester(Context context, JSONArray recJArray, int type, String msgID) {
 		this.context = context;
 		devicePolicyManager = (DevicePolicyManager) context
@@ -95,6 +97,15 @@ public class PolicyTester {
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}
+			
+			if(policy!=null && policy !=""){
+				if(usermessage!=null && usermessage!=""){
+					Intent intent = new Intent(context, AlertActivity.class);
+					intent.putExtra("message", usermessage);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(intent);
+				}
 			}
 			
 			returnJSON.put("code", CommonUtilities.OPERATION_POLICY_MONITOR);
@@ -149,7 +160,7 @@ public class PolicyTester {
 			try {
 				jobj.put("code", code);
 				
-				finalArray.put(jobj);
+				//finalArray.put(jobj);
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -360,6 +371,11 @@ public class PolicyTester {
 					jobj.put("status", true);
 				}else{
 					jobj.put("status", false);
+					if(usermessage!=null && usermessage!=""){
+						usermessage+="\nYour phone should be muted according to the policy, please mute your phone \n";
+					}else{
+						usermessage+="Your phone should be muted according to the policy, please mute your phone \n";
+					}
 				}
 				finalArray.put(jobj);
 			} catch (JSONException e1) {
@@ -368,6 +384,7 @@ public class PolicyTester {
 			}
 
 		} else if (code.equals(CommonUtilities.OPERATION_PASSWORD_POLICY)) {
+			
 			ComponentName demoDeviceAdmin = new ComponentName(context,
 					DemoDeviceAdminReceiver.class);
 			JSONObject jobjx = new JSONObject();
@@ -378,6 +395,25 @@ public class PolicyTester {
 			// data = intent.getStringExtra("data");
 			JSONParser jp = new JSONParser();
 			try {
+				JSONObject jobjpass = new JSONObject();
+				jobjpass.put("code", CommonUtilities.OPERATION_CHANGE_LOCK_CODE);
+				Log.e("INSIDE PASSCODE : ",""+devicePolicyManager.isActivePasswordSufficient());
+				if(devicePolicyManager.isActivePasswordSufficient()){
+					jobjpass.put("status", true);
+					finalArray.put(jobjpass);
+				}else{
+					jobjpass.put("status", false);
+					finalArray.put(jobjpass);
+					if(usermessage!=null && usermessage!=""){
+						 usermessage+="\nYour screen lock password doesn't meet current policy requirement. Please reset your passcode \n";
+					}else{
+						 usermessage+="Your screen lock password doesn't meet current policy requirement. Please reset your passcode \n";
+					}
+							/*Intent intent = new Intent(context, AlertActivity.class);
+							intent.putExtra("message", "Your screen lock password doesn't meet current policy requirement. Please reset your passcode");
+							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);*/
+				}
+				
 				JSONObject jobj = new JSONObject(data);
 				if (!jobj.isNull("maxFailedAttempts")
 						&& jobj.get("maxFailedAttempts") != null) {
@@ -446,7 +482,7 @@ public class PolicyTester {
 
 				if (!jobj.isNull("requireAlphanumeric")
 						&& jobj.get("requireAlphanumeric") != null) {
-					alphanumeric = (String) jobj.get("requireAlphanumeric");
+					alphanumeric = (String) jobj.get("requireAlphanumeric").toString();
 					if (alphanumeric.equals("true")) {
 						if(IS_ENFORCE){
 						devicePolicyManager
@@ -472,7 +508,7 @@ public class PolicyTester {
 
 				if (!jobj.isNull("allowSimple")
 						&& jobj.get("allowSimple") != null) {
-					complex = (String) jobj.get("allowSimple");
+					complex = (String) jobj.get("allowSimple").toString();
 					if (!complex.equals("true")) {
 						if(IS_ENFORCE){
 						devicePolicyManager.setPasswordQuality(demoDeviceAdmin,
@@ -511,7 +547,8 @@ public class PolicyTester {
 						}
 					}
 				}
-
+				
+				
 				inparams.put("code", code);
 				inparams.put("status", "200");
 
@@ -546,6 +583,7 @@ public class PolicyTester {
 			String apz = "";
 			Boolean flag = true;
 			JSONArray jArray = null;
+			int appcount = 1;
 			try{
 				jArray = new JSONArray(data);
 				for (int i = 0; i < jArray.length(); i++) {
@@ -562,11 +600,16 @@ public class PolicyTester {
 								flag = false;
 								jsonObj.put("package", apps.get(j).pname);
 								if(i<(jArray.length()-1)){
-									if(apps.get(j).appname!=null)
-										apz += apps.get(j).appname + " ,\n";
+									if(apps.get(j).appname!=null){
+										apz += appcount+". "+apps.get(j).appname + "\n";
+										appcount++;
+									}
+										
 								}else{
-									if(apps.get(j).appname!=null)
-										apz += apps.get(j).appname;
+									if(apps.get(j).appname!=null){
+										apz += appcount+". "+apps.get(j).appname;
+										appcount++;
+									}
 								}
 							}else{
 								jsonObj.put("notviolated", true);
@@ -588,17 +631,20 @@ public class PolicyTester {
 			 */
 			JSONObject appsObj = new JSONObject();
 			try {
-				appsObj.put("data", jsonArray);
+				//appsObj.put("data", jsonArray);
 				appsObj.put("status", flag);
 				appsObj.put("code", code);
 				finalArray.put(appsObj);
-				
 				if(apz!=null || !apz.trim().equals("")){
-					Intent intent = new Intent(context, AlertActivity.class);
-					intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please uninstall them /n/n"+apz);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					context.startActivity(intent);
+					if(usermessage!=null && usermessage!=""){
+						usermessage+="\nFollowing apps are blacklisted by your MDM Admin, please remove them \n\n"+apz;
+					}else{
+						usermessage+="Following apps are blacklisted by your MDM Admin, please remove them \n\n"+apz;
+					}
+					/*Intent intent = new Intent(context, AlertActivity.class);
+					intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please remove them \n\n"+apz);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(intent);*/
 				}
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block

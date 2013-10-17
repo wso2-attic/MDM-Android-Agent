@@ -29,6 +29,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.mdm.api.PolicyTester;
 import com.mdm.models.PInfo;
+
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -57,7 +58,9 @@ public class Operation {
 	TrackCallSMS conversations;
 	PhoneState deviceState;
 	String code = null;
+	String policy_code = null;
 	String token = null;
+	String policy_token = null;
 	int policy_count = 0;
 	String data = "";
 	GPSTracker gps;
@@ -82,18 +85,27 @@ public class Operation {
 		this.context = context;
 		this.intent = intent;
 		this.mode = mode;
-		code = intent.getStringExtra("message").trim();
-		Log.v("Code", code);
+		
+		
 
-		token = intent.getStringExtra("token").trim();
-		Log.v("Token", token);
+		if(intent.getStringExtra("message").trim().equals(CommonUtilities.OPERATION_POLICY_MONITOR)){
+			policy_token = intent.getStringExtra("token").trim();
+			policy_code = intent.getStringExtra("message").trim();
+			Log.v("Token", policy_token);
+		}else{
+			token = intent.getStringExtra("token").trim();
+			code = intent.getStringExtra("message").trim();
+			Log.v("Code", code);
+			Log.v("Token", token);
+		}
+		
 
 		if (intent.getStringExtra("data") != null) {
 			data = intent.getStringExtra("data");
 			Log.v("Data", data);
 		}
 
-		if (code.equals(CommonUtilities.OPERATION_POLICY_BUNDLE)) {
+		if (intent.getStringExtra("message").trim().equals(CommonUtilities.OPERATION_POLICY_BUNDLE)) {
 			try {
 				SharedPreferences mainPrefp = context.getSharedPreferences(
 						"com.mdm", Context.MODE_PRIVATE);
@@ -129,7 +141,11 @@ public class Operation {
 				e.printStackTrace();
 			}
 
-		} else {
+		}else if(intent.getStringExtra("message").trim().equals(CommonUtilities.OPERATION_POLICY_MONITOR)) {
+			Log.e("REQ", "6");
+			doTask(policy_code, data, REQUEST_MODE_NORMAL);
+		}else{
+			Log.e("REQ", "7");
 			doTask(code, data, REQUEST_MODE_NORMAL);
 		}
 
@@ -183,6 +199,7 @@ public class Operation {
 			}
 
 		} else {
+			Log.e("REQ", "2");
 			doTask(code, data, REQUEST_MODE_NORMAL);
 		}
 
@@ -203,6 +220,7 @@ public class Operation {
 				JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
 				if (policyObj.getString("data") != null
 						&& policyObj.getString("data") != "") {
+					Log.e("REQ", "3");
 					doTask(policyObj.getString("code"),
 							policyObj.getString("data"), REQUEST_MODE_BUNDLE);
 				}
@@ -212,6 +230,7 @@ public class Operation {
 			editor.putString("policy_applied", "1");
 			editor.commit();
 			this.data = policy;
+			Log.e("REQ", "4");
 			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
 					REQUEST_MODE_NORMAL);
 		} catch (Exception ex) {
@@ -239,7 +258,6 @@ public class Operation {
 		smsManager = SmsManager.getDefault();
 		conversations = new TrackCallSMS(context);
 		deviceState = new PhoneState(context);
-
 		if (code_input.equals(CommonUtilities.OPERATION_DEVICE_INFO)) {
 
 			PhoneState phoneState = new PhoneState(context);
@@ -387,6 +405,8 @@ public class Operation {
 				params.put("msgID", token);
 				params.put("status", "200");
 				params.put("data", jsonArray.toString());
+				Log.e("PASSING MSG ID : ",token);
+				Log.e("PASSING CODE : ",code_input);
 				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
 					ServerUtilities.pushData(params, context);
 				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
@@ -420,6 +440,7 @@ public class Operation {
 						policy_count++;
 					}
 					bundle_params.put("" + policy_count, params.toString());
+					
 				}
 				devicePolicyManager.lockNow();
 				
@@ -541,7 +562,11 @@ public class Operation {
 					smsManager.sendTextMessage(recepient, null,
 							"Notification Receieved Successfully", null, null);
 				}
-				generateNotification(context, notification);
+				//generateNotification(context, notification);
+				Intent intent = new Intent(context, AlertActivity.class);
+				intent.putExtra("message", notification);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+				context.startActivity(intent);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1018,7 +1043,20 @@ public class Operation {
 					devicePolicyManager.setPasswordExpirationTimeout(
 							demoDeviceAdmin, timout);
 				}
-
+				
+				SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				String policy = mainPref.getString("policy", "");
+				
+				if(!devicePolicyManager.isActivePasswordSufficient()){
+					if(policy!=null && policy!=""){
+						Intent intent = new Intent(context, AlertActivity.class);
+						intent.putExtra("message", "Your screen lock password doesn't meet current policy requirement. Please reset your passcode");
+						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+						context.startActivity(intent);
+					}
+				}
+				
 				inparams.put("code", code_input);
 				inparams.put("msgID", token);
 				inparams.put("status", "200");
@@ -1049,7 +1087,77 @@ public class Operation {
 				}
 			}
 
-		} else if (code_input
+		} else if (code_input.equals(CommonUtilities.OPERATION_EMAIL_CONFIGURATION)) {
+			String emailname="", emailtype="", ic_username="", ic_password="", ic_hostname="";
+			long timout;
+			Map<String, String> inparams = new HashMap<String, String>();
+			// data = intent.getStringExtra("data");
+			JSONParser jp = new JSONParser();
+			try {
+				JSONObject jobj = new JSONObject(data_input);
+				if (!jobj.isNull("type")
+						&& jobj.get("type") != null) {
+					emailtype = (String) jobj
+							.get("type");
+				}
+				
+				if (!jobj.isNull("displayname")
+						&& jobj.get("displayname") != null) {
+					emailname = (String) jobj
+							.get("displayname");
+				}
+				
+				if (!jobj.isNull("username")
+						&& jobj.get("username") != null) {
+					ic_username = (String) jobj
+							.get("username");
+				}
+
+				if (!jobj.isNull("password")
+						&& jobj.get("password") != null) {
+					ic_password = (String) jobj
+							.get("password");
+				}
+				
+				if(emailtype.trim().equals("GMAIL")){
+					ic_hostname = "imap.googlemail.com";
+				}else if(emailtype.equals("YAHOO")){
+					ic_hostname = "";
+				}else if(emailtype.equals("HOTMAIL")){
+					ic_hostname = "";
+				}
+				
+				inparams.put("code", code_input);
+				inparams.put("msgID", token);
+				inparams.put("status", "200");
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				params.put("status", "400");
+				e.printStackTrace();
+			} finally {
+				try {
+					if (req_mode == REQUEST_MODE_NORMAL) {
+						if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
+							ServerUtilities.pushData(inparams, context);
+						} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
+							smsManager.sendTextMessage(recepient, null,
+									"Email Configured Successfully Set", null,
+									null);
+						}
+					} else {
+						if (policy_count != 0) {
+							policy_count++;
+						}
+						bundle_params.put("" + policy_count,
+								inparams.toString());
+					}
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+			}
+
+		}else if (code_input
 				.equals(CommonUtilities.OPERATION_INSTALL_GOOGLE_APP)) {
 
 			String packageName = "";
@@ -1138,7 +1246,7 @@ public class Operation {
 			Map<String, String> params = new HashMap<String, String>();
 			try {
 				params.put("code", code);
-				params.put("msgID", token);
+				params.put("msgID", policy_token);
 				params.put("status", "200");
 				params.put("data", bundle_params.toString());
 				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
@@ -1153,13 +1261,17 @@ public class Operation {
 		} else if (code_input.equals(CommonUtilities.OPERATION_POLICY_MONITOR)) {
 			JSONArray sendjArray;
 			try {
-				JSONObject jobj = new JSONObject(this.data);
-
-				sendjArray = jobj.getJSONArray("policies");
-				int type = Integer.parseInt((String) jobj.get("type")
-						.toString().trim());
+				//JSONObject jobj = new JSONObject(this.data);
+				
+				//sendjArray = jobj.getJSONArray("policies");
+				sendjArray = new JSONArray(this.data);
+				/*int type = Integer.parseInt((String) jobj.get("type")
+						.toString().trim());*/
+				int type = 1;
+				Log.e("PASSING MSG ID : ",policy_token);
+				Log.e("PASSING CODE : ",code_input);
 				PolicyTester tester = new PolicyTester(context, sendjArray,
-						type, token);
+						type, policy_token);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1182,10 +1294,12 @@ public class Operation {
 			JSONArray jArray = null;
 			try{
 				jArray = new JSONArray(data_input);
+				int appcount = 1;
 				for (int i = 0; i < jArray.length(); i++) {
 					JSONObject appObj = (JSONObject) jArray
 							.getJSONObject(i);
 					String identity = (String) appObj.get("identity");
+					
 					for (int j = 0; j < max; j++) {
 						JSONObject jsonObj = new JSONObject();
 						try {
@@ -1195,11 +1309,16 @@ public class Operation {
 								jsonObj.put("notviolated", false);
 								jsonObj.put("package", apps.get(j).pname);
 								if(i<(jArray.length()-1)){
-									if(apps.get(j).appname!=null)
-										apz += apps.get(j).appname + " , ";
+									if(apps.get(j).appname!=null){
+										apz += appcount+". "+apps.get(j).appname + "\n";
+										appcount++;
+									}
+										
 								}else{
-									if(apps.get(j).appname!=null)
-										apz += apps.get(j).appname;
+									if(apps.get(j).appname!=null){
+										apz += appcount+". "+apps.get(j).appname;
+										appcount++;
+									}
 								}
 							}else{
 								jsonObj.put("notviolated", true);
@@ -1236,12 +1355,16 @@ public class Operation {
 					smsManager
 							.sendTextMessage(recepient, null, apz, null, null);
 				}
-				if(apz!=null || !apz.trim().equals("")){
-					Intent intent = new Intent(context, AlertActivity.class);
-					intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please uninstall them : "+apz);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				context.startActivity(intent);
+				SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+						Context.MODE_PRIVATE);
+				String policy = mainPref.getString("policy", "");
+					if(policy!=null && policy!=""){
+						if(apz!=null || !apz.trim().equals("")){
+							Intent intent = new Intent(context, AlertActivity.class);
+							intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please remove them \n\n"+apz);
+							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+							context.startActivity(intent);
+					}
 				}
 			} catch (JSONException e1) {
 				// TODO Auto-generated catch block

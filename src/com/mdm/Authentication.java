@@ -353,5 +353,25 @@ public class Authentication extends SherlockActivity {
     		return super.onOptionsItemSelected(item);
     	}
     } 
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    	Intent i = new Intent();
+	    	i.setAction(Intent.ACTION_MAIN);
+	    	i.addCategory(Intent.CATEGORY_HOME);
+	    	this.startActivity(i);
+	        return true;
+	    }
+	    else if (keyCode == KeyEvent.KEYCODE_HOME) {
+	    	/*Intent i = new Intent();
+	    	i.setAction(Intent.ACTION_MAIN);
+	    	i.addCategory(Intent.CATEGORY_HOME);
+	    	this.startActivity(i);*/
+	    	this.finish();
+	        return true;
+	    }
+	    return super.onKeyDown(keyCode, event);
+	}
 
 }
