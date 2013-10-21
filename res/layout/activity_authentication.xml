@@ -12,7 +12,7 @@
 
       <!-- Header  Starts -->
 
-	   <RelativeLayout android:id="@+id/layout_topbar"
+	  <!-- <RelativeLayout android:id="@+id/layout_topbar"
 		android:orientation="vertical" android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:layout_alignParentTop="true">
       
@@ -35,26 +35,8 @@
 			    android:contentDescription="@string/string_content" />
 
 		</RelativeLayout>
-	 </RelativeLayout>
+	 </RelativeLayout> -->
 	
-      <LinearLayout
-          android:id="@+id/header"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:visibility="gone"
-          android:background="@layout/header_gradient"
-          android:paddingBottom="5dip"
-          android:paddingTop="5dip" >
-
-          <!-- Logo Start -->
-
-          <ImageView
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginLeft="10dip"
-              android:src="@drawable/logo" />
-          <!-- Logo Ends -->
-      </LinearLayout>
       <!-- Header Ends -->
       <!-- Footer Start -->
 
@@ -80,7 +62,8 @@
               android:layout_margin="5dp"
               android:singleLine="true"
               android:id="@+id/editText1"
-              android:hint="Email Address"
+              android:hint="Username"
+              android:textColor="@android:color/black"
               android:inputType="textEmailAddress" />
           <!-- Password Label -->
           <!-- Login button -->
@@ -88,9 +71,9 @@
 
           <EditText
               android:inputType="textPassword"
-              android:text=""
               android:id="@+id/editText2"
               android:layout_margin="5dp"
+              android:textColor="@android:color/black"
               android:layout_width="match_parent"
               android:hint="Password"
               android:layout_height="wrap_content"
@@ -102,10 +85,14 @@
           android:id="@+id/btnRegister"
           android:layout_width="fill_parent"
           android:layout_height="wrap_content"
-          android:layout_margin="10dp"
-          android:layout_alignParentLeft="true"
+          android:layout_marginLeft="10dp"
+          android:layout_marginRight="10dp"
+          android:layout_marginBottom="10dp"
+          android:layout_marginTop="30dp"
+          style="@style/ButtonText"
+          android:background="@drawable/btn_orange"
           android:text="Register" />
-
+          
       </LinearLayout>
 
       <!-- Login Form Ends -->
@@ -118,8 +105,10 @@
           android:layout_centerHorizontal="true"
           android:layout_margin="10dp"
           android:background="@drawable/repeat_bg"
+          android:orientation="vertical"
           android:gravity="center" >
       </LinearLayout>
+
 
   </RelativeLayout>
 

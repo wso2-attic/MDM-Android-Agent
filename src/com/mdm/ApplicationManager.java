@@ -67,7 +67,9 @@ public class ApplicationManager extends Activity {
 				.getInstalledPackages(0);
 		for (int i = 0; i < packs.size(); i++) {
 			PackageInfo p = packs.get(i);
-			if ((!getSysPackages) && (p.versionName == null)) {
+			ApplicationInfo a = p.applicationInfo;
+			//if ((!getSysPackages) && (p.versionName == null)) {
+			if ((!getSysPackages) &&  ((a.flags & ApplicationInfo.FLAG_SYSTEM) == 1)) {
 				continue;
 			}
 			PInfo newInfo = new PInfo();

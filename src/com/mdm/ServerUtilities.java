@@ -20,6 +20,7 @@ import static com.mdm.CommonUtilities.TAG;
 import com.google.android.gcm.GCMRegistrar;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -27,8 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -47,6 +52,10 @@ import javax.net.ssl.X509TrustManager;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,18 +66,19 @@ import android.os.*;
  */
 public final class ServerUtilities {
 
-	private static final int MAX_ATTEMPTS = 5;
+	private static final int MAX_ATTEMPTS = 2;
 	private static final int BACKOFF_MILLI_SECONDS = 2000;
 	private static final Random random = new Random();
 
-	static boolean isAuthenticate(String username, String password,
+	public static boolean isAuthenticate(String username, String password,
 			Context context) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", username);
 		params.put("password", password);
-		String response = sendWithTimeWait("users/authenticate", params,
-				"POST", context);
+		String response = "";
 		try {
+			response = sendWithTimeWait("users/authenticate", params,
+					"POST", context).get("response");
 			if (response.trim().contains("200")) {
 				return true;
 			} else {
@@ -80,27 +90,104 @@ public final class ServerUtilities {
 		}
 	}
 
-	static boolean isRegistered(String regId, Context context) {
+	public static boolean isRegistered(String regId, Context context) {
 		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> response = new HashMap<String, String>();
 		params.put("regid", regId);
-		String response = sendWithTimeWait("devices/isregistered", params,
+		response = sendWithTimeWait("devices/isregistered", params,
 				"POST", context);
+		String status="";
 		try {
-			Log.v("Register State", response);
+			status = response.get("status");
+			Log.v("Register State", response.get("response"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (response.trim().equals("registered")) {
+		if (response.get("response").trim().equals("registered") || status.trim().equals("200")) {
 			return true;
 		} else {
 			return false;
 		}
 	}
+	
+	public static String getEULA(Context context) {
+		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> response = new HashMap<String, String>();
+		String res="";
+		params.put("", null);
+		response = getRequest("devices/license", context);
+		String status = "";
+		try {
+			status = response.get("status");
+			Log.v("EULA RESPONSE", response.get("response"));
+			res =  response.get("response");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (status.trim().equals("200")) {
+			return res;
+			
+		} else {
+			return null;
+		}
+	}
+	
+	public static Map<String, String> getRequest(String url, Context context){
+		HttpResponse response = null;
+		Map<String, String> response_params = new HashMap<String, String>();
+		String _response ="";
+		try {        
+			String endpoint = CommonUtilities.SERVER_URL + url;
+			
+			SharedPreferences mainPref = context.getSharedPreferences(
+					"com.mdm", Context.MODE_PRIVATE);
+			String ipSaved = mainPref.getString("ip", "");
+			
+			if(ipSaved != null && ipSaved != ""){
+				endpoint = "http://"+ipSaved+":9763/mdm/api/"+ url;
+			}
+			
+		        HttpClient client = new DefaultHttpClient();
+		        HttpGet request = new HttpGet();
+		        request.setURI(new URI(endpoint));
+		        response = client.execute(request);
+		        _response = convertStreamToString(response.getEntity().getContent());
+		        response_params.put("response",_response);
+				response_params.put("status", String.valueOf(response.getStatusLine().getStatusCode()));
+			Log.e("TAGLIST RESPONSE : ",_response);
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return response_params;
+	}
+	
+	public static String convertStreamToString(InputStream inputStream) throws IOException {
+        if (inputStream != null) {
+            Writer writer = new StringWriter();
 
-	static String register(String regId, Context context) {
+            char[] buffer = new char[1024];
+            try {
+                Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"),1024);
+                int n;
+                while ((n = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, n);
+                }
+            } finally {
+                inputStream.close();
+            }
+            return writer.toString();
+        } else {
+            return "";
+        }
+    }
+
+	public static String register(String regId, Context context) {
 		DeviceInfo deviceInfo = new DeviceInfo(context);
 		JSONObject jsObject = new JSONObject();
 		String osVersion = "";
+		String response = "";
 		try {
 			osVersion = deviceInfo.getOsVersion();
 			jsObject.put("device", deviceInfo.getDevice());
@@ -110,10 +197,7 @@ public final class ServerUtilities {
 			jsObject.put("email", deviceInfo.getEmail());
 			// jsObject.put("sdkversion", deviceInfo.getSdkVersion());
 
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
@@ -125,29 +209,46 @@ public final class ServerUtilities {
 
 		// Calls the function "sendTimeWait" to do a HTTP post to our server
 		// using Android HTTPUrlConnection API
-		String response = sendWithTimeWait("devices/register", params, "POST",
-				context);
+		response = sendWithTimeWait("devices/register", params, "POST",
+				context).get("response");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return response;
 	}
 
-	static String unregister(String regId, Context context) {
+	public static String unregister(String regId, Context context) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
-		String response = sendWithTimeWait("devices/unregister", params,
-				"POST", context);
+		String response = "";
+		try{
+		response = sendWithTimeWait("devices/unregister", params,
+				"POST", context).get("response");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return response;
 	}
 
-	static String pushData(Map<String, String> params, Context context) {
-		String response = sendWithTimeWait("notifications", params, "POST",
-				context);
+	public static String pushData(Map<String, String> params, Context context) {
+		String response="";
+		try{
+		response = sendWithTimeWait("notifications", params, "POST",
+				context).get("response");
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return response;
 	}
 
-	static String sendWithTimeWait(String epPostFix,
-			Map<String, String> params, String option, Context context) {
-		String response = null;
-		String responseFinal = null;
+	public static Map<String, String> sendWithTimeWait(String epPostFix,
+		Map<String, String> params, String option, Context context) {
+		Map<String, String> response = null;
+		Map<String, String> responseFinal = null;
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
 		for (int i = 1; i <= MAX_ATTEMPTS; i++) {
 			Log.d(TAG, "Attempt #" + i + " to register");
@@ -184,7 +285,7 @@ public final class ServerUtilities {
 		return responseFinal;
 	}
 	
-	final static HostnameVerifier WSO2MOBILE_HOST = new HostnameVerifier() {
+	public final static HostnameVerifier WSO2MOBILE_HOST = new HostnameVerifier() {
 		String[] allowHost = {"my.ultra.com", "your.ultra.com", "ours.ultra.com"}; 
 		
 		public boolean verify(String hostname, SSLSession session) {
@@ -202,16 +303,26 @@ public final class ServerUtilities {
 		
 	};
 
-	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+	public final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
 		public boolean verify(String hostname, SSLSession session) {
 			return true;
 		}
 	};
 
-	static String sendToServer(String epPostFix, Map<String, String> params,
+	public static Map<String, String> sendToServer(String epPostFix, Map<String, String> params,
 			String option, Context context) throws IOException {
 		String response = null;
+		Map<String, String> response_params = new HashMap<String, String>();
 		String endpoint = CommonUtilities.SERVER_URL + epPostFix;
+		
+		SharedPreferences mainPref = context.getSharedPreferences(
+				"com.mdm", Context.MODE_PRIVATE);
+		String ipSaved = mainPref.getString("ip", "");
+		
+		if(ipSaved != null && ipSaved != ""){
+			endpoint = "http://"+ipSaved+":9763/mdm/api/"+ epPostFix;
+		}
+		
 		URL url;
 		try {
 			url = new URL(endpoint);
@@ -269,19 +380,24 @@ public final class ServerUtilities {
 				Log.v("Response Statussss", status + "");
 				InputStream inStream = conn.getInputStream();
 				response = inputStreamAsString(inStream);
+				response_params.put("response",response);
 				Log.v("Response Messageeeee", response);
+				response_params.put("status", String.valueOf(status));
 			} else {
 				status = 200;
 			}
 			if (status != 200 && status != 201) {
 				throw new IOException("Post failed with error code " + status);
 			}
-		} finally {
+		} catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}finally {
 			if (conn != null) {
 				conn.disconnect();
 			}
 		}
-		return response;
+		return response_params;
 	}
 
 	private static void trustIFNetServer(Context context) {
@@ -359,7 +475,7 @@ public final class ServerUtilities {
 		}
 	}
 
-	static String inputStreamAsString(InputStream in) {
+	public static String inputStreamAsString(InputStream in) {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 		StringBuilder builder = new StringBuilder();

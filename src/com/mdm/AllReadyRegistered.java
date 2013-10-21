@@ -31,6 +31,8 @@ import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.view.KeyEvent;
 //import android.view.Menu;
 //import android.view.MenuInflater;
@@ -39,10 +41,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.view.MenuInflater;
 
 public class AllReadyRegistered extends SherlockActivity {
 	AsyncTask<Void, Void, Void> mRegisterTask;
@@ -148,6 +148,26 @@ public class AllReadyRegistered extends SherlockActivity {
 
         };
         mRegisterTask.execute(null, null, null);
+        
+        try {
+			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("policy", "");
+			editor.commit();
+			
+			SharedPreferences mainPref2 = AllReadyRegistered.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor2 = mainPref.edit();
+			editor.putString("isAgreed", "0");
+			editor.commit();
+			
+			editor.putString("registered","0");
+			editor.commit();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public void startOptionActivity(){
@@ -192,6 +212,12 @@ public class AllReadyRegistered extends SherlockActivity {
 			startActivity(intentPIN);
 			return true;
     	case R.id.ip_setting:
+    		SharedPreferences mainPref = AllReadyRegistered.this.getSharedPreferences("com.mdm",
+					Context.MODE_PRIVATE);
+			Editor editor = mainPref.edit();
+			editor.putString("ip", "");
+			editor.commit();
+			
     		Intent intentIP = new Intent(AllReadyRegistered.this,SettingsActivity.class);
     		intentIP.putExtra("from_activity_name", AllReadyRegistered.class.getSimpleName());
     		intentIP.putExtra("regid", regId);

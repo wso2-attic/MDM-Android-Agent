@@ -74,6 +74,7 @@ public class AuthenticationError extends Activity {
 		Intent intent = new Intent(AuthenticationError.this,Authentication.class);
 		intent.putExtra("from_activity_name", Authentication.class.getSimpleName());
 		intent.putExtra("regid", regId);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
 	

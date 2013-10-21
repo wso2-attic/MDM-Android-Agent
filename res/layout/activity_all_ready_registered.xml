@@ -77,8 +77,8 @@
 		      android:layout_height="wrap_content"
 		      android:layout_marginTop="10dip"
 		      android:text="Unregister" 
-		      android:textSize="16sp"
-        	  android:textColor="#372c24"	/>
+		      style="@style/ButtonText"
+          	  android:background="@drawable/btn_orange"	/>
 
 		  <!-- Link to Registration Screen -->
 		    
@@ -90,9 +90,9 @@
 		      android:layout_height="wrap_content"
 		      android:layout_below="@+id/layout_topbar"
 		      android:layout_centerHorizontal="true"
-		      android:layout_marginTop="34dp"
-		      android:gravity="center_vertical"
-		      android:text="Device already registered"
+		      android:layout_margin="10dp"
+		      android:gravity="center"
+		      android:text="Device successfully registered, click to un-register from the MDM"
 		      android:textSize="16sp"
         	  android:textColor="#372c24" />
 		  

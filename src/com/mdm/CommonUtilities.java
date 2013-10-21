@@ -17,75 +17,86 @@ package com.mdm;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 
 /**
  * Helper class providing methods and constants common to other classes in the
  * app.
  */
 public class CommonUtilities {
-
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
+
     static String SERVER_URL = "http://----ADD YOUR HOSTNAME HERE----:9763/mdm/api/";
+    static String SERVER_IP = "----ADD YOUR HOSTNAME HERE----";
+    static String SERVER_URL = "http://"+SERVER_IP+":9763/mdm/api/";
+
     
     public static String getSERVER_URL() {
-		return SERVER_URL;
-	}
+	return SERVER_URL;
+    }
 
-	public static void setSERVER_URL(String sERVER_URL) {
-		SERVER_URL = "http://"+sERVER_URL+":9763/mdm/api/";
-	}
+    public static void setSERVER_URL(String sERVER_URL) {
+	SERVER_IP = sERVER_URL;
+	SERVER_URL = "http://"+sERVER_URL+":9763/mdm/api/";
+    }
 
 	/**
      * Google API project id registered to use GCM.
      */
-    static final String SENDER_ID = "----ADD YOUR SENDER ID HERE----";
+     public static final String SENDER_ID = "----ADD YOUR SENDER ID HERE----";
+
 
     /**
      * Tag used on log messages.
      */
-    static final String TAG = "WSO2MobileMDM";
+     public static final String TAG = "WSO2MobileMDM";
 
     /**
      * Intent used to display a message in the screen.
      */
-    static final String DISPLAY_MESSAGE_ACTION =
+	public static final String DISPLAY_MESSAGE_ACTION =
             "com.google.android.gcm.demo.app.DISPLAY_MESSAGE";
 
     /**
      * Intent's extra that contains the message to be displayed.
      */
-    static final String EXTRA_MESSAGE = "message";
-    static final int MESSAGE_MODE_GCM = 1;
-    static final int MESSAGE_MODE_SMS = 2;
-    
+	public static final String EXTRA_MESSAGE = "message";
+	public static final int MESSAGE_MODE_GCM = 1;
+	public static final int MESSAGE_MODE_SMS = 2;
+	public static final String EULA_TITLE = "WSO2 License Agreement";
+	public static final String EULA_TEXT = "This is a sample license agreement, please Accept to get MDM Agent activated. This is a sample license agreement, please Accept to get MDM Agent activated. This is a sample license agreement, please Accept to get MDM Agent activated. This is a sample license agreement, please Accept to get MDM Agent activated. This is a sample license agreement, please Accept to get MDM Agent activated. This is a sample license agreement, please Accept to get MDM Agent activated. This is a sample license agreement, please Accept to get MDM Agent activated.";
     /**
      * Operation IDs
      */
-    static final String OPERATION_DEVICE_INFO = "500A";
-    static final String OPERATION_DEVICE_LOCATION = "501A";
-    static final String OPERATION_GET_APPLICATION_LIST = "502A";
-    static final String OPERATION_LOCK_DEVICE = "503A";
-    static final String OPERATION_WIPE_DATA = "504A";
-    static final String OPERATION_CLEAR_PASSWORD = "505A";
-    static final String OPERATION_NOTIFICATION = "506A";
-    static final String OPERATION_WIFI = "507A";
-    static final String OPERATION_DISABLE_CAMERA = "508A";
-    static final String OPERATION_INSTALL_APPLICATION = "509A";
-    static final String OPERATION_UNINSTALL_APPLICATION = "510A";
-    static final String OPERATION_ENCRYPT_STORAGE = "511A";
-    static final String OPERATION_APN = "512A";
-    static final String OPERATION_MUTE = "513A";
-    static final String OPERATION_TRACK_CALLS = "514A";
-    static final String OPERATION_TRACK_SMS = "515A";
-    static final String OPERATION_DATA_USAGE = "516A";
-    static final String OPERATION_STATUS = "517A";
-    static final String OPERATION_WEBCLIP = "518A";
-    static final String OPERATION_PASSWORD_POLICY = "519A";
-    static final String OPERATION_EMAIL_CONFIGURATION = "520A";
-    static final String OPERATION_INSTALL_GOOGLE_APP = "522A";
-    static final String OPERATION_CHANGE_LOCK_CODE = "526A";
+	public static final String OPERATION_DEVICE_INFO = "500A";
+	public static final String OPERATION_DEVICE_LOCATION = "501A";
+	public static final String OPERATION_GET_APPLICATION_LIST = "502A";
+	public static final String OPERATION_LOCK_DEVICE = "503A";
+	public static final String OPERATION_WIPE_DATA = "504A";
+	public static final String OPERATION_CLEAR_PASSWORD = "505A";
+	public static final String OPERATION_NOTIFICATION = "506A";
+	public static final String OPERATION_WIFI = "507A";
+	public static final String OPERATION_DISABLE_CAMERA = "508A";
+	public static final String OPERATION_INSTALL_APPLICATION = "509A";
+	public static final String OPERATION_INSTALL_APPLICATION_BUNDLE = "509B";
+	public static final String OPERATION_UNINSTALL_APPLICATION = "510A";
+	public static final String OPERATION_ENCRYPT_STORAGE = "511A";
+	public static final String OPERATION_APN = "512A";
+	public static final String OPERATION_MUTE = "513A";
+	public static final String OPERATION_TRACK_CALLS = "514A";
+	public static final String OPERATION_TRACK_SMS = "515A";
+	public static final String OPERATION_DATA_USAGE = "516A";
+	public static final String OPERATION_STATUS = "517A";
+	public static final String OPERATION_WEBCLIP = "518A";
+	public static final String OPERATION_PASSWORD_POLICY = "519A";
+	public static final String OPERATION_EMAIL_CONFIGURATION = "520A";
+	public static final String OPERATION_INSTALL_GOOGLE_APP = "522A";
+	public static final String OPERATION_CHANGE_LOCK_CODE = "526A";
+	public static final String OPERATION_POLICY_BUNDLE = "500P";
+	public static final String OPERATION_POLICY_MONITOR = "501P";
+	public static final String OPERATION_BLACKLIST_APPS = "528B";
     
     /**
      * Notifies UI to display a message.
@@ -96,7 +107,7 @@ public class CommonUtilities {
      * @param context application's context.
      * @param message message to be displayed.
      */
-    static void displayMessage(Context context, String message) {
+	public static void displayMessage(Context context, String message) {
         Intent intent = new Intent(DISPLAY_MESSAGE_ACTION);
         intent.putExtra(EXTRA_MESSAGE, message);
         context.sendBroadcast(intent);

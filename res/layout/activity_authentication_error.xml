@@ -101,10 +101,10 @@
           android:layout_alignLeft="@+id/textView1"
           android:layout_alignRight="@+id/textView1"
           android:layout_below="@+id/textView1"
-          android:layout_marginTop="15dp"
+          android:layout_marginTop="20dp"
           android:text="Try again" 
-          android:textSize="16sp"
-          android:textColor="#372c24"/>
+          style="@style/ButtonText"
+          android:background="@drawable/btn_orange"/>
 
   </RelativeLayout>
 
