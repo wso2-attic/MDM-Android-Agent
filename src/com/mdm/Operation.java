@@ -119,13 +119,13 @@ public class Operation {
 				editor.putString("policy", data);
 				editor.commit();
 
-				if (mainPref.getString("policy_applied", "") == null
+				/*if (mainPref.getString("policy_applied", "") == null
 						|| mainPref.getString("policy_applied", "").trim()
 								.equals("0")
 						|| mainPref.getString("policy_applied", "").trim()
-								.equals("")) {
+								.equals("")) {*/
 					executePolicy();
-				}
+				//}
 				/*
 				 * JSONArray jArray = new JSONArray(data); for(int i = 0;
 				 * i<jArray.length(); i++){ JSONObject policyObj =
@@ -142,10 +142,8 @@ public class Operation {
 			}
 
 		}else if(intent.getStringExtra("message").trim().equals(CommonUtilities.OPERATION_POLICY_MONITOR)) {
-			Log.e("REQ", "6");
 			doTask(policy_code, data, REQUEST_MODE_NORMAL);
 		}else{
-			Log.e("REQ", "7");
 			doTask(code, data, REQUEST_MODE_NORMAL);
 		}
 
@@ -157,18 +155,26 @@ public class Operation {
 		this.mode = mode;
 		this.params = params;
 		this.recepient = recepient;
-
-		if (params.get("code") != null) {
-			code = params.get("code").trim();
-			Log.v("PRINTING CODE : ", code);
-		}
-
+		
 		if (params.get("data") != null) {
 			data = params.get("data");
 			Log.v("Data", data);
 		}
+		
+		if(params.get("code").trim().equals(CommonUtilities.OPERATION_POLICY_MONITOR)){
+			policy_token = params.get("token").trim();
+			policy_code = params.get("code").trim();
+			Log.v("Token", policy_token);
+		}else{
+			token = params.get("token").trim();
+			code = params.get("code").trim();
+			Log.v("Code", code);
+			Log.v("Token", token);
+		}
+		
+		
 
-		if (code.equals(CommonUtilities.OPERATION_POLICY_BUNDLE)) {
+		if (params.get("code").trim().equals(CommonUtilities.OPERATION_POLICY_BUNDLE)) {
 			try {
 				SharedPreferences mainPref = context.getSharedPreferences(
 						"com.mdm", Context.MODE_PRIVATE);
@@ -176,13 +182,13 @@ public class Operation {
 				editor.putString("policy", data);
 				editor.commit();
 
-				if (mainPref.getString("policy_applied", "") == null
+				/*if (mainPref.getString("policy_applied", "") == null
 						|| mainPref.getString("policy_applied", "").trim()
 								.equals("0")
 						|| mainPref.getString("policy_applied", "").trim()
-								.equals("")) {
+								.equals("")) {*/
 					executePolicy();
-				}
+				//}
 				/*
 				 * JSONArray jArray = new JSONArray(data); for(int i = 0;
 				 * i<jArray.length(); i++){ JSONObject policyObj =
@@ -198,8 +204,9 @@ public class Operation {
 				e.printStackTrace();
 			}
 
-		} else {
-			Log.e("REQ", "2");
+		}else if(params.get("code").trim().equals(CommonUtilities.OPERATION_POLICY_MONITOR)) {
+			doTask(policy_code, data, REQUEST_MODE_NORMAL);
+		}else{
 			doTask(code, data, REQUEST_MODE_NORMAL);
 		}
 
@@ -220,7 +227,6 @@ public class Operation {
 				JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
 				if (policyObj.getString("data") != null
 						&& policyObj.getString("data") != "") {
-					Log.e("REQ", "3");
 					doTask(policyObj.getString("code"),
 							policyObj.getString("data"), REQUEST_MODE_BUNDLE);
 				}
@@ -230,7 +236,6 @@ public class Operation {
 			editor.putString("policy_applied", "1");
 			editor.commit();
 			this.data = policy;
-			Log.e("REQ", "4");
 			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
 					REQUEST_MODE_NORMAL);
 		} catch (Exception ex) {
@@ -1017,21 +1022,39 @@ public class Operation {
 
 				if (!jobj.isNull("requireAlphanumeric")
 						&& jobj.get("requireAlphanumeric") != null) {
-					alphanumeric = (String) jobj.get("requireAlphanumeric");
-					if (alphanumeric.equals("true")) {
-						devicePolicyManager
-								.setPasswordQuality(
-										demoDeviceAdmin,
-										DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC);
+					if(jobj.get("requireAlphanumeric") instanceof String){
+						alphanumeric = (String) jobj.get("requireAlphanumeric");
+						if (alphanumeric.equals("true")) {
+							devicePolicyManager
+									.setPasswordQuality(
+											demoDeviceAdmin,
+											DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC);
+						}
+					}else if(jobj.get("requireAlphanumeric") instanceof Boolean){
+						b_alphanumeric =  jobj.getBoolean("requireAlphanumeric");
+						if (b_alphanumeric) {
+							devicePolicyManager
+									.setPasswordQuality(
+											demoDeviceAdmin,
+											DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC);
+						}
 					}
 				}
 
 				if (!jobj.isNull("allowSimple")
 						&& jobj.get("allowSimple") != null) {
-					complex = (String) jobj.get("allowSimple");
-					if (!complex.equals("true")) {
-						devicePolicyManager.setPasswordQuality(demoDeviceAdmin,
-								DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
+					if(jobj.get("allowSimple") instanceof String){
+						complex = (String) jobj.get("allowSimple");
+						if (!complex.equals("true")) {
+							devicePolicyManager.setPasswordQuality(demoDeviceAdmin,
+									DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
+						}
+					}else if(jobj.get("allowSimple") instanceof Boolean){
+						b_complex = jobj.getBoolean("allowSimple");
+						if (!b_complex) {
+							devicePolicyManager.setPasswordQuality(demoDeviceAdmin,
+									DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
+						}
 					}
 				}
 

@@ -483,8 +483,18 @@ public class PolicyTester {
 
 				if (!jobj.isNull("requireAlphanumeric")
 						&& jobj.get("requireAlphanumeric") != null) {
-					alphanumeric = (String) jobj.get("requireAlphanumeric").toString();
-					if (alphanumeric.equals("true")) {
+					
+					if(jobj.get("requireAlphanumeric") instanceof String){
+						alphanumeric = (String) jobj.get("requireAlphanumeric").toString();
+						if (alphanumeric.equals("true")) {
+							b_alphanumeric=true;
+						}else{
+							b_alphanumeric=false;
+						}
+					}else if(jobj.get("requireAlphanumeric") instanceof Boolean){
+						b_alphanumeric =  jobj.getBoolean("requireAlphanumeric");
+					}
+					if (b_alphanumeric) {
 						if(IS_ENFORCE){
 						devicePolicyManager
 								.setPasswordQuality(
@@ -509,8 +519,19 @@ public class PolicyTester {
 
 				if (!jobj.isNull("allowSimple")
 						&& jobj.get("allowSimple") != null) {
-					complex = (String) jobj.get("allowSimple").toString();
-					if (!complex.equals("true")) {
+					
+					if(jobj.get("allowSimple") instanceof String){
+						complex = (String) jobj.get("allowSimple").toString();
+						if (complex.equals("true")) {
+							b_complex=true;
+						}else{
+							b_complex=false;
+						}
+					}else if(jobj.get("allowSimple") instanceof Boolean){
+						b_complex =  jobj.getBoolean("allowSimple");
+					}
+
+					if (!b_complex) {
 						if(IS_ENFORCE){
 						devicePolicyManager.setPasswordQuality(demoDeviceAdmin,
 								DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
@@ -724,4 +745,3 @@ public class PolicyTester {
 		}
 	}
 }
-
