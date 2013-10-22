@@ -391,6 +391,7 @@ public class PolicyTester {
 			JSONObject jobjx = new JSONObject();
 			int attempts, length, history, specialChars;
 			String alphanumeric, complex;
+			boolean b_alphanumeric=false, b_complex=false;
 			long timout;
 			Map<String, String> inparams = new HashMap<String, String>();
 			// data = intent.getStringExtra("data");

@@ -985,6 +985,7 @@ public class Operation {
 
 			int attempts, length, history, specialChars;
 			String alphanumeric, complex;
+			boolean b_alphanumeric, b_complex;
 			long timout;
 			Map<String, String> inparams = new HashMap<String, String>();
 			// data = intent.getStringExtra("data");
