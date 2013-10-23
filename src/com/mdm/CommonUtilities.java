@@ -27,31 +27,27 @@ public class CommonUtilities {
     /**
      * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
      */
-
-    static String SERVER_URL = "http://----ADD YOUR HOSTNAME HERE----:9763/mdm/api/";
-    static String SERVER_IP = "----ADD YOUR HOSTNAME HERE----";
-    static String SERVER_URL = "http://"+SERVER_IP+":9763/mdm/api/";
-
+    static String SERVER_IP = "192.168.18.57";
+	static String SERVER_URL = "http://"+SERVER_IP+":9763/mdm/api/";
     
     public static String getSERVER_URL() {
-	return SERVER_URL;
-    }
+		return SERVER_URL;
+	}
 
-    public static void setSERVER_URL(String sERVER_URL) {
-	SERVER_IP = sERVER_URL;
-	SERVER_URL = "http://"+sERVER_URL+":9763/mdm/api/";
-    }
+	public static void setSERVER_URL(String sERVER_URL) {
+		SERVER_IP = sERVER_URL;
+		SERVER_URL = "http://"+sERVER_URL+":9763/mdm/api/";
+	}
 
 	/**
      * Google API project id registered to use GCM.
      */
-     public static final String SENDER_ID = "----ADD YOUR SENDER ID HERE----";
-
-
+	//public static final String SENDER_ID = "427708123537";
+    public static final String SENDER_ID = "275196291168";
     /**
      * Tag used on log messages.
      */
-     public static final String TAG = "WSO2MobileMDM";
+	public static final String TAG = "WSO2MobileMDM";
 
     /**
      * Intent used to display a message in the screen.

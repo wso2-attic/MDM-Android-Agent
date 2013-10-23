@@ -211,6 +211,7 @@ public final class ServerUtilities {
 		// using Android HTTPUrlConnection API
 		response = sendWithTimeWait("devices/register", params, "POST",
 				context).get("response");
+		Log.e("REGISTRATION RESPONSE : ",response);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
