@@ -218,6 +218,7 @@ public class RegisterSuccessful extends SherlockActivity {
 		i.setAction(Intent.ACTION_MAIN);
 		i.addCategory(Intent.CATEGORY_HOME);
 		this.startActivity(i);
+		//finish();
 		super.onBackPressed();
 	}
 
@@ -228,14 +229,13 @@ public class RegisterSuccessful extends SherlockActivity {
 			i.setAction(Intent.ACTION_MAIN);
 			i.addCategory(Intent.CATEGORY_HOME);
 			this.startActivity(i);
-			finish();
+			//finish();
 			return true;
 		} else if (keyCode == KeyEvent.KEYCODE_HOME) {
-			/*
-			 * Intent i = new Intent(); i.setAction(Intent.ACTION_MAIN);
-			 * i.addCategory(Intent.CATEGORY_HOME); this.startActivity(i);
-			 */
-			finish();
+			Intent i = new Intent();
+			i.setAction(Intent.ACTION_MAIN);
+			i.addCategory(Intent.CATEGORY_HOME);
+			//finish();
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);

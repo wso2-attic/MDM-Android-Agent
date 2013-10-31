@@ -25,11 +25,14 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class AuthenticationError extends Activity {
     String regId = "";
     private Button btnTryAgain;
     private final int TAG_BTN_TRY_AGAIN = 0;
+    private String FROM_ACTIVITY=null;
+    private TextView txtMsg;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,13 +42,23 @@ public class AuthenticationError extends Activity {
 			if(extras.containsKey("regid")){
 				regId = extras.getString("regid");
 			}
+			
+			if(extras.containsKey("from_activity_name")){
+				FROM_ACTIVITY = extras.getString("from_activity_name");
+			}
 		}
 		if(regId == null || regId.equals("")){
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
+		txtMsg = (TextView)findViewById(R.id.textView1);
+		
 		btnTryAgain = (Button)findViewById(R.id.btnTryAgain);
 		btnTryAgain.setTag(TAG_BTN_TRY_AGAIN);
 		btnTryAgain.setOnClickListener(onClickListener_BUTTON_CLICKED);
+		
+		if(FROM_ACTIVITY.equals(MainActivity.class.getSimpleName())){
+			txtMsg.setText("Registration failed");
+		}
 		
 	}
 
@@ -90,6 +103,7 @@ public class AuthenticationError extends Activity {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
 	    	Intent intent2 = new Intent(AuthenticationError.this,Authentication.class);
 	    	intent2.putExtra("from_activity_name", Authentication.class.getSimpleName());
+	    	intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	    	intent2.putExtra("regid", regId);
 			startActivity(intent2);
 	    	finish();

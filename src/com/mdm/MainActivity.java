@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
 	 String regId = "";
 	 String email = "";
 	 TextView mDisplay;
+	 boolean regState = false;
 	 boolean successFlag = false;
 	 private final int TAG_BTN_UNREGISTER = 0;
 	 private final int TAG_BTN_OPTIONS = 1;
@@ -104,13 +105,12 @@ public class MainActivity extends Activity {
 	        protected String doInBackground(Void... params) {
 	          //  boolean registered = ServerUtilities.register(context, regId);
 	        //	ServerUtilities.register(context, regId);
-	        	String result="";
 	        	try{
-	        	 result = ServerUtilities.register(regId, context);
+	        		regState = ServerUtilities.register(regId, context);
 	        	}catch(Exception e){
 	        		e.printStackTrace();
 	        	}
-	        	return result;
+	        	return null;
 	        }
 	
 	        ProgressDialog progressDialog;
@@ -125,13 +125,22 @@ public class MainActivity extends Activity {
 	        @Override
 	        protected void onPostExecute(String result) {
 	    		//Direct to register successful class
-	        	//Log.v("THE RESPONSE STATUS : ",result);
+	        	//Log.e("REGISTRATION RESPONSE STATUS : ",result);
 	        	//if(result.contains("Succesful")){
+	        	if(regState){
 	            	Intent intent = new Intent(MainActivity.this,RegisterSuccessful.class);
 	            	intent.putExtra("regid", regId);
 	            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            	startActivity(intent);
 	            	finish();
+	        	}else{
+	        		Intent intent = new Intent(MainActivity.this,AuthenticationError.class);
+	            	intent.putExtra("regid", regId);
+	            	intent.putExtra("from_activity_name", MainActivity.class.getSimpleName());
+	            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	            	startActivity(intent);
+	            	finish();
+	        	}
 	        	//}else{
 	        	//	btnLayout.setVisibility(View.VISIBLE);
 	        		//progressDialog.dismiss();
@@ -159,14 +168,13 @@ public class MainActivity extends Activity {
 			        protected String doInBackground(Void... params) {
 			          //  boolean registered = ServerUtilities.register(context, regId);
 			        //	ServerUtilities.register(context, regId);
-			        	String result="";
 			        	try{
-			        	 result = ServerUtilities.register(regId, context);
+			        		regState = ServerUtilities.register(regId, context);
 			        	}catch(Exception e){
 			        		e.printStackTrace();
 			        	}
 			        	
-			        	return result;
+			        	return null;
 			        }
 			
 			        ProgressDialog progressDialog;
@@ -182,11 +190,20 @@ public class MainActivity extends Activity {
 			        protected void onPostExecute(String result) {
 			    		//Direct to register successful class
 			        	//if(result.contains("Succesful")){
+			        	if(regState){
 			            	Intent intent = new Intent(MainActivity.this,RegisterSuccessful.class);
 			            	intent.putExtra("regid", regId);
 			            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			            	startActivity(intent);
 			            	finish();
+			        	}else{
+			        		Intent intent = new Intent(MainActivity.this,AuthenticationError.class);
+			            	intent.putExtra("regid", regId);
+			            	intent.putExtra("from_activity_name", MainActivity.class.getSimpleName());
+			            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			            	startActivity(intent);
+			            	finish();
+			        	}
 			        	//}else{
 			        		//btnLayout.setVisibility(View.VISIBLE);
 			        		//progressDialog.dismiss();

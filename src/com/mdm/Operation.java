@@ -176,6 +176,12 @@ public class Operation {
 
 		if (params.get("code").trim().equals(CommonUtilities.OPERATION_POLICY_BUNDLE)) {
 			try {
+				SharedPreferences mainPrefp = context.getSharedPreferences(
+						"com.mdm", Context.MODE_PRIVATE);
+				Editor editorp = mainPrefp.edit();
+				editorp.putString("policy", "");
+				editorp.commit();
+				
 				SharedPreferences mainPref = context.getSharedPreferences(
 						"com.mdm", Context.MODE_PRIVATE);
 				Editor editor = mainPref.edit();

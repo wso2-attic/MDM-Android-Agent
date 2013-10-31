@@ -231,6 +231,7 @@ public class AllReadyRegistered extends SherlockActivity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+	    	//finish();
 	    	Intent i = new Intent();
 	    	i.setAction(Intent.ACTION_MAIN);
 	    	i.addCategory(Intent.CATEGORY_HOME);
@@ -238,11 +239,11 @@ public class AllReadyRegistered extends SherlockActivity {
 	        return true;
 	    }
 	    else if (keyCode == KeyEvent.KEYCODE_HOME) {
-	    	/*Intent i = new Intent();
+	    	Intent i = new Intent();
 	    	i.setAction(Intent.ACTION_MAIN);
 	    	i.addCategory(Intent.CATEGORY_HOME);
-	    	this.startActivity(i);*/
-	    	this.finish();
+	    	this.startActivity(i);
+	    	//finish();
 	        return true;
 	    }
 	    return super.onKeyDown(keyCode, event);

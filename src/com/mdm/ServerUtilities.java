@@ -183,11 +183,12 @@ public final class ServerUtilities {
         }
     }
 
-	public static String register(String regId, Context context) {
+	public static boolean register(String regId, Context context) {
 		DeviceInfo deviceInfo = new DeviceInfo(context);
 		JSONObject jsObject = new JSONObject();
 		String osVersion = "";
 		String response = "";
+		boolean state=false;
 		try {
 			osVersion = deviceInfo.getOsVersion();
 			jsObject.put("device", deviceInfo.getDevice());
@@ -210,13 +211,19 @@ public final class ServerUtilities {
 		// Calls the function "sendTimeWait" to do a HTTP post to our server
 		// using Android HTTPUrlConnection API
 		response = sendWithTimeWait("devices/register", params, "POST",
-				context).get("response");
-		Log.e("REGISTRATION RESPONSE : ",response);
+				context).get("status");
+
+		if(response.equals("201")){
+			state = true;
+		}else{
+			state = false;
+		}
+		
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return response;
+		return state;
 	}
 
 	public static String unregister(String regId, Context context) {

@@ -76,6 +76,7 @@ public class PolicyTester {
 			}else{
 				jArray = new JSONArray(policy);
 			}
+			Log.e("POLICY ARAY : ", jArray.toString());
 			for (int i = 0; i < jArray.length(); i++) {
 				JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
 				if (policyObj.getString("data") != null
