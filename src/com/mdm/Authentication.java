@@ -282,24 +282,23 @@ public class Authentication extends SherlockActivity {
             protected void onPostExecute(Void result) {
 
 				if(state){
-					String pin = null;
-					SharedPreferences mainPref = context.getSharedPreferences(
+					//String pin = null;
+					/*SharedPreferences mainPref = context.getSharedPreferences(
 							"com.mdm", Context.MODE_PRIVATE);
-					String pinSaved = mainPref.getString("pin", "");
-					
-					if(pinSaved!=null && !pinSaved.equals("")){
+					String pinSaved = mainPref.getString("pin", "");*/
+					//if(pinSaved!=null && !pinSaved.equals("")){
 						Intent intent = new Intent(Authentication.this,PinCodeActivity.class);
 						intent.putExtra("regid", regId);
 						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						intent.putExtra("email", username.getText().toString());
 						startActivity(intent);
-					}else{
+					/*}else{
 						Intent intent = new Intent(Authentication.this, MainActivity.class);
 						intent.putExtra("regid", regId);
 						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 						intent.putExtra("email", username.getText().toString());
 						startActivity(intent);
-					}
+					}*/
 				}else{
 					Intent intent = new Intent(Authentication.this,AuthenticationError.class);
 					intent.putExtra("regid", regId);
