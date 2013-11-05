@@ -1393,10 +1393,10 @@ public class Operation {
 				String policy = mainPref.getString("policy", "");
 					if(policy!=null && policy!=""){
 						if(apz!=null || !apz.trim().equals("")){
-							Intent intent = new Intent(context, AlertActivity.class);
+							/*Intent intent = new Intent(context, AlertActivity.class);
 							intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please remove them \n\n"+apz);
 							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-							context.startActivity(intent);
+							context.startActivity(intent);*/
 					}
 				}
 			} catch (JSONException e1) {
