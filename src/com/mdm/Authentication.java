@@ -301,6 +301,7 @@ public class Authentication extends SherlockActivity {
 					}*/
 				}else{
 					Intent intent = new Intent(Authentication.this,AuthenticationError.class);
+					intent.putExtra("from_activity_name", Authentication.class.getSimpleName());
 					intent.putExtra("regid", regId);
 					startActivity(intent);
 				}

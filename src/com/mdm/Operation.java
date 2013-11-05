@@ -227,7 +227,7 @@ public class Operation {
 		try {
 
 			policy = mainPref.getString("policy", "");
-
+			Log.e("INCOMING POLICY : ",policy);
 			jArray = new JSONArray(policy);
 			for (int i = 0; i < jArray.length(); i++) {
 				JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
@@ -1078,14 +1078,14 @@ public class Operation {
 						Context.MODE_PRIVATE);
 				String policy = mainPref.getString("policy", "");
 				
-				if(!devicePolicyManager.isActivePasswordSufficient()){
+				/*if(!devicePolicyManager.isActivePasswordSufficient()){
 					if(policy!=null && policy!=""){
 						Intent intent = new Intent(context, AlertActivity.class);
 						intent.putExtra("message", "Your screen lock password doesn't meet current policy requirement. Please reset your passcode");
 						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
 						context.startActivity(intent);
 					}
-				}
+				}*/
 				
 				inparams.put("code", code_input);
 				inparams.put("msgID", token);
@@ -1291,13 +1291,16 @@ public class Operation {
 		} else if (code_input.equals(CommonUtilities.OPERATION_POLICY_MONITOR)) {
 			JSONArray sendjArray;
 			try {
-				//JSONObject jobj = new JSONObject(this.data);
+				JSONObject jobj = new JSONObject(this.data);
 				
-				//sendjArray = jobj.getJSONArray("policies");
-				sendjArray = new JSONArray(this.data);
-				/*int type = Integer.parseInt((String) jobj.get("type")
-						.toString().trim());*/
-				int type = 1;
+				sendjArray = jobj.getJSONArray("policies");
+				//sendjArray = new JSONArray(this.data);
+				int type = Integer.parseInt((String) jobj.get("type")
+						.toString().trim());
+				if(type!=1 && type!=2 && type!=3){
+					type = 1;
+				}
+				//int type = 1;
 				Log.e("PASSING MSG ID : ",policy_token);
 				Log.e("PASSING CODE : ",code_input);
 				PolicyTester tester = new PolicyTester(context, sendjArray,

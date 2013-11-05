@@ -45,8 +45,8 @@ public class PolicyTester {
 	boolean IS_ENFORCE = false;
 	String ssid, password;
 	int POLICY_MONITOR_TYPE_NO_ENFORCE_RETURN = 1;
-	int POLICY_MONITOR_TYPE_ENFORCE_RETURN = 2;
-	int POLICY_MONITOR_TYPE_NO_ENFORCE_MESSAGE_RETURN = 3;
+	int POLICY_MONITOR_TYPE_NO_ENFORCE_MESSAGE_RETURN = 2;
+	int POLICY_MONITOR_TYPE_ENFORCE_RETURN = 3;
 	
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 	public PolicyTester(Context context, JSONArray recJArray, int type, String msgID) {
@@ -59,10 +59,10 @@ public class PolicyTester {
 		
 		if(type == POLICY_MONITOR_TYPE_NO_ENFORCE_RETURN){
 			IS_ENFORCE = false;
-		}else if(type == POLICY_MONITOR_TYPE_ENFORCE_RETURN){
-			IS_ENFORCE = true;
 		}else if(type == POLICY_MONITOR_TYPE_NO_ENFORCE_MESSAGE_RETURN){
 			IS_ENFORCE = false;
+		}else if(type == POLICY_MONITOR_TYPE_ENFORCE_RETURN){
+			IS_ENFORCE = true;
 		}
 
 		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
@@ -101,8 +101,9 @@ public class PolicyTester {
 			}
 			Log.e("MONITOR POLICY : ",policy);
 			Log.e("MONITOR USER MESSAGE : ",usermessage);
+			//Display an alert to the user about policy violation
 			if(policy!=null && policy !=""){
-				if(usermessage!=null && usermessage!=""){
+				if(usermessage!=null && usermessage!="" && type == POLICY_MONITOR_TYPE_NO_ENFORCE_MESSAGE_RETURN){
 					Intent intent = new Intent(context, AlertActivity.class);
 					intent.putExtra("message", usermessage);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
