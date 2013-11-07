@@ -787,4 +787,4 @@ int styleable SherlockTheme_windowNoTitle 59
 int styleable SherlockTheme_windowSplitActionBar 63
 int[] styleable SherlockView { 0x010100da }
 int styleable SherlockView_android_focusable 0
-int xml device_admin_sample 0x7f040000
+int xml wso2mobile_device_admin 0x7f040000

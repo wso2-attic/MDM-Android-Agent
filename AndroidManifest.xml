@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mdm"
-    android:sharedUserId="com.mdm"
+    package="com.wso2mobile.mdm"
+    android:sharedUserId="com.wso2mobile.mdm"
     android:sharedUserLabel="@string/hello_world"
     android:versionCode="1"
     android:versionName="1.0" >
@@ -27,11 +27,11 @@
            where PACKAGE is the application's package name.
     -->
     <permission
-        android:name="com.mdm.permission.C2D_MESSAGE"
+        android:name="com.wso2mobile.mdm.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.mdm.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.wso2mobile.mdm.permission.C2D_MESSAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" >
     </uses-permission>
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -67,18 +67,18 @@
         android:screenOrientation="portrait"
         android:theme="@style/TopBarTheme" >
         <activity
-            android:name="com.mdm.MainActivity"
+            android:name="com.wso2mobile.mdm.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/TopBarTheme" >
         </activity>
         <activity
-            android:name="com.mdm.DisplayDeviceInfo"
+            android:name="com.wso2mobile.mdm.DisplayDeviceInfoActivity"
             android:label="@string/title_activity_display_device_info"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.mdm.RegisterSuccessful"
+            android:name="com.wso2mobile.mdm.services.RegisterSuccessfulActivity"
             android:label="@string/title_activity_register_successful"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Sherlock" >
@@ -92,11 +92,11 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="com.mdm" />
+                <category android:name="com.wso2mobile.mdm" />
             </intent-filter>
         </receiver>
         <receiver
-            android:name="com.mdm.DemoDeviceAdminReceiver"
+            android:name="com.wso2mobile.mdm.services.WSO2MobileDeviceAdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN" >
             <intent-filter>
 
@@ -107,47 +107,47 @@
             <!-- This is required this receiver to become device admin component. -->
             <meta-data
                 android:name="android.app.device_admin"
-                android:resource="@xml/device_admin_sample" >
+                android:resource="@xml/wso2mobile_device_admin" >
             </meta-data>
         </receiver>
-        <receiver android:name="com.mdm.SMSReceiver" >
+        <receiver android:name="com.wso2mobile.mdm.services.SMSReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
         <!-- End List of Receivers -->
-        <service android:name="com.mdm.GCMIntentService" />
+        <service android:name="com.wso2mobile.mdm.GCMIntentService" />
 
         <activity
-            android:name="com.mdm.Entry"
+            android:name="com.wso2mobile.mdm.EntryActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.mdm.AllReadyRegistered"
+            android:name="com.wso2mobile.mdm.AlreadyRegisteredActivity"
             android:label="@string/title_activity_all_ready_registered"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Sherlock" >
         </activity>
         <activity
-            android:name="com.mdm.Authentication"
+            android:name="com.wso2mobile.mdm.AuthenticationActivity"
             android:label="@string/title_activity_authentication"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Sherlock"
             android:windowSoftInputMode="stateUnchanged|adjustPan" >
         </activity>
         <activity
-            android:name="com.mdm.AuthenticationError"
+            android:name="com.wso2mobile.mdm.AuthenticationErrorActivity"
             android:label="@string/title_activity_authentication_error"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.mdm.NotifyActivity"
+            android:name="com.wso2mobile.mdm.NotifyActivity"
             android:label="@string/title_activity_notify"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.mdm.SettingsActivity"
+            android:name="com.wso2mobile.mdm.SettingsActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" >
@@ -158,28 +158,28 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.mdm.AgentSettingsActivity"
+            android:name="com.wso2mobile.mdm.AgentSettingsActivity"
             android:label="@string/title_activity_agent_settings"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.mdm.AvailableOperationsActivity"
+            android:name="com.wso2mobile.mdm.AvailableOperationsActivity"
             android:label="@string/title_activity_available_operations"
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.mdm.PinCodeActivity"
+            android:name="com.wso2mobile.mdm.PinCodeActivity"
             android:label="@string/title_activity_pin_code"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateUnchanged|adjustPan" >
         </activity>
         <activity
-            android:name="com.mdm.Notification"
+            android:name="com.wso2mobile.mdm.Notification"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_notification" >
         </activity>
         <activity
-            android:name="com.mdm.AlertActivity"
+            android:name="com.wso2mobile.mdm.AlertActivity"
             android:theme="@android:style/Theme.Dialog"
             android:screenOrientation="portrait"
             android:label="@string/title_activity_alert" >
