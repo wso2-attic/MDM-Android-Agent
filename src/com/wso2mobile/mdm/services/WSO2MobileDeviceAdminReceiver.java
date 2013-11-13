@@ -16,12 +16,23 @@
 package com.wso2mobile.mdm.services;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.android.gcm.GCMRegistrar;
+import com.wso2mobile.mdm.AlreadyRegisteredActivity;
+import com.wso2mobile.mdm.AuthenticationErrorActivity;
 import com.wso2mobile.mdm.R;
 import com.wso2mobile.mdm.R.string;
+import com.wso2mobile.mdm.utils.ServerUtilities;
 
+import android.app.ProgressDialog;
 import android.app.admin.DeviceAdminReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,7 +44,9 @@ import android.widget.Toast;
  */
 public class WSO2MobileDeviceAdminReceiver extends DeviceAdminReceiver {
 	static final String TAG = "DemoDeviceAdminReceiver";
-
+	AsyncTask<Void, Void, Void> mRegisterTask;
+	String regId="";
+	boolean unregState=false;
 	/** Called when this application is approved to be a device administrator. */
 	@Override
 	public void onEnabled(Context context, Intent intent) {
@@ -50,6 +63,62 @@ public class WSO2MobileDeviceAdminReceiver extends DeviceAdminReceiver {
 		Toast.makeText(context, R.string.device_admin_disabled,
 				Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onDisabled");
+		if(regId == null || regId.equals("")){
+			regId = GCMRegistrar.getRegistrationId(context);
+		}
+		
+		if(regId != null || !regId.equals("")){
+			startUnRegistration(context);
+		}
+		
+	}
+	
+	public void startUnRegistration(Context app_context){
+		final Context context = app_context;
+		mRegisterTask = new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+            	 Map<String, String> paramss = new HashMap<String, String>();
+                 paramss.put("regid", regId);
+            	//ServerUtilities.sendToServer(context, "/UNRegister", paramss);
+                 unregState=ServerUtilities.unregister(regId, context);
+                return null;
+            }
+            
+            //ProgressDialog progressDialog;
+            //declare other objects as per your need
+            @Override
+            protected void onPreExecute()
+            {
+                //progressDialog= ProgressDialog.show(context, "Unregistering Device","Please wait", true);
+
+                //do initialization of required objects objects here                
+            };    
+
+
+            @Override
+            protected void onPostExecute(Void result) {
+	            	try {
+	        			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+	        					Context.MODE_PRIVATE);
+	        			Editor editor = mainPref.edit();
+	        			editor.putString("policy", "");
+	        			editor.putString("isAgreed", "0");
+	        			editor.putString("registered","0");	
+	        			editor.putString("ip","");
+	        			editor.commit();
+	        		} catch (Exception e) {
+	        			// TODO Auto-generated catch block
+	        			e.printStackTrace();
+	        		}
+                mRegisterTask = null;
+                //progressDialog.dismiss();
+            }
+
+        };
+        mRegisterTask.execute(null, null, null);
+
 	}
 
 	@Override
