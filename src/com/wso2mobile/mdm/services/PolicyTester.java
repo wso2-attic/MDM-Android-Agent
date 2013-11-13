@@ -208,6 +208,12 @@ public class PolicyTester {
 					jobjc.put("status", true);
 				}else{
 					jobjc.put("status", false);
+					if(usermessage!=null && usermessage!=""){
+						usermessage+="\nYou are not using company WIFI account, please change your WIFI configuration \n";
+					}else{
+						usermessage+="You are not using company WIFI account, please change your WIFI configuration \n";
+					}
+					
 				}
 				jobjc.put("code", code);
 				
@@ -261,9 +267,19 @@ public class PolicyTester {
 						jobj.put("status", true);
 					}else{
 						jobj.put("status", false);
+						if(usermessage!=null && usermessage!=""){
+							usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
+						}else{
+							usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
+						}
 					}
 				}else{
 					jobj.put("status", false);
+					if(usermessage!=null && usermessage!=""){
+						usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
+					}else{
+						usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
+					}
 				}
 				jobj.put("code", code);
 				
@@ -344,6 +360,11 @@ public class PolicyTester {
 						jobj.put("status", true);
 					}else{
 						jobj.put("status", false);	
+						if(usermessage!=null && usermessage!=""){
+							usermessage+="\nYour device should be encrypted according to the policy, please enable device encryption through device settings\n";
+						}else{
+							usermessage+="Your device should be encrypted according to the policy, please enable device encryption through device settings \n";
+						}
 					}
 				}else{
 					if(devicePolicyManager.getStorageEncryptionStatus()== devicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED || devicePolicyManager.getStorageEncryptionStatus() == devicePolicyManager.ENCRYPTION_STATUS_INACTIVE){

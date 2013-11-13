@@ -131,6 +131,7 @@ public class MainActivity extends Activity {
 	        	if(regState){
 	            	Intent intent = new Intent(MainActivity.this,AlreadyRegisteredActivity.class);
 	            	intent.putExtra("regid", regId);
+	            	intent.putExtra("freshRegFlag", true);
 	            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            	startActivity(intent);
 	            	//finish();

@@ -21,6 +21,7 @@ import java.util.Map;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockActivity;
 import com.google.android.gcm.GCMRegistrar;
+import com.wso2mobile.mdm.services.Operation;
 import com.wso2mobile.mdm.services.WSO2MobileDeviceAdminReceiver;
 import com.wso2mobile.mdm.utils.ServerUtilities;
 
@@ -62,6 +63,8 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 	private final int TAG_BTN_RE_REGISTER = 2;
 	ActionBar actionbar;
 	boolean unregState=false;
+	boolean freshRegFlag = false;
+	Operation operation;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,7 +76,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 		 
 		 devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		 demoDeviceAdmin = new ComponentName(this, WSO2MobileDeviceAdminReceiver.class);
-		 
+		 operation = new Operation(AlreadyRegisteredActivity.this);
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
@@ -81,15 +84,50 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 				regId = extras.getString("regid");
 			}
 			
+			if(extras.containsKey("freshRegFlag")){
+				freshRegFlag = extras.getBoolean("freshRegFlag");
+			}
+			
 		}
 		if(regId == null || regId.equals("")){
 			regId = GCMRegistrar.getRegistrationId(this);
+		}
+		
+		if(freshRegFlag){
+			try {
+	            if (!devicePolicyManager.isAdminActive(demoDeviceAdmin)) {
+	                    Intent intent1 = new Intent(
+	                                    DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+	                    intent1.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+	                                    demoDeviceAdmin);
+	                    intent1.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+	                                    "This will enable device administration");
+	                    startActivityForResult(intent1, ACTIVATION_REQUEST);
+	            }
+	            operation.executePolicy();
+		    } catch (Exception ex) {
+		            ex.printStackTrace();
+		    }
 		}
 		txtRegText = (TextView)findViewById(R.id.txtRegText);
 		
 		btnUnregister = (Button)findViewById(R.id.btnUnreg);
 		btnUnregister.setTag(TAG_BTN_UNREGISTER);
 		btnUnregister.setOnClickListener(onClickListener_BUTTON_CLICKED);
+		
+		 try {
+			 if(freshRegFlag){
+	             SharedPreferences mainPref = AlreadyRegisteredActivity.this.getSharedPreferences("com.mdm",
+	                             Context.MODE_PRIVATE);
+	             Editor editor = mainPref.edit();
+	             editor.putString("registered","1");
+	             editor.commit();
+			 }
+             
+	     } catch (Exception e) {
+	             // TODO Auto-generated catch block
+	             e.printStackTrace();
+	     }
 		
 		//optionBtn = (ImageView) findViewById(R.id.option_button);	
 		//optionBtn.setTag(TAG_BTN_OPTIONS);
@@ -242,6 +280,16 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
     		return super.onOptionsItemSelected(item);
     	}
     } 
+	
+	@Override
+    public void onBackPressed() {
+            Intent i = new Intent();
+            i.setAction(Intent.ACTION_MAIN);
+            i.addCategory(Intent.CATEGORY_HOME);
+            this.startActivity(i);
+            //finish();
+            super.onBackPressed();
+    }
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

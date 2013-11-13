@@ -237,11 +237,13 @@ public class Operation {
 			Log.e("INCOMING POLICY : ",policy);
 			jArray = new JSONArray(policy);
 			for (int i = 0; i < jArray.length(); i++) {
-				JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
-				if (policyObj.getString("data") != null
-						&& policyObj.getString("data") != "") {
-					doTask(policyObj.getString("code"),
-							policyObj.getString("data"), REQUEST_MODE_BUNDLE);
+				if(jArray.getJSONObject(i)!=null){
+					JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
+					if (policyObj.getString("data") != null
+							&& policyObj.getString("data") != "") {
+						doTask(policyObj.getString("code"),
+								policyObj.getString("data"), REQUEST_MODE_BUNDLE);
+					}
 				}
 			}
 
@@ -1304,12 +1306,14 @@ public class Operation {
 				//sendjArray = new JSONArray(this.data);
 				int type = Integer.parseInt((String) jobj.get("type")
 						.toString().trim());
+				
 				if(type!=1 && type!=2 && type!=3){
 					type = 1;
 				}
 				//int type = 1;
 				Log.e("PASSING MSG ID : ",policy_token);
 				Log.e("PASSING CODE : ",code_input);
+				Log.e("PASSING TYPE : ",String.valueOf(type));
 				PolicyTester tester = new PolicyTester(context, sendjArray,
 						type, policy_token);
 			} catch (JSONException e) {
