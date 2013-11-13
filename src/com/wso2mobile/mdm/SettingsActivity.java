@@ -15,7 +15,6 @@
 */
 package com.wso2mobile.mdm;
 
-import com.wso2mobile.mdm.services.RegisterSuccessfulActivity;
 import com.wso2mobile.mdm.utils.CommonUtilities;
 
 import android.os.Bundle;
@@ -102,18 +101,14 @@ public class SettingsActivity extends Activity {
     		intent.putExtra("regid", REG_ID);
     		startActivity(intent);
     		return true;
-	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessfulActivity.class.getSimpleName())) {
-    		Intent intent = new Intent(SettingsActivity.this,RegisterSuccessfulActivity.class);
-    		intent.putExtra("from_activity_name", SettingsActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
-    		startActivity(intent);
-    		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AuthenticationActivity.class.getSimpleName())) {
-    		Intent intent = new Intent(SettingsActivity.this,AuthenticationActivity.class);
+    		/*Intent intent = new Intent(SettingsActivity.this,AuthenticationActivity.class);
     		intent.putExtra("from_activity_name", SettingsActivity.class.getSimpleName());
     		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     		intent.putExtra("regid", REG_ID);
-    		startActivity(intent);
+    		startActivity(intent);*/
+	    	int pid = android.os.Process.myPid(); 
+	    	android.os.Process.killProcess(pid); 
     		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK) {
 	    	Intent i = new Intent();

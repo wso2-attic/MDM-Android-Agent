@@ -32,7 +32,6 @@ import com.wso2mobile.mdm.api.DeviceInfo;
 import com.wso2mobile.mdm.api.GPSTracker;
 import com.wso2mobile.mdm.api.LocationServices;
 import com.wso2mobile.mdm.api.PhoneState;
-import com.wso2mobile.mdm.api.PolicyTester;
 import com.wso2mobile.mdm.api.TrackCallSMS;
 import com.wso2mobile.mdm.models.PInfo;
 import com.wso2mobile.mdm.utils.CommonUtilities;

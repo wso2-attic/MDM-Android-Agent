@@ -25,7 +25,6 @@ import static com.wso2mobile.mdm.utils.CommonUtilities.SERVER_URL;
 
 import com.google.android.gcm.GCMRegistrar;
 
-import com.wso2mobile.mdm.services.RegisterSuccessfulActivity;
 import com.wso2mobile.mdm.services.WSO2MobileDeviceAdminReceiver;
 import com.wso2mobile.mdm.utils.ServerUtilities;
 
@@ -130,7 +129,7 @@ public class MainActivity extends Activity {
             		progressDialog.dismiss();
                 }
 	        	if(regState){
-	            	Intent intent = new Intent(MainActivity.this,RegisterSuccessfulActivity.class);
+	            	Intent intent = new Intent(MainActivity.this,AlreadyRegisteredActivity.class);
 	            	intent.putExtra("regid", regId);
 	            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            	startActivity(intent);
@@ -194,7 +193,7 @@ public class MainActivity extends Activity {
 		            		progressDialog.dismiss();
 		                }
 			        	if(regState){
-			            	Intent intent = new Intent(MainActivity.this,RegisterSuccessfulActivity.class);
+			            	Intent intent = new Intent(MainActivity.this,AlreadyRegisteredActivity.class);
 			            	intent.putExtra("regid", regId);
 			            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			            	startActivity(intent);

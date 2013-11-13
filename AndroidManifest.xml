@@ -78,7 +78,7 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.wso2mobile.mdm.services.RegisterSuccessfulActivity"
+            android:name="com.wso2mobile.mdm.RegisterSuccessfulActivity"
             android:label="@string/title_activity_register_successful"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Sherlock" >

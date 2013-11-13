@@ -1,7 +1,6 @@
 package com.wso2mobile.mdm;
 
 import com.wso2mobile.mdm.api.DeviceInfo;
-import com.wso2mobile.mdm.services.RegisterSuccessfulActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -77,12 +76,6 @@ public class AvailableOperationsActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
     		Intent intent = new Intent(AvailableOperationsActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", AvailableOperationsActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
-    		startActivity(intent);
-    		return true;
-	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessfulActivity.class.getSimpleName())) {
-    		Intent intent = new Intent(AvailableOperationsActivity.this,RegisterSuccessfulActivity.class);
     		intent.putExtra("from_activity_name", AvailableOperationsActivity.class.getSimpleName());
     		intent.putExtra("regid", REG_ID);
     		startActivity(intent);

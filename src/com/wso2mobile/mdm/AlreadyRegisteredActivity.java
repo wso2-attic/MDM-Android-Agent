@@ -43,6 +43,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 
@@ -53,15 +55,17 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 	ComponentName demoDeviceAdmin;
 	String regId="";
 	private Button btnUnregister;
+	private TextView txtRegText;
 	//private ImageView optionBtn;
 	private final int TAG_BTN_UNREGISTER = 0;
 	private final int TAG_BTN_OPTIONS = 1;
+	private final int TAG_BTN_RE_REGISTER = 2;
 	ActionBar actionbar;
 	boolean unregState=false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_all_ready_registered);
+		setContentView(R.layout.activity_already_registered);
 		 getSupportActionBar().setDisplayShowCustomEnabled(true);
 		 getSupportActionBar().setCustomView(R.layout.custom_sherlock_bar);
 		 View homeIcon = findViewById(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.id.home : R.id.abs__home);
@@ -76,10 +80,13 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 			if(extras.containsKey("regid")){
 				regId = extras.getString("regid");
 			}
+			
 		}
 		if(regId == null || regId.equals("")){
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
+		txtRegText = (TextView)findViewById(R.id.txtRegText);
+		
 		btnUnregister = (Button)findViewById(R.id.btnUnreg);
 		btnUnregister.setTag(TAG_BTN_UNREGISTER);
 		btnUnregister.setOnClickListener(onClickListener_BUTTON_CLICKED);
@@ -100,11 +107,17 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 			switch (iTag) {
 
 			case TAG_BTN_UNREGISTER:
-				startRegistration();
+				startUnRegistration();
 				break;
 
 			case TAG_BTN_OPTIONS:
 				//startOptionActivity();
+				break;
+			case TAG_BTN_RE_REGISTER:
+				Intent intent = new Intent(AlreadyRegisteredActivity.this,EntryActivity.class);
+            	intent.putExtra("regid", regId);
+            	startActivity(intent);
+            	finish();
 				break;
 
 			default:
@@ -114,7 +127,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 		}
 	};
 	
-	public void startRegistration(){
+	public void startUnRegistration(){
 		final Context context = AlreadyRegisteredActivity.this;
 		mRegisterTask = new AsyncTask<Void, Void, Void>() {
 
@@ -141,11 +154,30 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
             @Override
             protected void onPostExecute(Void result) {
             	if(unregState){
-	            	devicePolicyManager.removeActiveAdmin(demoDeviceAdmin);
+	            	/*
 	            	Intent intent = new Intent(AlreadyRegisteredActivity.this,EntryActivity.class);
 	            	intent.putExtra("regid", regId);
 	            	startActivity(intent);
-	            	finish();
+	            	finish();*/
+            		txtRegText.setText(R.string.register_text_view_text_unregister);
+            		btnUnregister.setText(R.string.register_button_text);
+            		btnUnregister.setTag(TAG_BTN_RE_REGISTER);
+            		btnUnregister.setOnClickListener(onClickListener_BUTTON_CLICKED);
+            		
+            		devicePolicyManager.removeActiveAdmin(demoDeviceAdmin);
+	            	try {
+	        			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+	        					Context.MODE_PRIVATE);
+	        			Editor editor = mainPref.edit();
+	        			editor.putString("policy", "");
+	        			editor.putString("isAgreed", "0");
+	        			editor.putString("registered","0");	
+	        			editor.putString("ip","");
+	        			editor.commit();
+	        		} catch (Exception e) {
+	        			// TODO Auto-generated catch block
+	        			e.printStackTrace();
+	        		}
             	}else{
             		Intent intent = new Intent(AlreadyRegisteredActivity.this,AuthenticationErrorActivity.class);
 	            	intent.putExtra("regid", regId);
@@ -158,26 +190,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 
         };
         mRegisterTask.execute(null, null, null);
-        
-        try {
-			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
-					Context.MODE_PRIVATE);
-			Editor editor = mainPref.edit();
-			editor.putString("policy", "");
-			editor.commit();
-			
-			SharedPreferences mainPref2 = AlreadyRegisteredActivity.this.getSharedPreferences("com.mdm",
-					Context.MODE_PRIVATE);
-			Editor editor2 = mainPref.edit();
-			editor.putString("isAgreed", "0");
-			editor.commit();
-			
-			editor.putString("registered","0");
-			editor.commit();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 	}
 
 	public void startOptionActivity(){
@@ -187,14 +200,6 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 		startActivity(intent);
 	}
 	
-	/*@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.all_ready_registered, menu);
-		return true;
-		MenuInflater inflater = getMenuInflater();
-    	inflater.inflate(R.menu.options_menu, menu);
-        return true;
-	}*/
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
         getSupportMenuInflater().inflate(R.menu.sherlock_menu, menu);

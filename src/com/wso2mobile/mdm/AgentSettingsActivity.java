@@ -16,7 +16,6 @@
 package com.wso2mobile.mdm;
 
 
-import com.wso2mobile.mdm.services.RegisterSuccessfulActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -108,9 +107,6 @@ public class AgentSettingsActivity extends Activity {
 	    	}else if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(MainActivity.class.getSimpleName())){
 	    		Intent intent = new Intent(AgentSettingsActivity.this,MainActivity.class);
 	    		intent.putExtra("regid", REG_ID);
-	    		startActivity(intent);
-	    	}else if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessfulActivity.class.getSimpleName())){
-	    		Intent intent = new Intent(AgentSettingsActivity.this,RegisterSuccessfulActivity.class);
 	    		startActivity(intent);
 	    	}else{
 	    		finish();

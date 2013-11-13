@@ -1,4 +1,4 @@
-package com.wso2mobile.mdm.api;
+package com.wso2mobile.mdm.services;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,8 +10,11 @@ import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.wso2mobile.mdm.AlertActivity;
+import com.wso2mobile.mdm.api.ApplicationManager;
+import com.wso2mobile.mdm.api.DeviceInfo;
+import com.wso2mobile.mdm.api.PhoneState;
+import com.wso2mobile.mdm.api.WiFiConfig;
 import com.wso2mobile.mdm.models.PInfo;
-import com.wso2mobile.mdm.services.WSO2MobileDeviceAdminReceiver;
 import com.wso2mobile.mdm.utils.CommonUtilities;
 import com.wso2mobile.mdm.utils.ServerUtilities;
 
@@ -60,6 +63,9 @@ public class PolicyTester {
 			IS_ENFORCE = false;
 		}else if(type == POLICY_MONITOR_TYPE_ENFORCE_RETURN){
 			IS_ENFORCE = true;
+		}else{
+			IS_ENFORCE = false;
+			type = POLICY_MONITOR_TYPE_NO_ENFORCE_MESSAGE_RETURN;
 		}
 
 		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",

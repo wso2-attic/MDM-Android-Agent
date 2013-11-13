@@ -15,13 +15,10 @@
  */
 package com.wso2mobile.mdm.utils;
 
-import static com.wso2mobile.mdm.utils.CommonUtilities.SERVER_URL;
 import static com.wso2mobile.mdm.utils.CommonUtilities.TAG;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.wso2mobile.mdm.R;
-import com.wso2mobile.mdm.R.raw;
-import com.wso2mobile.mdm.R.string;
 import com.wso2mobile.mdm.api.DeviceInfo;
 
 import android.content.Context;
@@ -54,17 +51,24 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
-import javax.security.cert.CertificateException;
-import javax.security.cert.X509Certificate;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.os.*;
 
 /**
  * Helper class used to communicate with the demo server.
@@ -137,6 +141,30 @@ public final class ServerUtilities {
 		}
 	}
 	
+	public static HttpClient getNewHttpClient() {
+	     try {
+	         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+	         trustStore.load(null, null);
+
+	         SSLSocketFactory sf = new WSO2MobileSSLSocketFactory(trustStore);
+	         sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+
+	         HttpParams params = new BasicHttpParams();
+	         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+	         HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
+
+	         SchemeRegistry registry = new SchemeRegistry();
+	         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	         registry.register(new Scheme("https", sf, 443));
+
+	         ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+
+	         return new DefaultHttpClient(ccm, params);
+	     } catch (Exception e) {
+	         return new DefaultHttpClient();
+	     }
+	}
+	
 	public static Map<String, String> getRequest(String url, Context context){
 		HttpResponse response = null;
 		Map<String, String> response_params = new HashMap<String, String>();
@@ -149,10 +177,10 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-				endpoint = "http://"+ipSaved+":9763/mdm/api/"+ url;
+				endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 			}
 			
-		        HttpClient client = new DefaultHttpClient();
+		        HttpClient client = getNewHttpClient();
 		        HttpGet request = new HttpGet();
 		        request.setURI(new URI(endpoint));
 		        response = client.execute(request);
@@ -305,7 +333,7 @@ public final class ServerUtilities {
 	}
 	
 	public final static HostnameVerifier WSO2MOBILE_HOST = new HostnameVerifier() {
-		String[] allowHost = {"my.ultra.com", "your.ultra.com", "ours.ultra.com"}; 
+		String[] allowHost = {"192.168.18.57", "204.13.81.82", "ours.ultra.com"}; 
 		
 		public boolean verify(String hostname, SSLSession session) {
 			boolean status = false;
@@ -322,7 +350,7 @@ public final class ServerUtilities {
 		
 	};
 
-	public final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
+	final static HostnameVerifier DO_NOT_VERIFY = new HostnameVerifier() {
 		public boolean verify(String hostname, SSLSession session) {
 			return true;
 		}
@@ -339,7 +367,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "http://"+ipSaved+":9763/mdm/api/"+ epPostFix;
+			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
 		}
 		
 		URL url;
@@ -367,9 +395,9 @@ public final class ServerUtilities {
 		try {
 
 			if (url.getProtocol().toLowerCase().equals("https")) {
-
-				// trustAllHosts();
-				trustIFNetServer(context);
+				//trustIFNetServer(context);
+				//sConn.setHostnameVerifier(DO_NOT_VERIFY);
+				trustAllHosts();
 				sConn = (HttpsURLConnection) url.openConnection();
 				sConn.setHostnameVerifier(DO_NOT_VERIFY);
 				conn = sConn;
@@ -396,11 +424,11 @@ public final class ServerUtilities {
 				out.close();
 				// handle the response
 				status = conn.getResponseCode();
-				Log.v("Response Statussss", status + "");
+				Log.v("Response Status", status + "");
 				InputStream inStream = conn.getInputStream();
 				response = inputStreamAsString(inStream);
 				response_params.put("response",response);
-				Log.v("Response Messageeeee", response);
+				Log.v("Response Message", response);
 				response_params.put("status", String.valueOf(status));
 			} else {
 				status = Integer.valueOf(CommonUtilities.REQUEST_SUCCESSFUL);
@@ -456,7 +484,7 @@ public final class ServerUtilities {
 		X509TrustManager easyTrustManager = new X509TrustManager() {
 
 			public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
+				return new java.security.cert.X509Certificate[] {};
 			}
 
 			@Override
@@ -502,7 +530,7 @@ public final class ServerUtilities {
 		try {
 			while ((line = reader.readLine()) != null) {
 				builder.append(line);
-				builder.append("\n"); // appende a new line
+				builder.append("\n"); // append a new line
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

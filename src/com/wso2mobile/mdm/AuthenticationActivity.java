@@ -230,18 +230,21 @@ public class AuthenticationActivity extends SherlockActivity {
 		cancelButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SharedPreferences mainPref = AuthenticationActivity.this.getSharedPreferences("com.mdm",
+				SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
 						Context.MODE_PRIVATE);
 				Editor editor = mainPref.edit();
+				editor.putString("policy", "");
 				editor.putString("isAgreed", "0");
+				editor.putString("registered","0");	
+				editor.putString("ip","");
 				editor.commit();
-				finish();
-				/*
-				Intent intentIP = new Intent(Authentication.this,SettingsActivity.class);
-	    		intentIP.putExtra("from_activity_name", Authentication.class.getSimpleName());
+				//finish();
+				
+				Intent intentIP = new Intent(AuthenticationActivity.this,SettingsActivity.class);
+	    		intentIP.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
 	    		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 				startActivity(intentIP);
-				dialog.dismiss();*/
+				dialog.dismiss();
 			}
 		});
 		

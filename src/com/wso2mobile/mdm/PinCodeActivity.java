@@ -1,6 +1,5 @@
 package com.wso2mobile.mdm;
 
-import com.wso2mobile.mdm.services.RegisterSuccessfulActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -179,7 +178,7 @@ public class PinCodeActivity extends Activity {
 		editor.putString("pin", txtPin.getText().toString().trim());
 		editor.commit();
 
-		if(FROM_ACTIVITY != null && (FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName()) || FROM_ACTIVITY.equals(RegisterSuccessfulActivity.class.getSimpleName()))){
+		if(FROM_ACTIVITY != null && (FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName()))){
 			Toast.makeText(getApplicationContext(), "PIN Code changed successfully", Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(PinCodeActivity.this,AlreadyRegisteredActivity.class);
     		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
@@ -241,12 +240,6 @@ public class PinCodeActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
     		Intent intent = new Intent(PinCodeActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
-    		startActivity(intent);
-    		return true;
-	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(RegisterSuccessfulActivity.class.getSimpleName())) {
-    		Intent intent = new Intent(PinCodeActivity.this,RegisterSuccessfulActivity.class);
     		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
     		intent.putExtra("regid", REG_ID);
     		startActivity(intent);

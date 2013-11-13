@@ -43,5 +43,8 @@
     <string name="menu_item_pin">Change PIN</string>
     <string name="menu_item_ip">Change Server Address</string>
     <string name="title_activity_alert">Message from MDM</string>
-
+    
+    <!-- REGISTRATION -->
+    <string name="register_button_text">Register</string>
+	<string name="register_text_view_text_unregister">Device un-registration successful, click to re-register to the MDM</string>
 </resources>

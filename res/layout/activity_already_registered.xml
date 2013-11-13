@@ -86,6 +86,7 @@
   		<!-- Login Form Ends -->
 
 		  <TextView
+		      android:id="@+id/txtRegText"
 		      android:layout_width="wrap_content"
 		      android:layout_height="wrap_content"
 		      android:layout_below="@+id/layout_topbar"

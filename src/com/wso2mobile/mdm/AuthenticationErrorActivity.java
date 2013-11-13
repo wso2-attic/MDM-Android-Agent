@@ -16,7 +16,6 @@
 package com.wso2mobile.mdm;
 
 import com.google.android.gcm.GCMRegistrar;
-import com.wso2mobile.mdm.services.RegisterSuccessfulActivity;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -60,7 +59,7 @@ public class AuthenticationErrorActivity extends Activity {
 		
 		if(FROM_ACTIVITY.equals(MainActivity.class.getSimpleName())){
 			txtMsg.setText("Registration failed");
-		}else if(FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())||FROM_ACTIVITY.equals(RegisterSuccessfulActivity.class.getSimpleName())){
+		}else if(FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())){
 			txtMsg.setText("Unregistration failed");
 			btnTryAgain.setTag(TAG_BTN_UNREGISTER);
 		}
