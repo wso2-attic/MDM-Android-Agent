@@ -66,7 +66,7 @@ public class CommonUtilities {
         public static final int MESSAGE_MODE_GCM = 1;
         public static final int MESSAGE_MODE_SMS = 2;
         public static final String EULA_TITLE = "WSO2 License Agreement";
-        public static final String EULA_TEXT = "----ADD YOUR HOSTNAME HERE----";
+        public static final String EULA_TEXT = "----ADD LICENSE AGREEMENT HERE----";
     /**
      * Operation IDs
      */
