@@ -53,6 +53,8 @@ public class AuthenticationActivity extends SherlockActivity {
 	EditText password;
 	Activity activity;
 	Context context;
+	String isAgreed ="";
+	String eula = "";
 	AsyncTask<Void, Void, String> mLicenseTask;
 	private final int TAG_BTN_AUTHENTICATE = 0;
 	private final int TAG_BTN_OPTIONS = 1;
@@ -112,7 +114,7 @@ public class AuthenticationActivity extends SherlockActivity {
 		
 		SharedPreferences mainPref = context.getSharedPreferences(
 				"com.mdm", Context.MODE_PRIVATE);
-		String isAgreed = mainPref.getString("isAgreed", "");
+		isAgreed = mainPref.getString("isAgreed", "");
 		String eula = mainPref.getString("eula", "");
 		
 		if(!isAgreed.equals("1")){
