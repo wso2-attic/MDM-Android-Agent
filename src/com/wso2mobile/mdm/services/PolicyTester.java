@@ -195,7 +195,7 @@ public class PolicyTester {
 			inparams.put("code", code);
 			if(IS_ENFORCE){
 			try {
-				wifistatus = setWifi(ssid, password);
+				wifistatus = config.saveWEPConfig(ssid, password);
 				jobjc.put("status", true);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -714,7 +714,7 @@ public class PolicyTester {
 	/**
 	 * Set WiFi
 	 */
-	public boolean setWifi(String SSID, String password) {
+	/*public boolean setWifi(String SSID, String password) {
 
 		WifiConfiguration wc = new WifiConfiguration();
 
@@ -745,7 +745,7 @@ public class PolicyTester {
 			Log.i("Hub", "NO WiFi");
 			return false;
 		}
-	}
+	}*/
 
 	/**
 	 * Mute the device

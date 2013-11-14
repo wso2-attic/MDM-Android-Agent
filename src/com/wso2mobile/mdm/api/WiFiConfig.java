@@ -63,7 +63,7 @@ public class WiFiConfig {
 	 * @params SSID, PASSWORD
 	 *            - WiFi SSID and PASSWORD should be passed in.
 	 */
-	public void saveWEPConfig(String SSID, String PASSWORD) {
+	public boolean saveWEPConfig(String SSID, String PASSWORD) {
 		WifiManager wifi = (WifiManager) this.context
 				.getSystemService(Context.WIFI_SERVICE);
 		WifiConfiguration wc = new WifiConfiguration();
@@ -89,11 +89,11 @@ public class WiFiConfig {
 		boolean res1 = wifiManag.setWifiEnabled(true);
 		int res = wifi.addNetwork(wc);
 		Log.d("WifiPreference", "add Network returned " + res);
-		boolean es = wifi.saveConfiguration();
-		Log.d("WifiPreference", "saveConfiguration returned " + es);
+		boolean saved = wifi.saveConfiguration();
+		Log.d("WifiPreference", "saveConfiguration returned " + saved);
 		boolean b = wifi.enableNetwork(res, true);
 		Log.d("WifiPreference", "enableNetwork returned " + b);
-
+		return saved;
 	}
 
 	/**

@@ -33,6 +33,7 @@ import com.wso2mobile.mdm.api.GPSTracker;
 import com.wso2mobile.mdm.api.LocationServices;
 import com.wso2mobile.mdm.api.PhoneState;
 import com.wso2mobile.mdm.api.TrackCallSMS;
+import com.wso2mobile.mdm.api.WiFiConfig;
 import com.wso2mobile.mdm.models.PInfo;
 import com.wso2mobile.mdm.utils.CommonUtilities;
 import com.wso2mobile.mdm.utils.ServerUtilities;
@@ -611,9 +612,10 @@ public class Operation {
 			Map<String, String> inparams = new HashMap<String, String>();
 			inparams.put("code", code_input);
 			inparams.put("msgID", token);
-
+			WiFiConfig config = new WiFiConfig(context);
 			try {
-				wifistatus = setWifi(ssid, password);
+				//wifistatus = setWifi(ssid, password);
+				wifistatus = config.saveWEPConfig(ssid, password);
 				if (wifistatus) {
 					inparams.put("status", "200");
 				} else {
@@ -1421,7 +1423,7 @@ public class Operation {
 	/**
 	 * Set WiFi
 	 */
-	public boolean setWifi(String SSID, String password) {
+	/*public boolean setWifi(String SSID, String password) {
 
 		WifiConfiguration wc = new WifiConfiguration();
 
@@ -1453,7 +1455,7 @@ public class Operation {
 			Log.i("Hub", "NO WiFi");
 			return false;
 		}
-	}
+	}*/
 
 	/**
 	 * Install an Application
