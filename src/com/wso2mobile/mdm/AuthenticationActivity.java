@@ -12,7 +12,7 @@
  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
-*/
+ */
 package com.wso2mobile.mdm;
 
 import com.actionbarsherlock.app.SherlockActivity;
@@ -26,12 +26,14 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences.Editor;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -45,7 +47,7 @@ import android.widget.EditText;
 import com.actionbarsherlock.view.Menu;
 
 public class AuthenticationActivity extends SherlockActivity {
-	AsyncTask<Void, Void, Void> mRegisterTask ;
+	AsyncTask<Void, Void, Void> mRegisterTask;
 	String regId = "";
 	public static final String MDM_PREFERENCES_LOGIN = "Login";
 	Button authenticate;
@@ -53,130 +55,177 @@ public class AuthenticationActivity extends SherlockActivity {
 	EditText password;
 	Activity activity;
 	Context context;
-	String isAgreed ="";
+	String isAgreed = "";
 	String eula = "";
+	ProgressDialog progressDialog;
 	AsyncTask<Void, Void, String> mLicenseTask;
 	private final int TAG_BTN_AUTHENTICATE = 0;
 	private final int TAG_BTN_OPTIONS = 1;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_authentication);
 		getSupportActionBar().setDisplayShowCustomEnabled(true);
 		getSupportActionBar().setCustomView(R.layout.custom_sherlock_bar);
-		View homeIcon = findViewById(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.id.home : R.id.abs__home);
-		 ((View) homeIcon.getParent()).setVisibility(View.GONE);
-		 
+		View homeIcon = findViewById(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ? android.R.id.home
+				: R.id.abs__home);
+		((View) homeIcon.getParent()).setVisibility(View.GONE);
+
 		this.activity = AuthenticationActivity.this;
 		this.context = AuthenticationActivity.this;
-		username = (EditText)findViewById(R.id.editText1);
+		username = (EditText) findViewById(R.id.editText1);
 		password = (EditText) findViewById(R.id.editText2);
 		username.setFocusable(true);
 		username.requestFocus();
-		Log.v("check first username",username.getText().toString());
-		Log.v("check first password",password.getText().toString());
-		authenticate = (Button)findViewById(R.id.btnRegister);
+		Log.v("check first username", username.getText().toString());
+		Log.v("check first password", password.getText().toString());
+		AsyncTask<Void, Void, Void> mRegisterTask;
+		authenticate = (Button) findViewById(R.id.btnRegister);
 		authenticate.setEnabled(false);
 		authenticate.setTag(TAG_BTN_AUTHENTICATE);
 		authenticate.setOnClickListener(onClickListener_BUTTON_CLICKED);
-		 mLicenseTask = new AsyncTask<Void, Void, String>() {
 
-	            @Override
-	            protected String doInBackground(Void... params) {
-	              //  boolean registered = ServerUtilities.register(context, regId);
-	            	String response="";
-	            	try{
-	            		response =ServerUtilities.getEULA(context);
-	            	}catch(Exception e){
-	            		e.printStackTrace();
-	            	}
-	                return response;
-	            }
-
-	            @Override
-	            protected void onPostExecute(String result) {
-	            	Log.v("REG IDDDD",regId);
-	            	if(result != null){
-	            		SharedPreferences mainPref = AuthenticationActivity.this.getSharedPreferences("com.mdm",
-	    						Context.MODE_PRIVATE);
-	    				Editor editor = mainPref.edit();
-	    				editor.putString("eula", result);
-	    				editor.commit();
-	            	}
-	            	mLicenseTask = null;
-	            }
-
-	        };
-	       
-	       mLicenseTask.execute();
-	 
-		
-		
-		SharedPreferences mainPref = context.getSharedPreferences(
-				"com.mdm", Context.MODE_PRIVATE);
+		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+				Context.MODE_PRIVATE);
 		isAgreed = mainPref.getString("isAgreed", "");
 		String eula = mainPref.getString("eula", "");
-		
-		if(!isAgreed.equals("1")){
-			if(eula != null && eula !=""){
+
+		if (!isAgreed.equals("1")) {
+			if (eula != null && eula != "") {
 				showAlert(eula, CommonUtilities.EULA_TITLE);
-			}else{
-				showAlert(CommonUtilities.EULA_TEXT, CommonUtilities.EULA_TITLE);
+			} else {
+
+				mLicenseTask = new AsyncTask<Void, Void, String>() {
+
+					@Override
+					protected String doInBackground(Void... params) {
+						// boolean registered =
+						// ServerUtilities.register(context, regId);
+						String response = "";
+						try {
+							response = ServerUtilities.getEULA(context);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						return response;
+					}
+
+					/*
+					 * @Override protected void onPreExecute() { progressDialog=
+					 * ProgressDialog.show(AuthenticationActivity.this,
+					 * "Retrieving license agreement","Please wait", true);
+					 * progressDialog.setCancelable(true);
+					 * progressDialog.setOnCancelListener(cancelListener); //do
+					 * initialization of required objects objects here };
+					 */
+
+					/*
+					 * OnCancelListener cancelListener=new OnCancelListener(){
+					 * 
+					 * @Override public void onCancel(DialogInterface arg0){
+					 * showAlert(
+					 * "Could not connect to server please check your internet connection and try again"
+					 * , "Connection Error"); //finish(); } };
+					 */
+
+					@Override
+					protected void onPostExecute(String result) {
+						/*
+						 * Log.v("REG IDDDD",regId); if (progressDialog!=null &&
+						 * progressDialog.isShowing()){
+						 * progressDialog.dismiss(); }
+						 */
+						if (result != null) {
+							SharedPreferences mainPref = AuthenticationActivity.this
+									.getSharedPreferences("com.mdm",
+											Context.MODE_PRIVATE);
+							Editor editor = mainPref.edit();
+							editor.putString("eula", result);
+							editor.commit();
+
+							isAgreed = mainPref.getString("isAgreed", "");
+							String eula = mainPref.getString("eula", "");
+							if (!isAgreed.equals("1")) {
+								if (eula != null && eula != "") {
+									showAlert(eula, CommonUtilities.EULA_TITLE);
+								} else {
+									showErrorMessage(
+											"Could not connect to server please check your internet connection and try again",
+											"Connection Error");
+								}
+							}
+						} else {
+							showErrorMessage(
+									"Could not connect to server please check your internet connection and try again",
+									"Connection Error");
+						}
+						mLicenseTask = null;
+					}
+
+				};
+
+				mLicenseTask.execute();
 			}
 		}
 		DeviceInfo deviceInfo = new DeviceInfo(AuthenticationActivity.this);
-		
-		/*optionBtn = (ImageView) findViewById(R.id.option_button);	
-		optionBtn.setTag(TAG_BTN_OPTIONS);
-		optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);*/
-		
+
+		/*
+		 * optionBtn = (ImageView) findViewById(R.id.option_button);
+		 * optionBtn.setTag(TAG_BTN_OPTIONS);
+		 * optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);
+		 */
+
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("regid")){
+			if (extras.containsKey("regid")) {
 				regId = extras.getString("regid");
 			}
 		}
-		if(regId == null || regId.equals("")){
+		if (regId == null || regId.equals("")) {
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
-		
+
 		username.addTextChangedListener(new TextWatcher() {
-		      @Override
-		      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		      }
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
 
-		      @Override
-		      public void onTextChanged(CharSequence s, int start, int before, int count) {
-		    	  enableSubmitIfReady();
-		      }
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				enableSubmitIfReady();
+			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				 enableSubmitIfReady();
+				enableSubmitIfReady();
 			}
-		    });
-		
+		});
+
 		password.addTextChangedListener(new TextWatcher() {
-		      @Override
-		      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		      }
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
 
-		      @Override
-		      public void onTextChanged(CharSequence s, int start, int before, int count) {
-		    	  enableSubmitIfReady();
-		      }
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				enableSubmitIfReady();
+			}
 
 			@Override
 			public void afterTextChanged(Editable s) {
 				// TODO Auto-generated method stub
-				 enableSubmitIfReady();
+				enableSubmitIfReady();
 			}
-		    });
-		
-	
-    }
-	
+		});
+
+	}
+
 	OnClickListener onClickListener_BUTTON_CLICKED = new OnClickListener() {
 
 		@Override
@@ -192,7 +241,7 @@ public class AuthenticationActivity extends SherlockActivity {
 				break;
 
 			case TAG_BTN_OPTIONS:
-				//startOptionActivity();
+				// startOptionActivity();
 				break;
 			default:
 				break;
@@ -200,155 +249,200 @@ public class AuthenticationActivity extends SherlockActivity {
 
 		}
 	};
-	
-	public void showAlert(String message, String title){
+
+	public void showErrorMessage(String message, String title) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(message);
+		builder.setTitle(title);
+		builder.setCancelable(true);
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				cancelEntry();
+				dialog.dismiss();
+			}
+		});
+		/*
+		 * builder1.setNegativeButton("No", new
+		 * DialogInterface.OnClickListener() { public void
+		 * onClick(DialogInterface dialog, int id) { dialog.cancel(); } });
+		 */
+
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+
+	public void showAlert(String message, String title) {
 		final Dialog dialog = new Dialog(context);
 		dialog.setContentView(R.layout.custom_terms_popup);
 		dialog.setTitle(CommonUtilities.EULA_TITLE);
 		dialog.setCancelable(false);
-		//TextView text = (TextView) dialog.findViewById(R.id.text);
-		WebView web = (WebView)dialog.findViewById(R.id.webview);
-		String html = "<html><body>"+message+"</body></html>";
+		// TextView text = (TextView) dialog.findViewById(R.id.text);
+		WebView web = (WebView) dialog.findViewById(R.id.webview);
+		String html = "<html><body>" + message + "</body></html>";
 		String mime = "text/html";
 		String encoding = "utf-8";
 		web.getSettings().setJavaScriptEnabled(true);
 		web.loadDataWithBaseURL(null, html, mime, encoding, null);
-		//text.setText(message+ "/n/n" +message +"/n/n/n"+message);
+		// text.setText(message+ "/n/n" +message +"/n/n/n"+message);
 		Button dialogButton = (Button) dialog.findViewById(R.id.dialogButtonOK);
-		Button cancelButton = (Button) dialog.findViewById(R.id.dialogButtonCancel);
+		Button cancelButton = (Button) dialog
+				.findViewById(R.id.dialogButtonCancel);
 
 		dialogButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SharedPreferences mainPref = AuthenticationActivity.this.getSharedPreferences("com.mdm",
-						Context.MODE_PRIVATE);
+				SharedPreferences mainPref = AuthenticationActivity.this
+						.getSharedPreferences("com.mdm", Context.MODE_PRIVATE);
 				Editor editor = mainPref.edit();
 				editor.putString("isAgreed", "1");
 				editor.commit();
 				dialog.dismiss();
 			}
 		});
-		
+
 		cancelButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
-						Context.MODE_PRIVATE);
-				Editor editor = mainPref.edit();
-				editor.putString("policy", "");
-				editor.putString("isAgreed", "0");
-				editor.putString("registered","0");	
-				editor.putString("ip","");
-				editor.commit();
-				//finish();
-				
-				Intent intentIP = new Intent(AuthenticationActivity.this,SettingsActivity.class);
-	    		intentIP.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
-	    		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-				startActivity(intentIP);
+				cancelEntry();
 				dialog.dismiss();
 			}
 		});
-		
+
 		dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
 
-		    @Override
-		    public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-		        if (keyCode == KeyEvent.KEYCODE_SEARCH && event.getRepeatCount() == 0) {
-		            return true; 
-		        }else if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
-		        	 return true; 
-		        }
-		        return false; 
-		    }
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode,
+					KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_SEARCH
+						&& event.getRepeatCount() == 0) {
+					return true;
+				} else if (keyCode == KeyEvent.KEYCODE_BACK
+						&& event.getRepeatCount() == 0) {
+					return true;
+				}
+				return false;
+			}
 		});
 
 		dialog.show();
 	}
-	
-	public void startAuthentication(){
+
+	public void cancelEntry() {
+		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+				Context.MODE_PRIVATE);
+		Editor editor = mainPref.edit();
+		editor.putString("policy", "");
+		editor.putString("isAgreed", "0");
+		editor.putString("registered", "0");
+		editor.putString("ip", "");
+		editor.commit();
+		// finish();
+
+		Intent intentIP = new Intent(AuthenticationActivity.this,
+				SettingsActivity.class);
+		intentIP.putExtra("from_activity_name",
+				AuthenticationActivity.class.getSimpleName());
+		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intentIP);
+
+	}
+
+	public void startAuthentication() {
 		final Context context = AuthenticationActivity.this;
-        mRegisterTask = new AsyncTask<Void, Void, Void>() {
-        	boolean state=false;
-            @Override
-            protected Void doInBackground(Void... params) {
-            	state = ServerUtilities.isAuthenticate(username.getText().toString(), password.getText().toString(), AuthenticationActivity.this);
-                return null;
-            }
-            
-            ProgressDialog progressDialog;
-            //declare other objects as per your need
-            @Override
-            protected void onPreExecute()
-            {
-                progressDialog= ProgressDialog.show(AuthenticationActivity.this, "Authenticating","Please wait", true);
+		mRegisterTask = new AsyncTask<Void, Void, Void>() {
+			boolean state = false;
 
-                //do initialization of required objects objects here                
-            };    
+			@Override
+			protected Void doInBackground(Void... params) {
+				state = ServerUtilities.isAuthenticate(username.getText()
+						.toString(), password.getText().toString(),
+						AuthenticationActivity.this);
+				return null;
+			}
 
-           
-            protected void onPostExecute(Void result) {
-            	if (progressDialog!=null && progressDialog.isShowing()){
-            		progressDialog.dismiss();
-                }
-				if(state){
-					//String pin = null;
-					/*SharedPreferences mainPref = context.getSharedPreferences(
-							"com.mdm", Context.MODE_PRIVATE);
-					String pinSaved = mainPref.getString("pin", "");*/
-					//if(pinSaved!=null && !pinSaved.equals("")){
-						Intent intent = new Intent(AuthenticationActivity.this,PinCodeActivity.class);
-						intent.putExtra("regid", regId);
-						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						intent.putExtra("email", username.getText().toString());
-						startActivity(intent);
-					/*}else{
-						Intent intent = new Intent(Authentication.this, MainActivity.class);
-						intent.putExtra("regid", regId);
-						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						intent.putExtra("email", username.getText().toString());
-						startActivity(intent);
-					}*/
-				}else{
-					Intent intent = new Intent(AuthenticationActivity.this,AuthenticationErrorActivity.class);
-					intent.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
+			ProgressDialog progressDialog;
+
+			// declare other objects as per your need
+			@Override
+			protected void onPreExecute() {
+				progressDialog = ProgressDialog.show(
+						AuthenticationActivity.this, "Authenticating",
+						"Please wait", true);
+
+				// do initialization of required objects objects here
+			};
+
+			protected void onPostExecute(Void result) {
+				if (progressDialog != null && progressDialog.isShowing()) {
+					progressDialog.dismiss();
+				}
+				if (state) {
+					// String pin = null;
+					/*
+					 * SharedPreferences mainPref =
+					 * context.getSharedPreferences( "com.mdm",
+					 * Context.MODE_PRIVATE); String pinSaved =
+					 * mainPref.getString("pin", "");
+					 */
+					// if(pinSaved!=null && !pinSaved.equals("")){
+					Intent intent = new Intent(AuthenticationActivity.this,
+							PinCodeActivity.class);
+					intent.putExtra("regid", regId);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					intent.putExtra("email", username.getText().toString());
+					startActivity(intent);
+					/*
+					 * }else{ Intent intent = new Intent(Authentication.this,
+					 * MainActivity.class); intent.putExtra("regid", regId);
+					 * intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					 * intent.putExtra("email", username.getText().toString());
+					 * startActivity(intent); }
+					 */
+				} else {
+					Intent intent = new Intent(AuthenticationActivity.this,
+							AuthenticationErrorActivity.class);
+					intent.putExtra("from_activity_name",
+							AuthenticationActivity.class.getSimpleName());
 					intent.putExtra("regid", regId);
 					startActivity(intent);
 				}
-                mRegisterTask = null;
-                progressDialog.dismiss();
-            }
-		
-			/*protected Void doInBackground(Void... params) {
-				// TODO Auto-generated method stub
-				return null;
-			}*/
+				mRegisterTask = null;
+				progressDialog.dismiss();
+			}
 
-        };
-        mRegisterTask.execute(null, null, null);
+			/*
+			 * protected Void doInBackground(Void... params) { // TODO
+			 * Auto-generated method stub return null; }
+			 */
+
+		};
+		mRegisterTask.execute(null, null, null);
 	}
-	
-	public void startOptionActivity(){
-		Intent intent = new Intent(AuthenticationActivity.this,DisplayDeviceInfoActivity.class);
-		intent.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
+
+	public void startOptionActivity() {
+		Intent intent = new Intent(AuthenticationActivity.this,
+				DisplayDeviceInfoActivity.class);
+		intent.putExtra("from_activity_name",
+				AuthenticationActivity.class.getSimpleName());
 		intent.putExtra("regid", regId);
 		startActivity(intent);
 	}
-	
+
 	public void enableSubmitIfReady() {
 
-	    boolean isReady = false;
-	    
-	    if(username.getText().toString().length()>=3 && password.getText().toString().length()>=3){
-	    	isReady = true;
-	    }
+		boolean isReady = false;
 
-	    if (isReady) {
-	       authenticate.setEnabled(true);
-	   } else {
-		   authenticate.setEnabled(false);
-	    }
-	  }
+		if (username.getText().toString().length() >= 3
+				&& password.getText().toString().length() >= 3) {
+			isReady = true;
+		}
+
+		if (isReady) {
+			authenticate.setEnabled(true);
+		} else {
+			authenticate.setEnabled(false);
+		}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -356,45 +450,123 @@ public class AuthenticationActivity extends SherlockActivity {
 		getSupportMenuInflater().inflate(R.menu.auth_sherlock_menu, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-    	case R.id.ip_setting:
-    		SharedPreferences mainPref = AuthenticationActivity.this.getSharedPreferences("com.mdm",
-					Context.MODE_PRIVATE);
+		switch (item.getItemId()) {
+		case R.id.ip_setting:
+			SharedPreferences mainPref = AuthenticationActivity.this
+					.getSharedPreferences("com.mdm", Context.MODE_PRIVATE);
 			Editor editor = mainPref.edit();
 			editor.putString("ip", "");
 			editor.commit();
-			
-    		Intent intentIP = new Intent(AuthenticationActivity.this,SettingsActivity.class);
-    		intentIP.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
-    		intentIP.putExtra("regid", regId);
+
+			Intent intentIP = new Intent(AuthenticationActivity.this,
+					SettingsActivity.class);
+			intentIP.putExtra("from_activity_name",
+					AuthenticationActivity.class.getSimpleName());
+			intentIP.putExtra("regid", regId);
 			startActivity(intentIP);
 			return true;
-    	default:
-    		return super.onOptionsItemSelected(item);
-    	}
-    } 
-	
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) {
-	    	Intent i = new Intent();
-	    	i.setAction(Intent.ACTION_MAIN);
-	    	i.addCategory(Intent.CATEGORY_HOME);
-	    	this.startActivity(i);
-	        return true;
-	    }
-	    else if (keyCode == KeyEvent.KEYCODE_HOME) {
-	    	/*Intent i = new Intent();
-	    	i.setAction(Intent.ACTION_MAIN);
-	    	i.addCategory(Intent.CATEGORY_HOME);
-	    	this.startActivity(i);*/
-	    	this.finish();
-	        return true;
-	    }
-	    return super.onKeyDown(keyCode, event);
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			Intent i = new Intent();
+			i.setAction(Intent.ACTION_MAIN);
+			i.addCategory(Intent.CATEGORY_HOME);
+			this.startActivity(i);
+			return true;
+		} else if (keyCode == KeyEvent.KEYCODE_HOME) {
+			/*
+			 * Intent i = new Intent(); i.setAction(Intent.ACTION_MAIN);
+			 * i.addCategory(Intent.CATEGORY_HOME); this.startActivity(i);
+			 */
+			this.finish();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		mRegisterTask = new AsyncTask<Void, Void, Void>() {
+			boolean state = false;
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				try {
+					state = ServerUtilities.isRegistered(regId, context);
+				} catch (Exception e) {
+					e.printStackTrace();
+					// HandleNetworkError(e);
+					// Toast.makeText(getApplicationContext(), "No Connection",
+					// Toast.LENGTH_LONG).show();
+				}
+				return null;
+			}
+
+			// declare other objects as per your need
+			@Override
+			protected void onPreExecute() {
+				/*
+				 * progressDialog=
+				 * ProgressDialog.show(AuthenticationActivity.this,
+				 * "Checking Registration Info","Please wait", true);
+				 * progressDialog.setCancelable(true);
+				 * progressDialog.setOnCancelListener(cancelListener);
+				 */
+				// do initialization of required objects objects here
+			};
+
+			/*
+			 * OnCancelListener cancelListener=new OnCancelListener(){
+			 * 
+			 * @Override public void onCancel(DialogInterface arg0){
+			 * showErrorMessage(
+			 * "Could not connect to server please check your internet connection and try again"
+			 * , "Connection Error"); } };
+			 */
+
+			@Override
+			protected void onPostExecute(Void result) {
+				if (progressDialog != null && progressDialog.isShowing()) {
+					progressDialog.dismiss();
+				}
+				SharedPreferences mainPref = context.getSharedPreferences(
+						"com.mdm", Context.MODE_PRIVATE);
+				String success = mainPref.getString("registered", "");
+				if (success.trim().equals("1")) {
+					state = true;
+				}
+
+				if (state) {
+					Intent intent = new Intent(AuthenticationActivity.this,
+							AlreadyRegisteredActivity.class);
+					intent.putExtra("regid", regId);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(intent);
+					// finish();
+				} else {
+					if (progressDialog != null && progressDialog.isShowing()) {
+						progressDialog.dismiss();
+					}
+					// finish();
+				}
+				mRegisterTask = null;
+
+			}
+
+		};
+
+		mRegisterTask.execute(null, null, null);
+
+		super.onResume();
 	}
 
 }

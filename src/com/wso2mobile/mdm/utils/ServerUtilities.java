@@ -37,9 +37,15 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
@@ -52,17 +58,26 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
@@ -84,6 +99,10 @@ public final class ServerUtilities {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", username);
 		params.put("password", password);
+		
+		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("username", username)); 
+		params.add(new BasicNameValuePair("password", password)); */
 		String response = "";
 		try {
 			response = sendWithTimeWait("users/authenticate", params,
@@ -103,6 +122,10 @@ public final class ServerUtilities {
 		Map<String, String> params = new HashMap<String, String>();
 		Map<String, String> response = new HashMap<String, String>();
 		params.put("regid", regId);
+		
+		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("regid", regId)); */
+		
 		response = sendWithTimeWait("devices/isregistered", params,
 				"POST", context);
 		String status="";
@@ -141,27 +164,26 @@ public final class ServerUtilities {
 		}
 	}
 	
-	public static HttpClient getNewHttpClient() {
+	public static HttpClient getCertifiedHttpClient(Context context) {
 	     try {
-	         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-	         trustStore.load(null, null);
+	    	 KeyStore localTrustStore = KeyStore.getInstance("BKS");
+	    	 InputStream in = context.getResources().openRawResource(R.raw.mytruststore);
+	    	 localTrustStore.load(in, CommonUtilities.TRUSTSTORE_PASSWORD.toCharArray());
 
-	         SSLSocketFactory sf = new WSO2MobileSSLSocketFactory(trustStore);
-	         sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+	    	 SchemeRegistry schemeRegistry = new SchemeRegistry();
+	    	 schemeRegistry.register(new Scheme("http", PlainSocketFactory
+	    	                 .getSocketFactory(), 80));
+	    	 SSLSocketFactory sslSocketFactory = new SSLSocketFactory(localTrustStore);
+	    	 schemeRegistry.register(new Scheme("https", sslSocketFactory, 443));
+	    	 HttpParams params = new BasicHttpParams();
+	    	 ClientConnectionManager cm = 
+	    	     new ThreadSafeClientConnManager(params, schemeRegistry);
 
-	         HttpParams params = new BasicHttpParams();
-	         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-	         HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
-
-	         SchemeRegistry registry = new SchemeRegistry();
-	         registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	         registry.register(new Scheme("https", sf, 443));
-
-	         ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
-
-	         return new DefaultHttpClient(ccm, params);
+	    	 HttpClient client = new DefaultHttpClient(cm, params);
+	    	 return client;
 	     } catch (Exception e) {
-	         return new DefaultHttpClient();
+	    	 e.printStackTrace();
+	         return null;
 	     }
 	}
 	
@@ -177,10 +199,10 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-				endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+				endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 			}
-			
-		        HttpClient client = getNewHttpClient();
+
+		        HttpClient client = getCertifiedHttpClient(context);
 		        HttpGet request = new HttpGet();
 		        request.setURI(new URI(endpoint));
 		        response = client.execute(request);
@@ -232,7 +254,14 @@ public final class ServerUtilities {
 			// jsObject.put("sdkversion", deviceInfo.getSdkVersion());
 
 		
-
+		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("regid", regId));	
+		params.add(new BasicNameValuePair("properties", jsObject.toString()));	
+		params.add(new BasicNameValuePair("email", deviceInfo.getEmail()));	
+		params.add(new BasicNameValuePair("osversion", osVersion));	
+		params.add(new BasicNameValuePair("platform", "Android"));	
+		params.add(new BasicNameValuePair("vendor", deviceInfo.getDeviceManufacturer()));	*/
+		
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
 		params.put("properties", jsObject.toString());
@@ -262,6 +291,10 @@ public final class ServerUtilities {
 	public static boolean unregister(String regId, Context context) {
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
+		
+		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("regid", regId));	*/
+		
 		String response = "";
 		boolean state=false;
 		try{
@@ -279,10 +312,16 @@ public final class ServerUtilities {
 		return state;
 	}
 
-	public static String pushData(Map<String, String> params, Context context) {
+	public static String pushData(Map<String, String> params_in, Context context) {
 		String response="";
 		try{
-		response = sendWithTimeWait("notifications", params, "POST",
+		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+
+		for(Entry<String, String> entry : params_in.entrySet()){
+			params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));	
+		}*/
+		
+		response = sendWithTimeWait("notifications", params_in, "POST",
 				context).get("response");
 		
 		} catch (Exception e) {
@@ -291,16 +330,74 @@ public final class ServerUtilities {
 		}
 		return response;
 	}
+	
+	public static Map<String, String> postData(Context context, String url, Map<String, String> params) {
+	    // Create a new HttpClient and Post Header
+		Map<String, String> response_params = new HashMap<String, String>();
+	    HttpClient httpclient = getCertifiedHttpClient(context);
+
+	    String endpoint = CommonUtilities.SERVER_URL + url;
+		
+		SharedPreferences mainPref = context.getSharedPreferences(
+				"com.mdm", Context.MODE_PRIVATE);
+		String ipSaved = mainPref.getString("ip", "");
+		
+		if(ipSaved != null && ipSaved != ""){
+			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+		}
+		Log.v(TAG, "Posting '" + params.toString() + "' to " + endpoint);
+		StringBuilder bodyBuilder = new StringBuilder();
+		Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
+		// constructs the POST body using the parameters
+		while (iterator.hasNext()) {
+			Entry<String, String> param = iterator.next();
+			bodyBuilder.append(param.getKey()).append('=')
+					.append(param.getValue());
+			if (iterator.hasNext()) {
+				bodyBuilder.append('&');
+			}
+		}
+		
+		String body = bodyBuilder.toString();
+		Log.v(TAG, "Posting '" + body + "' to " + url);
+		byte[] postData = body.getBytes();
+		
+		HttpPost httppost = new HttpPost(endpoint);
+		httppost.setHeader("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+        httppost.setHeader("Accept", "*/*");
+        httppost.setHeader("User-Agent","Mozilla/5.0 ( compatible ), Android");
+		
+	    try {
+	        // Add your data
+	        httppost.setEntity(new ByteArrayEntity(postData));
+
+	        // Execute HTTP Post Request
+	        HttpResponse response = httpclient.execute(httppost);
+	        response_params.put("response",getResponseBody(response));
+			response_params.put("status", String.valueOf(response.getStatusLine().getStatusCode()));
+			return response_params;
+	    } catch (ClientProtocolException e) {
+	        // TODO Auto-generated catch block
+	    	e.printStackTrace();
+	    	return null;
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	    	e.printStackTrace();
+	    	return null;
+	    }
+	} 
 
 	public static Map<String, String> sendWithTimeWait(String epPostFix,
-		Map<String, String> params, String option, Context context) {
+			Map<String, String> params, String option, Context context) {
 		Map<String, String> response = null;
 		Map<String, String> responseFinal = null;
 		long backoff = BACKOFF_MILLI_SECONDS + random.nextInt(1000);
 		for (int i = 1; i <= MAX_ATTEMPTS; i++) {
 			Log.d(TAG, "Attempt #" + i + " to register");
 			try {
-				response = sendToServer(epPostFix, params, option, context);
+				//response = sendToServer(epPostFix, params, option, context);
+				
+				response = postData(context, epPostFix, params);
 				if (response != null && !response.equals(null)) {
 					responseFinal = response;
 				}
@@ -309,7 +406,7 @@ public final class ServerUtilities {
 				Log.v("Check Reg Success", message.toString());
 				// displayMessage(context, message);
 				return responseFinal;
-			} catch (IOException e) {
+			} catch (Exception e) {
 				Log.e(TAG, "Failed to register on attempt " + i, e);
 				if (i == MAX_ATTEMPTS) {
 					break;
@@ -367,7 +464,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
+			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
 		}
 		
 		URL url;
@@ -395,11 +492,10 @@ public final class ServerUtilities {
 		try {
 
 			if (url.getProtocol().toLowerCase().equals("https")) {
-				//trustIFNetServer(context);
-				//sConn.setHostnameVerifier(DO_NOT_VERIFY);
-				trustAllHosts();
+				//trustAllHosts();
 				sConn = (HttpsURLConnection) url.openConnection();
-				sConn.setHostnameVerifier(DO_NOT_VERIFY);
+				sConn = getTrustedConnection(context, sConn);
+				sConn.setHostnameVerifier(WSO2MOBILE_HOST);
 				conn = sConn;
 
 			} else {
@@ -447,38 +543,6 @@ public final class ServerUtilities {
 		return response_params;
 	}
 
-	private static void trustIFNetServer(Context context) {
-
-		try {
-			/*TrustManagerFactory tmf = TrustManagerFactory
-					.getInstance(TrustManagerFactory.getDefaultAlgorithm());*/
-			
-			TrustManagerFactory tmf = TrustManagerFactory
-					.getInstance("PKIX");
-			KeyStore ks = KeyStore.getInstance("BKS");
-
-			InputStream in = context.getResources().openRawResource(
-					R.raw.truststore);
-
-			String keyPassword = "";
-
-			ks.load(in, keyPassword.toCharArray());
-
-			in.close();
-
-			tmf.init(ks);
-
-			TrustManager[] tms = tmf.getTrustManagers();
-
-			SSLContext sc = SSLContext.getInstance("TLS");
-
-			sc.init(null, tms, new java.security.SecureRandom());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	private static void trustAllHosts() {
 
 		X509TrustManager easyTrustManager = new X509TrustManager() {
@@ -522,6 +586,57 @@ public final class ServerUtilities {
 		}
 	}
 
+	public static HttpsURLConnection getTrustedConnection(Context context,
+			HttpsURLConnection conn) {
+		HttpsURLConnection urlConnection = conn;
+		try {
+			KeyStore localTrustStore;
+
+			localTrustStore = KeyStore.getInstance("BKS");
+
+			InputStream in = context.getResources().openRawResource(
+					R.raw.mytruststore);
+
+			localTrustStore.load(in, CommonUtilities.TRUSTSTORE_PASSWORD.toCharArray());
+
+			TrustManagerFactory tmf;
+			tmf = TrustManagerFactory.getInstance(TrustManagerFactory
+					.getDefaultAlgorithm());
+
+			tmf.init(localTrustStore);
+
+			SSLContext sslCtx;
+
+			sslCtx = SSLContext.getInstance("TLS");
+
+			sslCtx.init(null, tmf.getTrustManagers(), null);
+
+			urlConnection.setSSLSocketFactory(sslCtx.getSocketFactory());
+			return urlConnection;
+		} catch (KeyManagementException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (CertificateException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return null;
+		} catch (KeyStoreException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			return null;
+		}
+
+	}
+
 	public static String inputStreamAsString(InputStream in) {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -543,6 +658,108 @@ public final class ServerUtilities {
 		}
 		// System.out.println(builder.toString());
 		return builder.toString();
+	}
+	
+	public static String getResponseBody(HttpResponse response) {
+
+	    String response_text = null;
+	    HttpEntity entity = null;
+	    try {
+	        entity = response.getEntity();
+	        response_text = _getResponseBody(entity);
+	    } catch (ParseException e) {
+	        e.printStackTrace();
+	    } catch (IOException e) {
+	        if (entity != null) {
+	            try {
+	                entity.consumeContent();
+	            } catch (IOException e1) {
+	            }
+	        }
+	    }
+	    return response_text;
+	}
+
+	public static String _getResponseBody(final HttpEntity entity) throws IOException, ParseException {
+
+	    if (entity == null) {
+	        throw new IllegalArgumentException("HTTP entity may not be null");
+	    }
+
+	    InputStream instream = entity.getContent();
+
+	    if (instream == null) {
+	        return "";
+	    }
+
+	    if (entity.getContentLength() > Integer.MAX_VALUE) {
+	        throw new IllegalArgumentException(
+
+	        "HTTP entity too large to be buffered in memory");
+	    }
+
+	    String charset = getContentCharSet(entity);
+
+	    if (charset == null) {
+
+	        charset = HTTP.DEFAULT_CONTENT_CHARSET;
+
+	    }
+
+	    Reader reader = new InputStreamReader(instream, charset);
+
+	    StringBuilder buffer = new StringBuilder();
+
+	    try {
+
+	        char[] tmp = new char[1024];
+
+	        int l;
+
+	        while ((l = reader.read(tmp)) != -1) {
+
+	            buffer.append(tmp, 0, l);
+
+	        }
+
+	    } finally {
+
+	        reader.close();
+
+	    }
+
+	    return buffer.toString();
+
+	}
+
+	public static String getContentCharSet(final HttpEntity entity) throws ParseException {
+
+	    if (entity == null) {
+	        throw new IllegalArgumentException("HTTP entity may not be null");
+	    }
+
+	    String charset = null;
+
+	    if (entity.getContentType() != null) {
+
+	        HeaderElement values[] = entity.getContentType().getElements();
+
+	        if (values.length > 0) {
+
+	            NameValuePair param = values[0].getParameterByName("charset");
+
+	            if (param != null) {
+
+	                charset = param.getValue();
+
+	            }
+
+	        }
+
+	    }
+
+	    return charset;
+
 	}
 
 }

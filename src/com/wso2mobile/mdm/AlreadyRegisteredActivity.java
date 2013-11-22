@@ -101,7 +101,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 	                    intent1.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN,
 	                                    demoDeviceAdmin);
 	                    intent1.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-	                                    "This will enable device administration");
+	                                    getResources().getString(R.string.device_admin_enable_alert));
 	                    startActivityForResult(intent1, ACTIVATION_REQUEST);
 	            }
 	            operation.executePolicy();
@@ -183,7 +183,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
             @Override
             protected void onPreExecute()
             {
-                progressDialog= ProgressDialog.show(AlreadyRegisteredActivity.this, "Unregistering Device","Please wait", true);
+                progressDialog= ProgressDialog.show(AlreadyRegisteredActivity.this, getResources().getString(R.string.dialog_message_unregistering),getResources().getString(R.string.dialog_message_please_wait), true);
 
                 //do initialization of required objects objects here                
             };    

@@ -231,11 +231,14 @@ public class PolicyTester {
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data);
+				
 				if (!jobj.isNull("function")
-						&& jobj.get("function").toString().equals("Enable")) {
+						&& jobj.get("function").toString()
+								.equalsIgnoreCase("enable")) {
 					camFunc = false;
 				} else if (!jobj.isNull("function")
-						&& jobj.get("function").toString().equals("Disable")) {
+						&& jobj.get("function").toString()
+								.equalsIgnoreCase("disable")) {
 					camFunc = true;
 				} else if (!jobj.isNull("function")) {
 					camFunc = Boolean.parseBoolean(jobj.get("function")
@@ -263,23 +266,36 @@ public class PolicyTester {
 			JSONObject jobj = new JSONObject();
 			try {
 				if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-					if(camFunc && devicePolicyManager.getCameraDisabled(cameraAdmin)){
-						jobj.put("status", true);
-					}else{
-						jobj.put("status", false);
-						if(usermessage!=null && usermessage!=""){
-							usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
+					if(!camFunc){
+						if(!devicePolicyManager.getCameraDisabled(cameraAdmin)){
+							jobj.put("status", true);
 						}else{
-							usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
+							jobj.put("status", false);
+							/*if(usermessage!=null && usermessage!=""){
+								usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
+							}else{
+								usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
+							}*/
+						}
+					}else{
+						if(devicePolicyManager.getCameraDisabled(cameraAdmin)){
+							jobj.put("status", true);
+						}else{
+							jobj.put("status", false);
+							if(usermessage!=null && usermessage!=""){
+								usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
+							}else{
+								usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
+							}
 						}
 					}
 				}else{
 					jobj.put("status", false);
-					if(usermessage!=null && usermessage!=""){
+					/*if(usermessage!=null && usermessage!=""){
 						usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
 					}else{
 						usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
-					}
+					}*/
 				}
 				jobj.put("code", code);
 				

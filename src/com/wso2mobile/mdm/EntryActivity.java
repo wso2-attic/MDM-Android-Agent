@@ -66,7 +66,7 @@ public class EntryActivity extends Activity {
         if((info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO) && !info.isRooted()){
         	accessFlag = true;
         }else{
-        	accessFlag = true;
+        	accessFlag = false;
         }
 		
         // Make sure the device has the proper dependencies.
@@ -242,7 +242,7 @@ public class EntryActivity extends Activity {
         if(accessFlag){
         	mRegisterTask.execute(null, null, null);
         }else{
-        	//Toast.makeText(getApplicationContext(), getString(R.string.device_not_compatible_error), Toast.LENGTH_LONG).show();
+        	showAlert(getString(R.string.device_not_compatible_error), "Authorization Faliure");
         }
         
         
@@ -309,7 +309,7 @@ public class EntryActivity extends Activity {
     @Override
     protected void onResume() {
     	// TODO Auto-generated method stub
-        mRegisterTask = new AsyncTask<Void, Void, Void>() {
+       /* mRegisterTask = new AsyncTask<Void, Void, Void>() {
         	boolean state = false;
             @Override
             protected Void doInBackground(Void... params) {
@@ -382,7 +382,7 @@ public class EntryActivity extends Activity {
             }
         }else{
         	//Toast.makeText(getApplicationContext(), getString(R.string.device_not_compatible_error), Toast.LENGTH_LONG).show();
-        }
+        }*/
     	super.onResume();
     }
     
@@ -394,7 +394,7 @@ public class EntryActivity extends Activity {
         builder.setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-            	finish();
+            	cancelEntry();
                 dialog.cancel();
             }
         });
@@ -409,7 +409,24 @@ public class EntryActivity extends Activity {
         alert.show();
 	}
 
-
+    public void cancelEntry(){
+		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+				Context.MODE_PRIVATE);
+		Editor editor = mainPref.edit();
+		editor.putString("policy", "");
+		editor.putString("isAgreed", "0");
+		editor.putString("registered","0");	
+		editor.putString("ip","");
+		editor.commit();
+		//finish();
+		
+		Intent intentIP = new Intent(EntryActivity.this,SettingsActivity.class);
+		intentIP.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
+		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intentIP);
+		
+	}
+    
     private final BroadcastReceiver mHandleMessageReceiver =
             new BroadcastReceiver() {
         @Override

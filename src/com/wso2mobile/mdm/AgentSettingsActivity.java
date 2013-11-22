@@ -35,7 +35,7 @@ import android.widget.AdapterView.OnItemClickListener;
 public class AgentSettingsActivity extends Activity {
 	private String FROM_ACTIVITY = null;
 	private String REG_ID = "";
-	static final String[] OP_NAME = new String[] { "Operations", "Phone Info", "Change PIN code", "Change IP address"};
+	private static String[] OP_NAME = null;
 	private ArrayAdapter<String> listAdapter ; 
 	
 	@Override
@@ -43,6 +43,7 @@ public class AgentSettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_agent_settings);
 		
+		OP_NAME = new String[] { getResources().getString(R.string.menu_item_operations), getResources().getString(R.string.menu_item_phone_info), getResources().getString(R.string.menu_item_change_pin), getResources().getString(R.string.menu_item_change_ip)};
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			if(extras.containsKey("from_activity_name")){

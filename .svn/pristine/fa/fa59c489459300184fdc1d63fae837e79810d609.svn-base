@@ -1,5 +1,0 @@
-package com.mdm;
-
-public final class Config {
-    public static GCMIntentService context = null;
-}
