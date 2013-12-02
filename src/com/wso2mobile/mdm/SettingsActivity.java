@@ -227,6 +227,7 @@ public class SettingsActivity extends Activity {
                 new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
+                mSenderIDTask.cancel(true);
             }
         });
         /*builder1.setNegativeButton("No",
@@ -248,3 +249,4 @@ public class SettingsActivity extends Activity {
 	}
 
 }
+
