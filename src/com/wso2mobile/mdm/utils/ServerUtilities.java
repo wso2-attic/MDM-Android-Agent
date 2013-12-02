@@ -19,6 +19,7 @@ import static com.wso2mobile.mdm.utils.CommonUtilities.TAG;
 
 import com.google.android.gcm.GCMRegistrar;
 import com.wso2mobile.mdm.R;
+import com.wso2mobile.mdm.SettingsActivity;
 import com.wso2mobile.mdm.api.DeviceInfo;
 
 import android.content.Context;
@@ -164,6 +165,28 @@ public final class ServerUtilities {
 		}
 	}
 	
+	public static String getSenderID(Context context) {
+		Map<String, String> params = new HashMap<String, String>();
+		Map<String, String> response = new HashMap<String, String>();
+		String res="";
+		params.put("", null);
+		response = getRequest("devices/sender_id", context);
+		String status = "";
+		try {
+			status = response.get("status");
+			Log.v("SENDER ID RESPONSE :", response.get("response"));
+			res =  response.get("response");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (status.trim().equals(CommonUtilities.REQUEST_SUCCESSFUL)) {
+			return res;
+			
+		} else {
+			return null;
+		}
+	}
+	
 	public static HttpClient getCertifiedHttpClient(Context context) {
 	     try {
 	    	 KeyStore localTrustStore = KeyStore.getInstance("BKS");
@@ -199,7 +222,7 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-				endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+				endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 			}
 
 		        HttpClient client = getCertifiedHttpClient(context);
@@ -244,13 +267,16 @@ public final class ServerUtilities {
 		String osVersion = "";
 		String response = "";
 		boolean state=false;
+		SharedPreferences mainPref = context.getSharedPreferences(context.getResources().getString(R.string.shared_pref_package),
+				Context.MODE_PRIVATE);
+		String type = mainPref.getString(context.getResources().getString(R.string.shared_pref_reg_type), "");
 		try {
 			osVersion = deviceInfo.getOsVersion();
 			jsObject.put("device", deviceInfo.getDevice());
 			jsObject.put("imei", deviceInfo.getDeviceId());
 			jsObject.put("imsi", deviceInfo.getIMSINumber());
 			jsObject.put("model", deviceInfo.getDeviceModel());
-			jsObject.put("email", deviceInfo.getEmail());
+			//jsObject.put("email", deviceInfo.getEmail());
 			// jsObject.put("sdkversion", deviceInfo.getSdkVersion());
 
 		
@@ -269,7 +295,7 @@ public final class ServerUtilities {
 		params.put("osversion", osVersion);
 		params.put("platform", "Android");
 		params.put("vendor", deviceInfo.getDeviceManufacturer());
-
+		params.put("type", type);
 		// Calls the function "sendTimeWait" to do a HTTP post to our server
 		// using Android HTTPUrlConnection API
 		response = sendWithTimeWait("devices/register", params, "POST",
@@ -343,7 +369,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 		}
 		Log.v(TAG, "Posting '" + params.toString() + "' to " + endpoint);
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -464,7 +490,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
+			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
 		}
 		
 		URL url;

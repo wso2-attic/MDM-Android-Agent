@@ -53,18 +53,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onRegistered(Context context, String registrationId) {
-        Log.i(TAG, "Device registered: regId = " + registrationId);
+    	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.i(TAG, "Device registered: regId = " + registrationId);}
        // displayMessage(context, getString(R.string.gcm_registered));
        // ServerUtilities.register(context, registrationId);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("regId", registrationId);
+        editor.putString(getResources().getString(R.string.shared_pref_regId), registrationId);
         editor.commit();
     }
 
     @Override
     protected void onUnregistered(Context context, String registrationId) {
-        Log.i(TAG, "Device unregistered");
+    	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.i(TAG, "Device unregistered");}
     //    displayMessage(context, getString(R.string.gcm_unregistered));
         if (GCMRegistrar.isRegisteredOnServer(context)) {
           //  ServerUtilities.unregister(context, registrationId);
@@ -72,13 +72,13 @@ public class GCMIntentService extends GCMBaseIntentService {
         } else {
             // This callback results from the call to unregister made on
             // ServerUtilities when the registration to the server failed.
-            Log.i(TAG, "Ignoring unregister callback");
+        	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.i(TAG, "Ignoring unregister callback");}
         }
     }
     
 	@Override
     protected void onMessage(Context context, Intent intent) {
-		String code = intent.getStringExtra("message").trim();
+		String code = intent.getStringExtra(getResources().getString(R.string.intent_extra_message)).trim();
         Config.context = this;
         //devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
     	processMsg = new ProcessMessage(Config.context, CommonUtilities.MESSAGE_MODE_GCM, intent);
@@ -89,7 +89,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     protected void onDeletedMessages(Context context, int total) {
-        Log.i(TAG, "Received deleted messages notification");
+    	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.i(TAG, "Received deleted messages notification");}
         String message = getString(R.string.gcm_deleted, total);
       //  displayMessage(context, message);
         // notifies user
@@ -98,14 +98,14 @@ public class GCMIntentService extends GCMBaseIntentService {
 
     @Override
     public void onError(Context context, String errorId) {
-        Log.i(TAG, "Received error: " + errorId);
+    	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.i(TAG, "Received error: " + errorId);}
       //  displayMessage(context, getString(R.string.gcm_error, errorId));
     }
 
     @Override
     protected boolean onRecoverableError(Context context, String errorId) {
         // log message
-        Log.i(TAG, "Received recoverable error: " + errorId);
+    	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.i(TAG, "Received recoverable error: " + errorId);}
      //   displayMessage(context, getString(R.string.gcm_recoverable_error,errorId));
         return super.onRecoverableError(context, errorId);
     }
@@ -121,7 +121,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         Notification notification = new Notification(icon, message, when);
         String title = context.getString(R.string.app_name);
         Intent notificationIntent = new Intent(context, NotifyActivity.class);
-        notificationIntent.putExtra("notification", message);
+        notificationIntent.putExtra(context.getResources().getString(R.string.intent_extra_notification), message);
         // set intent so it does not start a new activity
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);

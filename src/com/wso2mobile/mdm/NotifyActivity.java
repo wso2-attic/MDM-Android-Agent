@@ -34,7 +34,7 @@ public class NotifyActivity extends Activity {
 		setContentView(R.layout.notify);
 		TextView notifyTV = (TextView) findViewById(R.id.notify);
 		Intent intent = getIntent();
-		String notification  = intent.getStringExtra("notification");
+		String notification  = intent.getStringExtra(getResources().getString(R.string.intent_extra_notification));
 		notifyTV.setText(notification);
 		
 		

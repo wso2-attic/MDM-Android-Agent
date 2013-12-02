@@ -15,21 +15,15 @@
 */
 package com.wso2mobile.mdm;
 
-
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.telephony.SmsManager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
 public class AgentSettingsActivity extends Activity {
@@ -46,12 +40,12 @@ public class AgentSettingsActivity extends Activity {
 		OP_NAME = new String[] { getResources().getString(R.string.menu_item_operations), getResources().getString(R.string.menu_item_phone_info), getResources().getString(R.string.menu_item_change_pin), getResources().getString(R.string.menu_item_change_ip)};
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("from_activity_name")){
-				FROM_ACTIVITY = extras.getString("from_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
+				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
 			}
 			
-			if(extras.containsKey("regid")){
-				REG_ID = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
 		
@@ -66,24 +60,24 @@ public class AgentSettingsActivity extends Activity {
 			    // When clicked, show a toast with the TextView text
 				if(position == 0){
 					Intent intent = new Intent(AgentSettingsActivity.this,AvailableOperationsActivity.class);
-					intent.putExtra("from_activity_name", FROM_ACTIVITY);
-					intent.putExtra("regid", REG_ID);
+					intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), FROM_ACTIVITY);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 					startActivity(intent);
 				}else if(position == 1){
 					Intent intent = new Intent(AgentSettingsActivity.this,DisplayDeviceInfoActivity.class);
-					intent.putExtra("from_activity_name", FROM_ACTIVITY);
-					intent.putExtra("regid", REG_ID);
+					intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), FROM_ACTIVITY);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 					startActivity(intent);
 				}else if(position == 2){
 					Intent intent = new Intent(AgentSettingsActivity.this,PinCodeActivity.class);
-					intent.putExtra("from_activity_name", AgentSettingsActivity.class.getSimpleName());
-					intent.putExtra("main_activity_name", FROM_ACTIVITY);
-					intent.putExtra("regid", REG_ID);
+					intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), AgentSettingsActivity.class.getSimpleName());
+					intent.putExtra(getResources().getString(R.string.intent_extra_main_activity), FROM_ACTIVITY);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 					startActivity(intent);
 				}else if(position == 3){
 					Intent intent = new Intent(AgentSettingsActivity.this,SettingsActivity.class);
-					intent.putExtra("from_activity_name", FROM_ACTIVITY);
-					intent.putExtra("regid", REG_ID);
+					intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), FROM_ACTIVITY);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 					startActivity(intent);
 				}
 			}
@@ -99,15 +93,15 @@ public class AgentSettingsActivity extends Activity {
 	    	}
 	    	else if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AuthenticationActivity.class.getSimpleName())){
 	    		Intent intent = new Intent(AgentSettingsActivity.this,AuthenticationActivity.class);
-	    		intent.putExtra("regid", REG_ID);
+	    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 	    		startActivity(intent);
 	    	}else if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())){
 	    		Intent intent = new Intent(AgentSettingsActivity.this,AlreadyRegisteredActivity.class);
-	    		intent.putExtra("regid", REG_ID);
+	    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 	    		startActivity(intent);
 	    	}else if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(MainActivity.class.getSimpleName())){
 	    		Intent intent = new Intent(AgentSettingsActivity.this,MainActivity.class);
-	    		intent.putExtra("regid", REG_ID);
+	    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 	    		startActivity(intent);
 	    	}else{
 	    		finish();

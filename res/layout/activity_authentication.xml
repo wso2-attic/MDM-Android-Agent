@@ -10,40 +10,6 @@
       android:layout_height="wrap_content"
       android:background="#ffffff" >
 
-      <!-- Header  Starts -->
-
-	  <!-- <RelativeLayout android:id="@+id/layout_topbar"
-		android:orientation="vertical" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:layout_alignParentTop="true">
-      
-		<RelativeLayout style="@style/TitleBar" android:id="@+id/title_bar_layout"
-			android:layout_width="fill_parent" android:layout_height="@dimen/top_bar_height">
-
-			<ImageView
-			    android:id="@+id/logo"
-			    style="@style/TitleBarLogo"
-			    android:layout_centerVertical="true"
-			    android:layout_marginLeft="10dp"
-			    android:contentDescription="@string/string_content" />
-			
-			<ImageView
-			    android:id="@+id/option_button"
-			    style="@style/TitleBarOption"
-			    android:visibility="gone"
-			    android:layout_centerVertical="true"
-			    android:layout_alignParentRight="true"
-			    android:contentDescription="@string/string_content" />
-
-		</RelativeLayout>
-	 </RelativeLayout> -->
-	
-      <!-- Header Ends -->
-      <!-- Footer Start -->
-
-   
-      <!-- Footer Ends -->
-
-
       <!-- Login Form -->
 
       <LinearLayout
@@ -95,6 +61,14 @@
           
       </LinearLayout>
 
+      <TextView android:id="@+id/txtLoadingEULA"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerInParent="true"
+              android:textColor="@android:color/black"
+              android:visibility="gone"
+              android:text="Loading the license agreement, please wait..."/>
+      
       <!-- Login Form Ends -->
 
       <LinearLayout
@@ -108,7 +82,6 @@
           android:orientation="vertical"
           android:gravity="center" >
       </LinearLayout>
-
 
   </RelativeLayout>
 

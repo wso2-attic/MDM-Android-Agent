@@ -16,49 +16,63 @@
 package com.wso2mobile.mdm;
 
 import com.wso2mobile.mdm.utils.CommonUtilities;
+import com.wso2mobile.mdm.utils.ServerUtilities;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class SettingsActivity extends Activity {
 	TextView ip;
 	Button optionBtn;
+	RadioButton radioBYOD, radioCOPE;
 	private String FROM_ACTIVITY = null;
 	private String REG_ID = "";
 	Context context;
+	String deviceType, senderID=null;
+	AsyncTask<Void, Void, String> mSenderIDTask;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 		context = SettingsActivity.this;
 		Bundle extras = getIntent().getExtras();
+		deviceType = getResources().getString(R.string.device_enroll_type_byod);
 		if (extras != null) {
-			if(extras.containsKey("from_activity_name")){
-				FROM_ACTIVITY = extras.getString("from_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
+				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
 			}
 			
-			if(extras.containsKey("regid")){
-				REG_ID = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
 		
+		radioBYOD = (RadioButton)findViewById(R.id.radioBYOD);
+		radioCOPE = (RadioButton)findViewById(R.id.radioCOPE);
 		
 		ip = (TextView)findViewById(R.id.editText1);
 		SharedPreferences mainPref = context.getSharedPreferences(
-				"com.mdm", Context.MODE_PRIVATE);
-		String ipSaved = mainPref.getString("ip", "");
+				getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+		String ipSaved = mainPref.getString(getResources().getString(R.string.shared_pref_ip), "");
 		
 		if(ipSaved != null && ipSaved != ""){
 			ip.setText(ipSaved);
@@ -75,30 +89,49 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(!ip.getText().toString().trim().equals("")){
-					SharedPreferences mainPref = SettingsActivity.this.getSharedPreferences("com.mdm",
-							Context.MODE_PRIVATE);
-					Editor editor = mainPref.edit();
-					editor.putString("ip", ip.getText().toString().trim());
-					editor.commit();
-					
-					CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
-					Intent intent = new Intent(SettingsActivity.this,EntryActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    			startActivity(intent);	
+				if(radioBYOD.isChecked()){
+					deviceType = getResources().getString(R.string.device_enroll_type_byod);
 				}else{
-					Toast.makeText(context, "Please enter Server Address, i.e : www.abc.com", Toast.LENGTH_LONG).show();
+					deviceType = getResources().getString(R.string.device_enroll_type_cope);
 				}
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						SettingsActivity.this);
+				builder.setMessage(
+						getResources().getString(R.string.dialog_init_confirmation) + " "
+								+ ip.getText().toString() + " "
+								+ getResources().getString(R.string.dialog_init_middle) + " " + deviceType + " " + getResources().getString(R.string.dialog_init_end))
+						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 			}
 		});
 	}
+	
+	DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch (which) {
+			case DialogInterface.BUTTON_POSITIVE:
+				if(!ip.getText().toString().trim().equals("")){
+					getSenderID();
+					
+				}else{
+					Toast.makeText(context, getResources().getString(R.string.toast_message_enter_server_address), Toast.LENGTH_LONG).show();
+				}
+				break;
+
+			case DialogInterface.BUTTON_NEGATIVE:
+				dialog.dismiss();
+				break;
+			}
+		}
+	};
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
     		Intent intent = new Intent(SettingsActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", SettingsActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
+    		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), SettingsActivity.class.getSimpleName());
+    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
     		startActivity(intent);
     		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AuthenticationActivity.class.getSimpleName())) {
@@ -119,6 +152,58 @@ public class SettingsActivity extends Activity {
 	        return true;
 	    }
 	    return super.onKeyDown(keyCode, event);
+	}
+	
+	public void getSenderID(){
+		  mSenderIDTask = new AsyncTask<Void, Void, String>() {
+	            @Override
+	            protected String doInBackground(Void... params) {
+	            	String response = "";
+	            	try{
+	            		response =ServerUtilities.getSenderID(context);
+	            	}catch(Exception e){
+	            		e.printStackTrace();
+	            		//HandleNetworkError(e);
+	            		//Toast.makeText(getApplicationContext(), "No Connection", Toast.LENGTH_LONG).show();
+	            	}
+	                return response;
+	            }
+	            
+	            
+	            //declare other objects as per your need
+	            @Override
+	            protected void onPreExecute()
+	            {
+	                //do initialization of required objects objects here                
+	            };     
+
+	            
+	            @Override
+	            protected void onPostExecute(String result) {
+	            	if(result!=null && !result.equals("")){
+	            		CommonUtilities.setSENDER_ID(result);
+	            	}
+	            	SharedPreferences mainPref = context.getSharedPreferences(
+	            			getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+	            	Editor editor = mainPref.edit();
+	            	editor.putString(getResources().getString(R.string.shared_pref_sender_id), senderID);
+					editor.putString(getResources().getString(R.string.shared_pref_ip), ip.getText().toString().trim());
+					editor.putString(getResources().getString(R.string.shared_pref_reg_type), deviceType);
+					editor.commit();
+					
+					CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
+					Intent intent = new Intent(SettingsActivity.this,EntryActivity.class);
+					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	    			startActivity(intent);	
+	    			
+	                mSenderIDTask = null;
+	                
+	            }
+
+	        };
+	        
+	        mSenderIDTask.execute(null, null, null);
+	        	
 	}
 	
 	@Override

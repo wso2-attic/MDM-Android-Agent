@@ -40,12 +40,12 @@ public class AuthenticationErrorActivity extends Activity {
 		setContentView(R.layout.activity_authentication_error);
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("regid")){
-				regId = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				regId = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 			
-			if(extras.containsKey("from_activity_name")){
-				FROM_ACTIVITY = extras.getString("from_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
+				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
 			}
 		}
 		if(regId == null || regId.equals("")){
@@ -58,9 +58,9 @@ public class AuthenticationErrorActivity extends Activity {
 		btnTryAgain.setOnClickListener(onClickListener_BUTTON_CLICKED);
 		
 		if(FROM_ACTIVITY.equals(MainActivity.class.getSimpleName())){
-			txtMsg.setText("Registration failed");
+			txtMsg.setText(getResources().getString(R.string.error_registration_failed));
 		}else if(FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())){
-			txtMsg.setText("Unregistration failed");
+			txtMsg.setText(getResources().getString(R.string.error_unregistration_failed));
 			btnTryAgain.setTag(TAG_BTN_UNREGISTER);
 		}
 		
@@ -92,8 +92,8 @@ public class AuthenticationErrorActivity extends Activity {
 	
 	public void tryAgain(){
 		Intent intent = new Intent(AuthenticationErrorActivity.this,AuthenticationActivity.class);
-		intent.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
-		intent.putExtra("regid", regId);
+		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), AuthenticationActivity.class.getSimpleName());
+		intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
@@ -109,9 +109,9 @@ public class AuthenticationErrorActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK) {
 	    	Intent intent2 = new Intent(AuthenticationErrorActivity.this,AuthenticationActivity.class);
-	    	intent2.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
+	    	intent2.putExtra(getResources().getString(R.string.intent_extra_from_activity), AuthenticationActivity.class.getSimpleName());
 	    	intent2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	    	intent2.putExtra("regid", regId);
+	    	intent2.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			startActivity(intent2);
 	    	finish();
 	        return true;

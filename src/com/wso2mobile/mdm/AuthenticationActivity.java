@@ -33,7 +33,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.SharedPreferences.Editor;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -44,15 +43,17 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+
 import com.actionbarsherlock.view.Menu;
 
 public class AuthenticationActivity extends SherlockActivity {
 	AsyncTask<Void, Void, Void> mRegisterTask;
 	String regId = "";
-	public static final String MDM_PREFERENCES_LOGIN = "Login";
 	Button authenticate;
 	EditText username;
 	EditText password;
+	TextView txtLoadingEULA;
 	Activity activity;
 	Context context;
 	String isAgreed = "";
@@ -74,99 +75,126 @@ public class AuthenticationActivity extends SherlockActivity {
 
 		this.activity = AuthenticationActivity.this;
 		this.context = AuthenticationActivity.this;
+		txtLoadingEULA = (TextView)findViewById(R.id.txtLoadingEULA);
 		username = (EditText) findViewById(R.id.editText1);
 		password = (EditText) findViewById(R.id.editText2);
 		username.setFocusable(true);
 		username.requestFocus();
-		Log.v("check first username", username.getText().toString());
-		Log.v("check first password", password.getText().toString());
+		if(CommonUtilities.DEBUG_MODE_ENABLED){
+			Log.v("check first username", username.getText().toString());
+			Log.v("check first password", password.getText().toString());
+		}
 		AsyncTask<Void, Void, Void> mRegisterTask;
 		authenticate = (Button) findViewById(R.id.btnRegister);
 		authenticate.setEnabled(false);
 		authenticate.setTag(TAG_BTN_AUTHENTICATE);
 		authenticate.setOnClickListener(onClickListener_BUTTON_CLICKED);
 
-		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+		txtLoadingEULA.setVisibility(View.VISIBLE);
+		username.setVisibility(View.GONE);
+		password.setVisibility(View.GONE);
+		authenticate.setVisibility(View.GONE);
+		
+		SharedPreferences mainPref = context.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 				Context.MODE_PRIVATE);
-		isAgreed = mainPref.getString("isAgreed", "");
-		String eula = mainPref.getString("eula", "");
-
-		if (!isAgreed.equals("1")) {
-			if (eula != null && eula != "") {
-				showAlert(eula, CommonUtilities.EULA_TITLE);
-			} else {
-
-				mLicenseTask = new AsyncTask<Void, Void, String>() {
-
-					@Override
-					protected String doInBackground(Void... params) {
-						// boolean registered =
-						// ServerUtilities.register(context, regId);
-						String response = "";
-						try {
-							response = ServerUtilities.getEULA(context);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						return response;
-					}
-
-					/*
-					 * @Override protected void onPreExecute() { progressDialog=
-					 * ProgressDialog.show(AuthenticationActivity.this,
-					 * "Retrieving license agreement","Please wait", true);
-					 * progressDialog.setCancelable(true);
-					 * progressDialog.setOnCancelListener(cancelListener); //do
-					 * initialization of required objects objects here };
-					 */
-
-					/*
-					 * OnCancelListener cancelListener=new OnCancelListener(){
-					 * 
-					 * @Override public void onCancel(DialogInterface arg0){
-					 * showAlert(
-					 * "Could not connect to server please check your internet connection and try again"
-					 * , "Connection Error"); //finish(); } };
-					 */
-
-					@Override
-					protected void onPostExecute(String result) {
-						/*
-						 * Log.v("REG IDDDD",regId); if (progressDialog!=null &&
-						 * progressDialog.isShowing()){
-						 * progressDialog.dismiss(); }
-						 */
-						if (result != null) {
-							SharedPreferences mainPref = AuthenticationActivity.this
-									.getSharedPreferences("com.mdm",
-											Context.MODE_PRIVATE);
-							Editor editor = mainPref.edit();
-							editor.putString("eula", result);
-							editor.commit();
-
-							isAgreed = mainPref.getString("isAgreed", "");
-							String eula = mainPref.getString("eula", "");
-							if (!isAgreed.equals("1")) {
-								if (eula != null && eula != "") {
-									showAlert(eula, CommonUtilities.EULA_TITLE);
-								} else {
-									showErrorMessage(
-											"Could not connect to server please check your internet connection and try again",
-											"Connection Error");
-								}
+		isAgreed = mainPref.getString(getResources().getString(R.string.shared_pref_isagreed), "");
+		String eula = mainPref.getString(getResources().getString(R.string.shared_pref_eula), "");
+		String type = mainPref.getString(getResources().getString(R.string.shared_pref_reg_type), "");
+		
+		if(type.trim().equals(getResources().getString(R.string.device_enroll_type_byod))){
+			if (!isAgreed.equals("1")) {
+				username.setVisibility(View.GONE);
+				password.setVisibility(View.GONE);
+				authenticate.setVisibility(View.GONE);
+				txtLoadingEULA.setVisibility(View.VISIBLE);
+				if (eula != null && eula != "") {
+					showAlert(eula, CommonUtilities.EULA_TITLE);
+				} else {
+	
+					mLicenseTask = new AsyncTask<Void, Void, String>() {
+	
+						@Override
+						protected String doInBackground(Void... params) {
+							// boolean registered =
+							// ServerUtilities.register(context, regId);
+							String response = "";
+							try {
+								response = ServerUtilities.getEULA(context);
+							} catch (Exception e) {
+								e.printStackTrace();
 							}
-						} else {
-							showErrorMessage(
-									"Could not connect to server please check your internet connection and try again",
-									"Connection Error");
+							return response;
 						}
-						mLicenseTask = null;
-					}
-
-				};
-
-				mLicenseTask.execute();
+	
+						/*
+						 * @Override protected void onPreExecute() { progressDialog=
+						 * ProgressDialog.show(AuthenticationActivity.this,
+						 * "Retrieving license agreement","Please wait", true);
+						 * progressDialog.setCancelable(true);
+						 * progressDialog.setOnCancelListener(cancelListener); //do
+						 * initialization of required objects objects here };
+						 */
+	
+						/*
+						 * OnCancelListener cancelListener=new OnCancelListener(){
+						 * 
+						 * @Override public void onCancel(DialogInterface arg0){
+						 * showAlert(
+						 * "Could not connect to server please check your internet connection and try again"
+						 * , "Connection Error"); //finish(); } };
+						 */
+	
+						@Override
+						protected void onPostExecute(String result) {
+							/*
+							 * Log.v("REG IDDDD",regId); if (progressDialog!=null &&
+							 * progressDialog.isShowing()){
+							 * progressDialog.dismiss(); }
+							 */
+							if (result != null) {
+								SharedPreferences mainPref = AuthenticationActivity.this
+										.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
+												Context.MODE_PRIVATE);
+								Editor editor = mainPref.edit();
+								editor.putString(getResources().getString(R.string.shared_pref_eula), result);
+								editor.commit();
+	
+								isAgreed = mainPref.getString(getResources().getString(R.string.shared_pref_isagreed), "");
+								String eula = mainPref.getString(getResources().getString(R.string.shared_pref_eula), "");
+								if (!isAgreed.equals("1")) {
+									if (eula != null && eula != "") {
+										showAlert(eula, CommonUtilities.EULA_TITLE);
+									} else {
+										showErrorMessage(
+												getResources().getString(R.string.error_connect_to_server),
+												getResources().getString(R.string.error_heading_connection));
+									}
+								}
+							} else {
+								showErrorMessage(
+										getResources().getString(R.string.error_connect_to_server),
+										getResources().getString(R.string.error_heading_connection));
+							}
+							mLicenseTask = null;
+						}
+	
+					};
+	
+					mLicenseTask.execute();
+				}
+			}else{
+				username.setVisibility(View.VISIBLE);
+				username.requestFocus();
+				password.setVisibility(View.VISIBLE);
+				authenticate.setVisibility(View.VISIBLE);
+				txtLoadingEULA.setVisibility(View.GONE);
 			}
+		}else{
+			username.setVisibility(View.VISIBLE);
+			username.requestFocus();
+			password.setVisibility(View.VISIBLE);
+			authenticate.setVisibility(View.VISIBLE);
+			txtLoadingEULA.setVisibility(View.GONE);
 		}
 		DeviceInfo deviceInfo = new DeviceInfo(AuthenticationActivity.this);
 
@@ -178,8 +206,8 @@ public class AuthenticationActivity extends SherlockActivity {
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if (extras.containsKey("regid")) {
-				regId = extras.getString("regid");
+			if (extras.containsKey(getResources().getString(R.string.intent_extra_regid))) {
+				regId = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
 		if (regId == null || regId.equals("")) {
@@ -255,7 +283,7 @@ public class AuthenticationActivity extends SherlockActivity {
 		builder.setMessage(message);
 		builder.setTitle(title);
 		builder.setCancelable(true);
-		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		builder.setPositiveButton(getResources().getString(R.string.button_ok), new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int id) {
 				cancelEntry();
 				dialog.dismiss();
@@ -291,10 +319,15 @@ public class AuthenticationActivity extends SherlockActivity {
 		dialogButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				username.setVisibility(View.VISIBLE);
+				username.requestFocus();
+				password.setVisibility(View.VISIBLE);
+				authenticate.setVisibility(View.VISIBLE);
+				txtLoadingEULA.setVisibility(View.GONE);
 				SharedPreferences mainPref = AuthenticationActivity.this
-						.getSharedPreferences("com.mdm", Context.MODE_PRIVATE);
+						.getSharedPreferences(getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
 				Editor editor = mainPref.edit();
-				editor.putString("isAgreed", "1");
+				editor.putString(getResources().getString(R.string.shared_pref_isagreed), "1");
 				editor.commit();
 				dialog.dismiss();
 			}
@@ -328,19 +361,19 @@ public class AuthenticationActivity extends SherlockActivity {
 	}
 
 	public void cancelEntry() {
-		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+		SharedPreferences mainPref = context.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 				Context.MODE_PRIVATE);
 		Editor editor = mainPref.edit();
-		editor.putString("policy", "");
-		editor.putString("isAgreed", "0");
-		editor.putString("registered", "0");
-		editor.putString("ip", "");
+		editor.putString(getResources().getString(R.string.shared_pref_policy), "");
+		editor.putString(getResources().getString(R.string.shared_pref_isagreed), "0");
+		editor.putString(getResources().getString(R.string.shared_pref_registered), "0");
+		editor.putString(getResources().getString(R.string.shared_pref_ip), "");
 		editor.commit();
 		// finish();
 
 		Intent intentIP = new Intent(AuthenticationActivity.this,
 				SettingsActivity.class);
-		intentIP.putExtra("from_activity_name",
+		intentIP.putExtra(getResources().getString(R.string.intent_extra_from_activity),
 				AuthenticationActivity.class.getSimpleName());
 		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intentIP);
@@ -366,8 +399,8 @@ public class AuthenticationActivity extends SherlockActivity {
 			@Override
 			protected void onPreExecute() {
 				progressDialog = ProgressDialog.show(
-						AuthenticationActivity.this, "Authenticating",
-						"Please wait", true);
+						AuthenticationActivity.this, getResources().getString(R.string.dialog_authenticate),
+						getResources().getString(R.string.dialog_please_wait), true);
 
 				// do initialization of required objects objects here
 			};
@@ -387,9 +420,9 @@ public class AuthenticationActivity extends SherlockActivity {
 					// if(pinSaved!=null && !pinSaved.equals("")){
 					Intent intent = new Intent(AuthenticationActivity.this,
 							PinCodeActivity.class);
-					intent.putExtra("regid", regId);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra("email", username.getText().toString());
+					intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString());
 					startActivity(intent);
 					/*
 					 * }else{ Intent intent = new Intent(Authentication.this,
@@ -401,9 +434,9 @@ public class AuthenticationActivity extends SherlockActivity {
 				} else {
 					Intent intent = new Intent(AuthenticationActivity.this,
 							AuthenticationErrorActivity.class);
-					intent.putExtra("from_activity_name",
+					intent.putExtra(getResources().getString(R.string.intent_extra_from_activity),
 							AuthenticationActivity.class.getSimpleName());
-					intent.putExtra("regid", regId);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 					startActivity(intent);
 				}
 				mRegisterTask = null;
@@ -422,9 +455,9 @@ public class AuthenticationActivity extends SherlockActivity {
 	public void startOptionActivity() {
 		Intent intent = new Intent(AuthenticationActivity.this,
 				DisplayDeviceInfoActivity.class);
-		intent.putExtra("from_activity_name",
+		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity),
 				AuthenticationActivity.class.getSimpleName());
-		intent.putExtra("regid", regId);
+		intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 		startActivity(intent);
 	}
 
@@ -456,16 +489,16 @@ public class AuthenticationActivity extends SherlockActivity {
 		switch (item.getItemId()) {
 		case R.id.ip_setting:
 			SharedPreferences mainPref = AuthenticationActivity.this
-					.getSharedPreferences("com.mdm", Context.MODE_PRIVATE);
+					.getSharedPreferences(getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
 			Editor editor = mainPref.edit();
-			editor.putString("ip", "");
+			editor.putString(getResources().getString(R.string.shared_pref_ip), "");
 			editor.commit();
 
 			Intent intentIP = new Intent(AuthenticationActivity.this,
 					SettingsActivity.class);
-			intentIP.putExtra("from_activity_name",
+			intentIP.putExtra(getResources().getString(R.string.intent_extra_from_activity),
 					AuthenticationActivity.class.getSimpleName());
-			intentIP.putExtra("regid", regId);
+			intentIP.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			startActivity(intentIP);
 			return true;
 		default:
@@ -539,8 +572,8 @@ public class AuthenticationActivity extends SherlockActivity {
 					progressDialog.dismiss();
 				}
 				SharedPreferences mainPref = context.getSharedPreferences(
-						"com.mdm", Context.MODE_PRIVATE);
-				String success = mainPref.getString("registered", "");
+						getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+				String success = mainPref.getString(getResources().getString(R.string.shared_pref_registered), "");
 				if (success.trim().equals("1")) {
 					state = true;
 				}
@@ -548,7 +581,7 @@ public class AuthenticationActivity extends SherlockActivity {
 				if (state) {
 					Intent intent = new Intent(AuthenticationActivity.this,
 							AlreadyRegisteredActivity.class);
-					intent.putExtra("regid", regId);
+					intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 					startActivity(intent);
 					// finish();

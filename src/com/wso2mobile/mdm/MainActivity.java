@@ -14,15 +14,6 @@
  ~ limitations under the License.
 */
 package com.wso2mobile.mdm;
-
-
-
-import static com.wso2mobile.mdm.utils.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static com.wso2mobile.mdm.utils.CommonUtilities.EXTRA_MESSAGE;
-import static com.wso2mobile.mdm.utils.CommonUtilities.SENDER_ID;
-import static com.wso2mobile.mdm.utils.CommonUtilities.SERVER_URL;
-
-
 import com.google.android.gcm.GCMRegistrar;
 
 import com.wso2mobile.mdm.services.WSO2MobileDeviceAdminReceiver;
@@ -33,25 +24,19 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.admin.DevicePolicyManager;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends Activity {
 	 String regId = "";
@@ -81,21 +66,21 @@ public class MainActivity extends Activity {
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("regid")){
-				regId = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				regId = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 			
-			if(extras.containsKey("email")){
-				email = extras.getString("email");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_email))){
+				email = extras.getString(getResources().getString(R.string.intent_extra_email));
 			}
 		}
 		if(regId == null || regId.equals("")){
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
 		
-		SharedPreferences mainPref = this.getSharedPreferences( "com.mdm", Context.MODE_PRIVATE);
+		SharedPreferences mainPref = this.getSharedPreferences( getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
 		Editor editor = mainPref.edit();
-		editor.putString("username", email);
+		editor.putString(getResources().getString(R.string.shared_pref_username), email);
 		editor.commit();
 		
 		//Enroll automatically
@@ -119,7 +104,7 @@ public class MainActivity extends Activity {
 	        @Override
 	        protected void onPreExecute()
 	        {
-	            progressDialog= ProgressDialog.show(MainActivity.this, "Enrolling Device","Please wait", true);
+	            progressDialog= ProgressDialog.show(MainActivity.this, getResources().getString(R.string.dialog_enrolling),getResources().getString(R.string.dialog_please_wait), true);
 	
 	            //do initialization of required objects objects here                
 	        }; 
@@ -130,15 +115,15 @@ public class MainActivity extends Activity {
                 }
 	        	if(regState){
 	            	Intent intent = new Intent(MainActivity.this,AlreadyRegisteredActivity.class);
-	            	intent.putExtra("regid", regId);
-	            	intent.putExtra("freshRegFlag", true);
+	            	intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+	            	intent.putExtra(getResources().getString(R.string.intent_extra_fresh_reg_flag), true);
 	            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            	startActivity(intent);
 	            	//finish();
 	        	}else{
 	        		Intent intent = new Intent(MainActivity.this,AuthenticationErrorActivity.class);
-	            	intent.putExtra("regid", regId);
-	            	intent.putExtra("from_activity_name", MainActivity.class.getSimpleName());
+	            	intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+	            	intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), MainActivity.class.getSimpleName());
 	            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	            	startActivity(intent);
 	            	//finish();
@@ -184,7 +169,7 @@ public class MainActivity extends Activity {
 			        @Override
 			        protected void onPreExecute()
 			        {
-			            progressDialog= ProgressDialog.show(MainActivity.this, "Enrolling Device","Please wait", true);
+			            progressDialog= ProgressDialog.show(MainActivity.this, getResources().getString(R.string.dialog_enrolling),getResources().getString(R.string.dialog_please_wait), true);
 			
 			            //do initialization of required objects objects here                
 			        }; 
@@ -195,14 +180,14 @@ public class MainActivity extends Activity {
 		                }
 			        	if(regState){
 			            	Intent intent = new Intent(MainActivity.this,AlreadyRegisteredActivity.class);
-			            	intent.putExtra("regid", regId);
+			            	intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			            	startActivity(intent);
 			            	//finish();
 			        	}else{
 			        		Intent intent = new Intent(MainActivity.this,AuthenticationErrorActivity.class);
-			            	intent.putExtra("regid", regId);
-			            	intent.putExtra("from_activity_name", MainActivity.class.getSimpleName());
+			            	intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+			            	intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), MainActivity.class.getSimpleName());
 			            	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			            	startActivity(intent);
 			            	//finish();

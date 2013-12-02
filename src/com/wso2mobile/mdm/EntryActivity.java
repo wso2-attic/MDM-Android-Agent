@@ -46,6 +46,7 @@ public class EntryActivity extends Activity {
 	DeviceInfo info = null;
 	String regId = "";
 	boolean accessFlag = true;
+	boolean state = false;
 	TextView errorMessage;
 	Context context;
 	ProgressDialog progressDialog;
@@ -53,16 +54,13 @@ public class EntryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_entry);
+		Log.e("NEW SENDER ID : ", CommonUtilities.SENDER_ID);
 		checkNotNull(CommonUtilities.SERVER_URL, "SERVER_URL");
         checkNotNull(CommonUtilities.SENDER_ID, "SENDER_ID");
         info = new DeviceInfo(EntryActivity.this);
         
         context = EntryActivity.this;
         
-        /*TouchDownConfig touchdown = new TouchDownConfig(context);
-        touchdown.register();
-        touchdown.performConfiguration("sdsdsd", "sdsd", "sdsdsd", "sdsdsdsd", true);
-		touchdown.performPolicySet();*/
         if((info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO) && !info.isRooted()){
         	accessFlag = true;
         }else{
@@ -97,20 +95,20 @@ public class EntryActivity extends Activity {
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("regid")){
-				regId = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				regId = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
 		if(regId == null || regId.equals("")){
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
 
-        Log.v("REGIDDDDD",regId);
+		if(CommonUtilities.DEBUG_MODE_ENABLED){Log.v("REGIDDDDD",regId);}
         if (regId.equals("") || regId == null) {
             GCMRegistrar.register(context, CommonUtilities.SENDER_ID);
         } else {
             if (GCMRegistrar.isRegisteredOnServer(this)) {
-            	Log.v("Check is Register Func","isRegisteredOnServer");
+            	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.v("Check GCM is Registered Func","RegisteredOnServer");}
               //  mDisplay.append(getString(R.string.already_registered) + "\n");
             } else {
                 final Context context = this;
@@ -128,7 +126,7 @@ public class EntryActivity extends Activity {
 
                     @Override
                     protected void onPostExecute(Void result) {
-                    	Log.v("REG IDDDD",regId);
+                    	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.v("REG IDDDD",regId);}
                         mRegisterTask = null;
                     }
 
@@ -141,42 +139,8 @@ public class EntryActivity extends Activity {
             }
         }
         final Context context = this;
-        
-        mLicenseTask = new AsyncTask<Void, Void, String>() {
 
-            @Override
-            protected String doInBackground(Void... params) {
-              //  boolean registered = ServerUtilities.register(context, regId);
-            	String response="";
-            	try{
-            		response =ServerUtilities.getEULA(context);
-            	}catch(Exception e){
-            		e.printStackTrace();
-            	}
-                return response;
-            }
-
-            @Override
-            protected void onPostExecute(String result) {
-            	Log.v("REG IDDDD",regId);
-            	if(result != null){
-            		SharedPreferences mainPref = EntryActivity.this.getSharedPreferences("com.mdm",
-    						Context.MODE_PRIVATE);
-    				Editor editor = mainPref.edit();
-    				editor.putString("eula", result);
-    				editor.commit();
-            	}
-            	mLicenseTask = null;
-            }
-
-        };
-
-        mLicenseTask.execute();
-
-        
-        
         mRegisterTask = new AsyncTask<Void, Void, Void>() {
-        	boolean state = false;
             @Override
             protected Void doInBackground(Void... params) {
             	try{
@@ -193,7 +157,7 @@ public class EntryActivity extends Activity {
             @Override
             protected void onPreExecute()
             {
-                progressDialog= ProgressDialog.show(EntryActivity.this, "Checking Registration Info","Please wait", true);
+                progressDialog= ProgressDialog.show(EntryActivity.this, getResources().getString(R.string.dialog_checking_reg),getResources().getString(R.string.dialog_please_wait), true);
                 progressDialog.setCancelable(true);
                 progressDialog.setOnCancelListener(cancelListener);
                 //do initialization of required objects objects here                
@@ -202,7 +166,7 @@ public class EntryActivity extends Activity {
             OnCancelListener cancelListener=new OnCancelListener(){
                 @Override
                 public void onCancel(DialogInterface arg0){
-                	showAlert("Could not connect to server please check your internet connection and try again", "Connection Error");
+                	showAlert(getResources().getString(R.string.error_connect_to_server), getResources().getString(R.string.error_heading_connection));
                 }
             };
 
@@ -212,23 +176,52 @@ public class EntryActivity extends Activity {
             		progressDialog.dismiss();
                 }
             	SharedPreferences mainPref = context.getSharedPreferences(
-    					"com.mdm", Context.MODE_PRIVATE);
-    			String success = mainPref.getString("registered", "");
-    			if(success.trim().equals("1")){
+            			getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+    			String success = mainPref.getString(getResources().getString(R.string.shared_pref_registered), "");
+    			if(success.trim().equals(getResources().getString(R.string.shared_pref_reg_success))){
     				state = true;
     			}
     			
             	if(accessFlag){
 	            	if(state){
 	        			Intent intent = new Intent(EntryActivity.this,AlreadyRegisteredActivity.class);
-	        			intent.putExtra("regid", regId);
+	        			intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        			startActivity(intent);
 	        			//finish();
 	        		}else{
+	        			mLicenseTask = new AsyncTask<Void, Void, String>() {
+
+	        	            @Override
+	        	            protected String doInBackground(Void... params) {
+	        	              //  boolean registered = ServerUtilities.register(context, regId);
+	        	            	String response="";
+	        	            	try{
+	        	            		response =ServerUtilities.getEULA(context);
+	        	            	}catch(Exception e){
+	        	            		e.printStackTrace();
+	        	            	}
+	        	                return response;
+	        	            }
+
+	        	            @Override
+	        	            protected void onPostExecute(String result) {
+	        	            	if(CommonUtilities.DEBUG_MODE_ENABLED){Log.v("REG IDDDD",regId);}
+	        	            	if(result != null){
+	        	            		SharedPreferences mainPref = EntryActivity.this.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
+	        	    						Context.MODE_PRIVATE);
+	        	    				Editor editor = mainPref.edit();
+	        	    				editor.putString(getResources().getString(R.string.shared_pref_eula), result);
+	        	    				editor.commit();
+	        	            	}
+	        	            	mLicenseTask = null;
+	        	            }
+
+	        	        };
+
+	        	        mLicenseTask.execute();
 	        			Intent intent = new Intent(EntryActivity.this,AuthenticationActivity.class);
-	        			intent.putExtra("regid", regId);
-	        			Log.v("REGIDDDDD",regId);
+	        			intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	        			startActivity(intent);
 	        			//finish();
@@ -240,9 +233,16 @@ public class EntryActivity extends Activity {
 
         };
         if(accessFlag){
-        	mRegisterTask.execute(null, null, null);
+        	if(state){
+        		Intent intent = new Intent(EntryActivity.this,AlreadyRegisteredActivity.class);
+    			intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    			startActivity(intent);
+        	}else{
+        		mRegisterTask.execute(null, null, null);
+        	}
         }else{
-        	showAlert(getString(R.string.device_not_compatible_error), "Authorization Faliure");
+        	showAlert(getResources().getString(R.string.device_not_compatible_error), getResources().getString(R.string.error_authorization_failed));
         }
         
         
@@ -301,7 +301,7 @@ public class EntryActivity extends Activity {
             mRegisterTask.cancel(true);
         }
     	Intent intentIP = new Intent(EntryActivity.this,SettingsActivity.class);
-		intentIP.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
+		intentIP.putExtra(getResources().getString(R.string.intent_extra_from_activity), AuthenticationActivity.class.getSimpleName());
 		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intentIP);
     }
@@ -309,8 +309,7 @@ public class EntryActivity extends Activity {
     @Override
     protected void onResume() {
     	// TODO Auto-generated method stub
-       /* mRegisterTask = new AsyncTask<Void, Void, Void>() {
-        	boolean state = false;
+       mRegisterTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
             	try{
@@ -347,28 +346,12 @@ public class EntryActivity extends Activity {
             		progressDialog.dismiss();
                 }
             	SharedPreferences mainPref = context.getSharedPreferences(
-    					"com.mdm", Context.MODE_PRIVATE);
-    			String success = mainPref.getString("registered", "");
-    			if(success.trim().equals("1")){
+            			getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+    			String success = mainPref.getString(getResources().getString(R.string.shared_pref_registered), "");
+    			if(success.trim().equals(getResources().getString(R.string.shared_pref_reg_success))){
     				state = true;
     			}
     			
-            	if(accessFlag){
-	            	if(state){
-	        			Intent intent = new Intent(EntryActivity.this,AlreadyRegisteredActivity.class);
-	        			intent.putExtra("regid", regId);
-	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        			startActivity(intent);
-	        			//finish();
-	        		}else{
-	        			Intent intent = new Intent(EntryActivity.this,AuthenticationActivity.class);
-	        			intent.putExtra("regid", regId);
-	        			Log.v("REGIDDDDD",regId);
-	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	        			startActivity(intent);
-	        			//finish();
-	        		}
-            	}
                 mRegisterTask = null;
                 
             }
@@ -382,7 +365,7 @@ public class EntryActivity extends Activity {
             }
         }else{
         	//Toast.makeText(getApplicationContext(), getString(R.string.device_not_compatible_error), Toast.LENGTH_LONG).show();
-        }*/
+        }
     	super.onResume();
     }
     
@@ -391,7 +374,7 @@ public class EntryActivity extends Activity {
         builder.setMessage(message);
         builder.setTitle(title);
         builder.setCancelable(true);
-        builder.setPositiveButton("OK",
+        builder.setPositiveButton(getResources().getString(R.string.button_ok),
                 new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
             	cancelEntry();
@@ -410,18 +393,18 @@ public class EntryActivity extends Activity {
 	}
 
     public void cancelEntry(){
-		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+		SharedPreferences mainPref = context.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 				Context.MODE_PRIVATE);
 		Editor editor = mainPref.edit();
-		editor.putString("policy", "");
-		editor.putString("isAgreed", "0");
-		editor.putString("registered","0");	
-		editor.putString("ip","");
+		editor.putString(getResources().getString(R.string.shared_pref_policy), "");
+		editor.putString(getResources().getString(R.string.shared_pref_isagreed), "0");
+		editor.putString(getResources().getString(R.string.shared_pref_registered),"0");	
+		editor.putString(getResources().getString(R.string.shared_pref_ip),"");
 		editor.commit();
 		//finish();
 		
 		Intent intentIP = new Intent(EntryActivity.this,SettingsActivity.class);
-		intentIP.putExtra("from_activity_name", AuthenticationActivity.class.getSimpleName());
+		intentIP.putExtra(getResources().getString(R.string.intent_extra_from_activity), AuthenticationActivity.class.getSimpleName());
 		intentIP.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intentIP);
 		

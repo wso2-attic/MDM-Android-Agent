@@ -4,10 +4,8 @@ import com.wso2mobile.mdm.api.DeviceInfo;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
@@ -15,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class AvailableOperationsActivity extends Activity {
 	private String FROM_ACTIVITY = null;
@@ -31,12 +28,12 @@ public class AvailableOperationsActivity extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("from_activity_name")){
-				FROM_ACTIVITY = extras.getString("from_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
+				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
 			}
 			
-			if(extras.containsKey("regid")){
-				REG_ID = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
 		info = new DeviceInfo(AvailableOperationsActivity.this);
@@ -76,8 +73,8 @@ public class AvailableOperationsActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
     		Intent intent = new Intent(AvailableOperationsActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", AvailableOperationsActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
+    		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), AvailableOperationsActivity.class.getSimpleName());
+    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
     		startActivity(intent);
     		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK) {

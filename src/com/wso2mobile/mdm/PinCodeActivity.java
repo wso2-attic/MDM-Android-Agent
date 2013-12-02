@@ -38,20 +38,20 @@ public class PinCodeActivity extends Activity {
 
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if (extras.containsKey("email")) {
-				EMAIL = extras.getString("email");
+			if (extras.containsKey(getResources().getString(R.string.intent_extra_email))) {
+				EMAIL = extras.getString(getResources().getString(R.string.intent_extra_email));
 			}
 
-			if (extras.containsKey("regid")) {
-				REG_ID = extras.getString("regid");
+			if (extras.containsKey(getResources().getString(R.string.intent_extra_regid))) {
+				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 			
-			if(extras.containsKey("from_activity_name")){
-				FROM_ACTIVITY = extras.getString("from_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
+				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
 			}
 			
-			if(extras.containsKey("main_activity_name")){
-				MAIN_ACTIVITY = extras.getString("main_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_main_activity))){
+				MAIN_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_main_activity));
 			}
 		}
 		
@@ -66,7 +66,7 @@ public class PinCodeActivity extends Activity {
 		if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())){
 			lblPin.setVisibility(View.GONE);
 			txtOldPin.setVisibility(View.VISIBLE);
-			txtPin.setHint("New PIN Code");
+			txtPin.setHint(getResources().getString(R.string.hint_new_pin));
 			txtPin.setEnabled(false);
 			
 			txtPin.addTextChangedListener(new TextWatcher() {
@@ -142,11 +142,11 @@ public class PinCodeActivity extends Activity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						PinCodeActivity.this);
 				builder.setMessage(
-						"Are you sure you want to set "
-								+ txtPin.getText().toString()
-								+ " as your PIN code?")
-						.setPositiveButton("Yes", dialogClickListener)
-						.setNegativeButton("No", dialogClickListener).show();
+						getResources().getString(R.string.dialog_pin_confirmation)
+								+ " " +txtPin.getText().toString() + " " 
+								+ getResources().getString(R.string.dialog_pin_confirmation_end))
+						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 				break;
 			default:
 				break;
@@ -172,23 +172,23 @@ public class PinCodeActivity extends Activity {
 
 	public void savePin() {
 
-		SharedPreferences mainPref = this.getSharedPreferences("com.mdm",
+		SharedPreferences mainPref = this.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 				Context.MODE_PRIVATE);
 		Editor editor = mainPref.edit();
-		editor.putString("pin", txtPin.getText().toString().trim());
+		editor.putString(getResources().getString(R.string.shared_pref_pin), txtPin.getText().toString().trim());
 		editor.commit();
 
 		if(FROM_ACTIVITY != null && (FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName()))){
-			Toast.makeText(getApplicationContext(), "PIN Code changed successfully", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_message_pin_change_success), Toast.LENGTH_SHORT).show();
 			Intent intent = new Intent(PinCodeActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
+    		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), PinCodeActivity.class.getSimpleName());
+    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
     		startActivity(intent);
 		}else{
 			Intent intent = new Intent(PinCodeActivity.this, MainActivity.class);
-			intent.putExtra("regid", REG_ID);
+			intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			intent.putExtra("email", EMAIL);
+			intent.putExtra(getResources().getString(R.string.intent_extra_email), EMAIL);
 			startActivity(intent);
 		}
 	}
@@ -211,9 +211,9 @@ public class PinCodeActivity extends Activity {
 	public void enableNewPINSubmitIfReady() {
 
 		boolean isReady = false;
-		SharedPreferences mainPref = this.getSharedPreferences("com.mdm",
+		SharedPreferences mainPref = this.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 				Context.MODE_PRIVATE);
-		String pin = mainPref.getString("pin", "");
+		String pin = mainPref.getString(getResources().getString(R.string.shared_pref_pin), "");
 		if(txtOldPin.getText().toString().trim().length() >= 4 && txtOldPin.getText().toString().trim().equals(pin.trim())){
 			txtPin.setEnabled(true);
 		}else{
@@ -225,7 +225,7 @@ public class PinCodeActivity extends Activity {
 				isReady = true;
 			}else{
 				isReady = false;
-				Toast.makeText(getApplicationContext(), "Old pincode you entered is wrong, please try again", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_message_pin_change_failed), Toast.LENGTH_SHORT).show();
 			}
 		}
 		
@@ -240,8 +240,8 @@ public class PinCodeActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
     		Intent intent = new Intent(PinCodeActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", PinCodeActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
+    		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), PinCodeActivity.class.getSimpleName());
+    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
     		startActivity(intent);
     		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK) {

@@ -24,10 +24,13 @@ import android.content.SharedPreferences;
  * app.
  */
 public class CommonUtilities {
-
-    public static String SERVER_IP = "----ADD YOUR HOSTNAME HERE----"; 
-    public static String SERVER_PORT = "9443";
-    public static String SERVER_URL = "https://"+SERVER_IP+":"+SERVER_PORT+"/mdm/api/";
+	public static boolean DEBUG_MODE_ENABLED = true;
+    /**
+     * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
+     */
+	public static String SERVER_IP = "----ADD YOUR HOSTNAME HERE----";
+	public static String SERVER_PORT = "9443";
+	public static String SERVER_URL = "http://"+SERVER_IP+":"+SERVER_PORT+"/mdm/api/";
     
     public static String getSERVER_URL() {
 		return SERVER_URL;
@@ -42,8 +45,17 @@ public class CommonUtilities {
      * Google API project id registered to use GCM.
      */
 
-	public static final String SENDER_ID = "----ADD YOUR SENDER ID HERE----";
-    /**
+	public static String SENDER_ID = "----ADD YOUR SENDER ID HERE----";
+	
+    public static String getSENDER_ID() {
+		return SENDER_ID;
+	}
+
+	public static void setSENDER_ID(String sENDER_ID) {
+		SENDER_ID = sENDER_ID;
+	}
+
+	/**
      * Tag used on log messages.
      */
 	public static final String TAG = "WSO2MobileMDM";

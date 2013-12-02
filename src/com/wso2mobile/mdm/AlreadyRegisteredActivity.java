@@ -28,7 +28,6 @@ import com.wso2mobile.mdm.utils.ServerUtilities;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
@@ -37,13 +36,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.view.KeyEvent;
-//import android.view.Menu;
-//import android.view.MenuInflater;
-//import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.actionbarsherlock.view.Menu;
@@ -80,12 +75,12 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("regid")){
-				regId = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				regId = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 			
-			if(extras.containsKey("freshRegFlag")){
-				freshRegFlag = extras.getBoolean("freshRegFlag");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_fresh_reg_flag))){
+				freshRegFlag = extras.getBoolean(getResources().getString(R.string.intent_extra_fresh_reg_flag));
 			}
 			
 		}
@@ -117,10 +112,10 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 		
 		 try {
 			 if(freshRegFlag){
-	             SharedPreferences mainPref = AlreadyRegisteredActivity.this.getSharedPreferences("com.mdm",
+	             SharedPreferences mainPref = AlreadyRegisteredActivity.this.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 	                             Context.MODE_PRIVATE);
 	             Editor editor = mainPref.edit();
-	             editor.putString("registered","1");
+	             editor.putString(getResources().getString(R.string.shared_pref_registered),"1");
 	             editor.commit();
 			 }
              
@@ -153,7 +148,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 				break;
 			case TAG_BTN_RE_REGISTER:
 				Intent intent = new Intent(AlreadyRegisteredActivity.this,EntryActivity.class);
-            	intent.putExtra("regid", regId);
+            	intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
             	startActivity(intent);
             	finish();
 				break;
@@ -172,7 +167,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
             @Override
             protected Void doInBackground(Void... params) {
             	 Map<String, String> paramss = new HashMap<String, String>();
-                 paramss.put("regid", regId);
+                 paramss.put(getResources().getString(R.string.intent_extra_regid), regId);
             	//ServerUtilities.sendToServer(context, "/UNRegister", paramss);
                  unregState=ServerUtilities.unregister(regId, context);
                 return null;
@@ -204,13 +199,13 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
             		
             		devicePolicyManager.removeActiveAdmin(demoDeviceAdmin);
 	            	try {
-	        			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+	        			SharedPreferences mainPref = context.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
 	        					Context.MODE_PRIVATE);
 	        			Editor editor = mainPref.edit();
-	        			editor.putString("policy", "");
-	        			editor.putString("isAgreed", "0");
-	        			editor.putString("registered","0");	
-	        			editor.putString("ip","");
+	        			editor.putString(getResources().getString(R.string.shared_pref_policy), "");
+	        			editor.putString(getResources().getString(R.string.shared_pref_isagreed), "0");
+	        			editor.putString(getResources().getString(R.string.shared_pref_registered),"0");	
+	        			editor.putString(getResources().getString(R.string.shared_pref_ip),"");
 	        			editor.commit();
 	        		} catch (Exception e) {
 	        			// TODO Auto-generated catch block
@@ -218,8 +213,8 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 	        		}
             	}else{
             		Intent intent = new Intent(AlreadyRegisteredActivity.this,AuthenticationErrorActivity.class);
-	            	intent.putExtra("regid", regId);
-	            	intent.putExtra("from_activity_name", AlreadyRegisteredActivity.class.getSimpleName());
+	            	intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+	            	intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), AlreadyRegisteredActivity.class.getSimpleName());
 	            	startActivity(intent);
             	}
                 mRegisterTask = null;
@@ -233,8 +228,8 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 
 	public void startOptionActivity(){
 		Intent intent = new Intent(AlreadyRegisteredActivity.this,AgentSettingsActivity.class);
-		intent.putExtra("from_activity_name", AlreadyRegisteredActivity.class.getSimpleName());
-		intent.putExtra("regid", regId);
+		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), AlreadyRegisteredActivity.class.getSimpleName());
+		intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 		startActivity(intent);
 	}
 	
@@ -248,32 +243,32 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
     	switch (item.getItemId()) {
     	case R.id.operation_setting:
     		Intent intentOP = new Intent(AlreadyRegisteredActivity.this,AvailableOperationsActivity.class);
-    		intentOP.putExtra("from_activity_name", AlreadyRegisteredActivity.class.getSimpleName());
-    		intentOP.putExtra("regid", regId);
+    		intentOP.putExtra(getResources().getString(R.string.intent_extra_from_activity), AlreadyRegisteredActivity.class.getSimpleName());
+    		intentOP.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			startActivity(intentOP);
     		return true;
     	case R.id.info_setting:
     		Intent intentIN = new Intent(AlreadyRegisteredActivity.this,DisplayDeviceInfoActivity.class);
-    		intentIN.putExtra("from_activity_name", AlreadyRegisteredActivity.class.getSimpleName());
-    		intentIN.putExtra("regid", regId);
+    		intentIN.putExtra(getResources().getString(R.string.intent_extra_from_activity), AlreadyRegisteredActivity.class.getSimpleName());
+    		intentIN.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			startActivity(intentIN);
 			return true;
     	case R.id.pin_setting:
     		Intent intentPIN = new Intent(AlreadyRegisteredActivity.this,PinCodeActivity.class);
-    		intentPIN.putExtra("from_activity_name", AlreadyRegisteredActivity.class.getSimpleName());
-			intentPIN.putExtra("regid", regId);
+    		intentPIN.putExtra(getResources().getString(R.string.intent_extra_from_activity), AlreadyRegisteredActivity.class.getSimpleName());
+			intentPIN.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			startActivity(intentPIN);
 			return true;
     	case R.id.ip_setting:
     		SharedPreferences mainPref = AlreadyRegisteredActivity.this.getSharedPreferences("com.mdm",
 					Context.MODE_PRIVATE);
 			Editor editor = mainPref.edit();
-			editor.putString("ip", "");
+			editor.putString(getResources().getString(R.string.shared_pref_ip), "");
 			editor.commit();
 			
     		Intent intentIP = new Intent(AlreadyRegisteredActivity.this,SettingsActivity.class);
-    		intentIP.putExtra("from_activity_name", AlreadyRegisteredActivity.class.getSimpleName());
-    		intentIP.putExtra("regid", regId);
+    		intentIP.putExtra(getResources().getString(R.string.intent_extra_from_activity), AlreadyRegisteredActivity.class.getSimpleName());
+    		intentIP.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 			startActivity(intentIP);
 			return true;
     	default:

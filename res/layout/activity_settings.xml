@@ -95,6 +95,7 @@
 	    android:layout_width="wrap_content"
 	    android:layout_below="@+id/linearLayout1"
 	    android:layout_marginLeft="10dp"
+	    android:layout_marginRight="10dp"
 	    android:layout_height="wrap_content"
 	    android:layout_marginBottom="20dp"
 	    android:gravity="center"
@@ -113,6 +114,32 @@
           android:inputType="numberDecimal|textPassword" >
 
       </EditText>
+      
+       <RadioGroup
+	        android:id="@+id/radioGroupType"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp"
+	        android:layout_below="@+id/editText1" >
+	          <RadioButton
+		          android:id="@+id/radioBYOD"
+		          android:layout_width="wrap_content"
+		          android:layout_height="wrap_content"
+		          android:layout_margin="5dp"
+		   		  android:checked="true"
+		   		  android:button="@drawable/custom_checkbox"
+		          android:textColor="@android:color/black"
+		          android:text="BYOD (This device is my own device)" />
+	
+		      <RadioButton
+		          android:id="@+id/radioCOPE"
+		          android:layout_width="wrap_content"
+		          android:layout_height="wrap_content"
+		          android:layout_margin="5dp"
+		          android:button="@drawable/custom_checkbox"
+		          android:textColor="@android:color/black"
+		          android:text="COPE (This device is coperate owned)" />
+	  </RadioGroup>
 
       <Button
           android:id="@+id/button1"
@@ -122,7 +149,7 @@
           android:layout_centerHorizontal="true"
           style="@style/ButtonText"
           android:background="@drawable/btn_orange"
-          android:layout_below="@+id/editText1"
+          android:layout_below="@+id/radioGroupType"
           android:text="Start Registration" />
 
   </RelativeLayout>

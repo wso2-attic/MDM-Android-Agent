@@ -27,6 +27,7 @@ import java.util.List;
 import com.wso2mobile.mdm.R;
 import com.wso2mobile.mdm.R.drawable;
 import com.wso2mobile.mdm.models.PInfo;
+import com.wso2mobile.mdm.utils.CommonUtilities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -149,8 +150,8 @@ public class ApplicationManager {
 														// Uninstall.
 	{
 		// Uri packageURI = Uri.parse("package:com.CheckInstallApp");
-		if (!packageName.contains("package:")) {
-			packageName = "package:" + packageName;
+		if (!packageName.contains(context.getResources().getString(R.string.application_package_prefix))) {
+			packageName = context.getResources().getString(R.string.application_package_prefix) + packageName;
 		}
 		Uri packageURI = Uri.parse(packageName.toString());
 		Intent uninstallIntent = new Intent(Intent.ACTION_DELETE, packageURI);
@@ -177,7 +178,7 @@ public class ApplicationManager {
 		                    Intent.ShortcutIconResource.fromContext(
 		                            context,
 		                            R.drawable.ic_bookmark));
-		  in.setAction("com.android.launcher.action.INSTALL_SHORTCUT"); 
+		  in.setAction(context.getResources().getString(R.string.application_package_launcher_action)); 
 		//or   in.setAction(Intent.ACTION_CREATE_SHORTCUT); 
 
 		  context.sendBroadcast(in);
@@ -201,15 +202,15 @@ public class ApplicationManager {
 			try {
 				URL url = new URL(arg0[0]);
 				HttpURLConnection c = (HttpURLConnection) url.openConnection();
-				c.setRequestMethod("GET");
+				c.setRequestMethod(context.getResources().getString(R.string.server_util_req_type_get));
 				c.setDoOutput(true);
 				c.connect();
 
 				String PATH = Environment.getExternalStorageDirectory()
-						.getPath() + "/Download/";
+						.getPath() + context.getResources().getString(R.string.application_mgr_download_location);
 				File file = new File(PATH);
 				file.mkdirs();
-				File outputFile = new File(file, "update.apk");
+				File outputFile = new File(file, context.getResources().getString(R.string.application_mgr_download_file_name));
 				if (outputFile.exists()) {
 					outputFile.delete();
 				}
@@ -227,13 +228,15 @@ public class ApplicationManager {
 
 				Intent intent = new Intent(Intent.ACTION_VIEW);
 				intent.setDataAndType(
-						Uri.fromFile(new File(PATH + "update.apk")),
-						"application/vnd.android.package-archive");
+						Uri.fromFile(new File(PATH + context.getResources().getString(R.string.application_mgr_download_file_name))),
+						context.getResources().getString(R.string.application_mgr_mime));
 				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 				context.startActivity(intent);
 
 			} catch (Exception e) {
-				Log.e("UpdateAPP", "Update error! " + e.getMessage());
+				if(CommonUtilities.DEBUG_MODE_ENABLED){
+					Log.e("UpdateAPP", "Update error! " + e.getMessage());
+				}
 			}
 			return null;
 		}

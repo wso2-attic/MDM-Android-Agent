@@ -22,22 +22,18 @@ import java.util.List;
 
 import org.json.JSONArray;
 
+import com.wso2mobile.mdm.utils.CommonUtilities;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.StatFs;
-import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 public class DeviceInfo{
 	String deviceModel = null;
@@ -65,11 +61,13 @@ public class DeviceInfo{
     public JSONArray getNetworkOperatorName() {
     	JSONArray jsonArray = null;
     	final TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-    	Log.e("Network OP",tm.getSimOperatorName());
-    	if(tm.getSimOperatorName().equals(null) || tm.getSimOperatorName()==""){
-        	networkOperatorName = "No Sim";
+    	if(CommonUtilities.DEBUG_MODE_ENABLED){
+    		Log.e("Network OP",tm.getSimOperatorName());
+    	}
+    	if(tm.getSimOperatorName()!= null && tm.getSimOperatorName()!=""){
+    		networkOperatorName =tm.getSimOperatorName(); 
         }else{
-        	networkOperatorName =tm.getSimOperatorName(); 
+        	networkOperatorName = "No Sim";
         }
     	
     	
@@ -186,8 +184,10 @@ public class DeviceInfo{
 		SensorManager sm = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
 		List<Sensor> list = sm.getSensorList(Sensor.TYPE_ALL);
 
-		for(Sensor s : list) {
-		    Log.d("SENSORS", s.getName());
+		if(CommonUtilities.DEBUG_MODE_ENABLED){
+			for(Sensor s : list) {
+			    Log.d("SENSORS", s.getName());
+			}
 		}
 	}
 	/**

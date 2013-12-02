@@ -1,11 +1,8 @@
 package com.wso2mobile.mdm;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import com.google.android.gcm.GCMRegistrar;
 
 import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,8 +22,8 @@ public class AlertActivity extends SherlockActivity {
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("message")){
-				message = extras.getString("message");
+			if(extras.containsKey( getResources().getString(R.string.intent_extra_message))){
+				message = extras.getString( getResources().getString(R.string.intent_extra_message));
 			}
 		}
 		

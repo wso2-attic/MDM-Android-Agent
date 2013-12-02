@@ -44,8 +44,58 @@
     <string name="menu_item_ip">Change Server Address</string>
     <string name="title_activity_alert">Message from MDM</string>
     <string name="device_admin_enable_alert">This will enable device administration</string>
+    <string name="device_enroll_type_byod">BYOD</string>
+    <string name="device_enroll_type_cope">COPE</string>
+    
+    <!-- TEXT FIELD HINTS -->
+    <string name="hint_new_pin">New PIN Code</string>
+    
+    <!-- TOAST MESSAGES -->
+    <string name="toast_message_pin_change_success">PIN Code changed successfully</string>
+    <string name="toast_message_pin_change_failed">Old pincode you entered is wrong, please try again</string>
+    <string name="toast_message_enter_server_address">Please enter Server Address, i.e : www.abc.com</string>
     
     <!-- INTENT EXTRAS -->
+    <string name="intent_extra_from_activity">from_activity_name</string>
+    <string name="intent_extra_regid">regid</string>
+    <string name="intent_extra_main_activity">main_activity_name</string>
+    <string name="intent_extra_message">message</string>
+    <string name="intent_extra_fresh_reg_flag">freshRegFlag</string>
+    <string name="intent_extra_email">email</string>
+    <string name="intent_extra_notification">notification</string>
+    
+    <!-- SHARED PREF KEYS -->
+    <string name="shared_pref_package">com.mdm</string>
+    <string name="shared_pref_policy">policy</string>
+    <string name="shared_pref_isagreed">isAgreed</string>
+    <string name="shared_pref_registered">registered</string>
+    <string name="shared_pref_ip">ip</string>
+    <string name="shared_pref_eula">eula</string>
+    <string name="shared_pref_regId">regId</string>
+    <string name="shared_pref_username">username</string>
+    <string name="shared_pref_pin">pin</string>
+    <string name="shared_pref_reg_success">1</string>
+    <string name="shared_pref_reg_fail">0</string>
+    <string name="shared_pref_reg_type">deviceType</string>
+    <string name="shared_pref_sender_id">senderID</string>
+    
+    <!-- ERROR MESSAGES -->
+    <string name="error_connect_to_server">Could not connect to server please check your internet connection and try again</string>
+    <string name="error_heading_connection">Connection Error</string>
+    <string name="error_registration_failed">Registration failed</string>
+    <string name="error_unregistration_failed">Unregistration failed</string>
+    <string name="error_authorization_failed">Unregistration failed</string>
+    
+    <!-- DIALOG TITLES AND MESSAGES -->
+    <string name="dialog_authenticate">Authenticating</string>
+    <string name="dialog_please_wait">Please wait</string>
+    <string name="dialog_checking_reg">Checking Registration Info</string>
+    <string name="dialog_enrolling">Enrolling Device</string>
+    <string name="dialog_pin_confirmation">Are you sure you want to set </string>
+    <string name="dialog_pin_confirmation_end"> as your PIN code?</string>
+    <string name="dialog_init_confirmation">You have set your domain to </string>
+    <string name="dialog_init_middle"> and your device is a </string>
+    <string name="dialog_init_end"> device, are you sure you want to proceed ?</string>
     
     <!-- REGISTRATION -->
     <string name="register_button_text">Register</string>
@@ -60,5 +110,30 @@
 	<!--  ALREADY REGISTERED ACTIVITY --> 
 	 <string name="dialog_message_unregistering">Unregistering Device</string>
 	 <string name="dialog_message_please_wait">Please wait</string>
+	 
+	 <!-- DEVICE INFO ACTIVITY -->
+	 <string name="info_label_imei">IMEI:</string>
+	 <string name="info_label_device">Device:</string>
+	 <string name="info_label_model">Model:</string>
+	 <string name="info_label_no_sim">No Sim</string>
+	 <string name="info_label_operator">Operator:</string>
+	 <string name="info_label_imsi">IMSI:</string>
+	 <string name="info_label_os">OS:</string>
+	 <string name="info_label_rooted">Rooted:</string>
+	 <string name="info_label_rooted_answer_yes">Yes</string>
+	 <string name="info_label_rooted_answer_no">No</string>
+	 
+	 <!-- BUTTON TITLES -->
+	<string name="button_ok">OK</string>
 	
+	<!-- APPLICATION MANAGER -->
+	<string name="application_mgr_download_location">/Download/</string>
+	<string name="application_mgr_download_file_name">update.apk</string>
+	<string name="application_mgr_mime">application/vnd.android.package-archive</string>
+	<string name="application_package_prefix">package:</string>
+	<string name="application_package_launcher_action">com.android.launcher.action.INSTALL_SHORTCUT</string>
+	
+	<!-- SERVER UTILITIES -->
+	<string name="server_util_req_type_post">POST</string>
+	<string name="server_util_req_type_get">GET</string>
 </resources>

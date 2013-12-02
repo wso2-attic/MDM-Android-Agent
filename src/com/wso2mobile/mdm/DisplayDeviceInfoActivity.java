@@ -20,17 +20,12 @@ import org.json.JSONException;
 
 import com.wso2mobile.mdm.api.DeviceInfo;
 
-
-import android.R.bool;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DisplayDeviceInfoActivity extends Activity {
@@ -41,19 +36,19 @@ public class DisplayDeviceInfoActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_display_device_info);
 		DeviceInfo deviceInfo = new DeviceInfo(DisplayDeviceInfoActivity.this);
-		TextView device_id = (TextView)findViewById(R.id.textView1);
-		TextView device = (TextView)findViewById(R.id.textView2);
-		TextView model = (TextView)findViewById(R.id.textView3);
-		TextView operator = (TextView)findViewById(R.id.textView4);
-		TextView sdk = (TextView)findViewById(R.id.textView5);
-		TextView os = (TextView)findViewById(R.id.textView6);
-		TextView root = (TextView)findViewById(R.id.textView7);
+		TextView device_id = (TextView)findViewById(R.id.txtId);
+		TextView device = (TextView)findViewById(R.id.txtDevice);
+		TextView model = (TextView)findViewById(R.id.txtModel);
+		TextView operator = (TextView)findViewById(R.id.txtOperator);
+		TextView sdk = (TextView)findViewById(R.id.txtSDK);
+		TextView os = (TextView)findViewById(R.id.txtOS);
+		TextView root = (TextView)findViewById(R.id.txtRoot);
 		
-		device_id.setText("IMEI:"+" "+deviceInfo.getDeviceId());
-		device.setText("Device:"+" "+deviceInfo.getDevice());
-		model.setText("Model:"+" "+deviceInfo.getDeviceModel());
+		device_id.setText(getResources().getString(R.string.info_label_imei)+" "+deviceInfo.getDeviceId());
+		device.setText(getResources().getString(R.string.info_label_device)+" "+deviceInfo.getDevice());
+		model.setText(getResources().getString(R.string.info_label_model)+" "+deviceInfo.getDeviceModel());
 		JSONArray jsonArray = null;
-		String operators = null;
+		String operators = "";
 		if(deviceInfo.getNetworkOperatorName()!= null){
 			jsonArray = deviceInfo.getNetworkOperatorName();
 		}
@@ -73,26 +68,26 @@ public class DisplayDeviceInfoActivity extends Activity {
 			}
         }
 		
-		if(operators.equals(null) || operators.equals("null")){
-			operators = "No Sim";
+		if(operators.equals(null)){
+			operators = getResources().getString(R.string.info_label_no_sim);
 		}
-		operator.setText("Operator:"+" "+operators);
+		operator.setText(getResources().getString(R.string.info_label_operator)+" "+operators);
 		if(deviceInfo.getIMSINumber() != null){
-			sdk.setText("IMSI:"+" "+deviceInfo.getIMSINumber());
+			sdk.setText(getResources().getString(R.string.info_label_imsi)+" "+deviceInfo.getIMSINumber());
 		}else{
-			sdk.setText("IMSI:"+" "+operators);
+			sdk.setText(getResources().getString(R.string.info_label_imsi)+" "+operators);
 		}
-		os.setText("OS:"+" "+deviceInfo.getOsVersion());
-		root.setText("Rooted:"+" "+(deviceInfo.isRooted()?"Yes":"No"));
+		os.setText(getResources().getString(R.string.info_label_os)+" "+deviceInfo.getOsVersion());
+		root.setText(getResources().getString(R.string.info_label_rooted)+" "+(deviceInfo.isRooted()?getResources().getString(R.string.info_label_rooted_answer_yes):getResources().getString(R.string.info_label_rooted_answer_no)));
 		
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
-			if(extras.containsKey("from_activity_name")){
-				FROM_ACTIVITY = extras.getString("from_activity_name");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
+				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
 			}
 			
-			if(extras.containsKey("regid")){
-				REG_ID = extras.getString("regid");
+			if(extras.containsKey(getResources().getString(R.string.intent_extra_regid))){
+				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
 
@@ -123,8 +118,8 @@ public class DisplayDeviceInfoActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
     		Intent intent = new Intent(DisplayDeviceInfoActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra("from_activity_name", DisplayDeviceInfoActivity.class.getSimpleName());
-    		intent.putExtra("regid", REG_ID);
+    		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), DisplayDeviceInfoActivity.class.getSimpleName());
+    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
     		startActivity(intent);
     		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK) {
