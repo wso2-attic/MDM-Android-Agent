@@ -129,7 +129,7 @@
 		   		  android:checked="true"
 		   		  android:button="@drawable/custom_checkbox"
 		          android:textColor="@android:color/black"
-		          android:text="BYOD (This device is my own device)" />
+		          android:text="  BYOD (This device is my own device)" />
 	
 		      <RadioButton
 		          android:id="@+id/radioCOPE"
@@ -138,7 +138,7 @@
 		          android:layout_margin="5dp"
 		          android:button="@drawable/custom_checkbox"
 		          android:textColor="@android:color/black"
-		          android:text="COPE (This device is coperate owned)" />
+		          android:text="  COPE (This device is coperate owned)" />
 	  </RadioGroup>
 
       <Button

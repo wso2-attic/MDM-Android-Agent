@@ -49,6 +49,7 @@ public class SettingsActivity extends Activity {
 	Context context;
 	String deviceType, senderID=null;
 	AsyncTask<Void, Void, String> mSenderIDTask;
+	ProgressDialog progressDialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -174,12 +175,23 @@ public class SettingsActivity extends Activity {
 	            @Override
 	            protected void onPreExecute()
 	            {
-	                //do initialization of required objects objects here                
+	            	progressDialog= ProgressDialog.show(SettingsActivity.this, getResources().getString(R.string.dialog_sender_id),getResources().getString(R.string.dialog_please_wait), true);
+	                progressDialog.setCancelable(true);
+	                progressDialog.setOnCancelListener(cancelListener);     
 	            };     
 
+	            OnCancelListener cancelListener=new OnCancelListener(){
+	                @Override
+	                public void onCancel(DialogInterface arg0){
+	                	showAlert(getResources().getString(R.string.error_connect_to_server), getResources().getString(R.string.error_heading_connection));
+	                }
+	            };
 	            
 	            @Override
 	            protected void onPostExecute(String result) {
+	            	if (progressDialog!=null && progressDialog.isShowing()){
+	            		progressDialog.dismiss();
+	                }
 	            	if(result!=null && !result.equals("")){
 	            		CommonUtilities.setSENDER_ID(result);
 	            	}
@@ -204,6 +216,28 @@ public class SettingsActivity extends Activity {
 	        
 	        mSenderIDTask.execute(null, null, null);
 	        	
+	}
+	
+	public void showAlert(String message, String title){
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message);
+        builder.setTitle(title);
+        builder.setCancelable(true);
+        builder.setPositiveButton(getResources().getString(R.string.button_ok),
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        /*builder1.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });*/
+
+        AlertDialog alert = builder.create();
+        alert.show();
 	}
 	
 	@Override

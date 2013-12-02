@@ -30,7 +30,7 @@ public class CommonUtilities {
      */
 	public static String SERVER_IP = "----ADD YOUR HOSTNAME HERE----";
 	public static String SERVER_PORT = "9443";
-	public static String SERVER_URL = "http://"+SERVER_IP+":"+SERVER_PORT+"/mdm/api/";
+	public static String SERVER_URL = "https://"+SERVER_IP+":"+SERVER_PORT+"/mdm/api/";
     
     public static String getSERVER_URL() {
 		return SERVER_URL;
