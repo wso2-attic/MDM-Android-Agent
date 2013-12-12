@@ -222,7 +222,7 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-				endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+				endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 			}
 
 		        HttpClient client = getCertifiedHttpClient(context);
@@ -296,6 +296,7 @@ public final class ServerUtilities {
 		params.put("platform", "Android");
 		params.put("vendor", deviceInfo.getDeviceManufacturer());
 		params.put("type", type);
+		params.put("mac", deviceInfo.getMACAddress());
 		// Calls the function "sendTimeWait" to do a HTTP post to our server
 		// using Android HTTPUrlConnection API
 		response = sendWithTimeWait("devices/register", params, "POST",
@@ -369,7 +370,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 		}
 		Log.v(TAG, "Posting '" + params.toString() + "' to " + endpoint);
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -490,7 +491,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
+			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
 		}
 		
 		URL url;
@@ -789,4 +790,3 @@ public final class ServerUtilities {
 	}
 
 }
-

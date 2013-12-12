@@ -54,11 +54,9 @@ public class EntryActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_entry);
-		Log.e("NEW SENDER ID : ", CommonUtilities.SENDER_ID);
 		checkNotNull(CommonUtilities.SERVER_URL, "SERVER_URL");
         checkNotNull(CommonUtilities.SENDER_ID, "SENDER_ID");
-        info = new DeviceInfo(EntryActivity.this);
-        
+        info = new DeviceInfo(EntryActivity.this);       
         context = EntryActivity.this;
         
         if((info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO) && !info.isRooted()){
