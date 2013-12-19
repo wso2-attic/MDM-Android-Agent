@@ -222,7 +222,7 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-				endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+				endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 			}
 
 		        HttpClient client = getCertifiedHttpClient(context);
@@ -277,7 +277,7 @@ public final class ServerUtilities {
 			jsObject.put("imsi", deviceInfo.getIMSINumber());
 			jsObject.put("model", deviceInfo.getDeviceModel());
 			//jsObject.put("email", deviceInfo.getEmail());
-			// jsObject.put("sdkversion", deviceInfo.getSdkVersion());
+			//jsObject.put("sdkversion", deviceInfo.getSdkVersion());
 
 		
 		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -370,7 +370,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
 		}
 		Log.v(TAG, "Posting '" + params.toString() + "' to " + endpoint);
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -491,7 +491,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
+			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
 		}
 		
 		URL url;
