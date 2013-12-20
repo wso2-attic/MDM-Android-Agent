@@ -253,6 +253,10 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 						editor.putString(
 								getResources().getString(
 										R.string.shared_pref_ip), "");
+						editor.putString(
+								getResources().getString(
+										R.string.shared_pref_sender_id), "");
+						
 						editor.commit();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
