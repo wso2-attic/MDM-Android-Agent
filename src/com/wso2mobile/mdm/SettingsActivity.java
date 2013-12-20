@@ -113,6 +113,7 @@ public class SettingsActivity extends Activity {
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
 				if(!ip.getText().toString().trim().equals("")){
+					CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
 					getSenderID();
 					
 				}else{
