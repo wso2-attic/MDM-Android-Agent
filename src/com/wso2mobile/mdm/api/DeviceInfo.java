@@ -34,6 +34,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -141,7 +142,13 @@ public class DeviceInfo{
 	*/
 	public String getDeviceId() {
 		final TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+		try{
 		deviceId = tm.getDeviceId();
+		if (deviceId == null || deviceId .length() == 0)
+			deviceId = Secure.getString(context.getContentResolver(),Secure.ANDROID_ID);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
 		return deviceId;
 	}
 	/**
