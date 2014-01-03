@@ -73,8 +73,16 @@ public class SettingsActivity extends Activity {
 		ip = (TextView)findViewById(R.id.editText1);
 		SharedPreferences mainPref = context.getSharedPreferences(
 				getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
-		String ipSaved = mainPref.getString(getResources().getString(R.string.shared_pref_ip), "");
+		String ipSaved = mainPref.getString(getResources().getString(R.string.shared_pref_ip), "");				
+		String success = mainPref.getString(getResources().getString(R.string.shared_pref_registered), "");
 		
+		if(success.trim().equals(getResources().getString(R.string.shared_pref_reg_success))){
+			Intent intent = new Intent(SettingsActivity.this,AlreadyRegisteredActivity.class);
+			intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+		}
+    	
 		if(ipSaved != null && ipSaved != ""){
 			ip.setText(ipSaved);
 			Intent intent = new Intent(SettingsActivity.this,EntryActivity.class);

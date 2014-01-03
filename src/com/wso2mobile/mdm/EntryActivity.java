@@ -103,6 +103,22 @@ public class EntryActivity extends Activity {
 		if(regId == null || regId.equals("")){
 			regId = GCMRegistrar.getRegistrationId(this);
 		}
+		
+		SharedPreferences mainPref = context.getSharedPreferences(
+    			getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+		String success = mainPref.getString(getResources().getString(R.string.shared_pref_registered), "");
+		if(success.trim().equals(getResources().getString(R.string.shared_pref_reg_success))){
+			state = true;
+		}
+		
+    	if(accessFlag){
+        	if(state){
+    			Intent intent = new Intent(EntryActivity.this,AlreadyRegisteredActivity.class);
+    			intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+    			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    			startActivity(intent);
+        	}
+    	}
 
 		if(CommonUtilities.DEBUG_MODE_ENABLED){Log.v("REGIDDDDD",regId);}
         if (regId.equals("") || regId == null) {

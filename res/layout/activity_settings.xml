@@ -111,7 +111,7 @@
           android:layout_centerHorizontal="true"
           android:layout_marginLeft="22dp"
           android:ems="10"
-          android:inputType="numberDecimal|textPassword" >
+          android:inputType="text" >
 
       </EditText>
       

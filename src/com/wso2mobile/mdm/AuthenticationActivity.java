@@ -52,6 +52,7 @@ public class AuthenticationActivity extends SherlockActivity {
 	String regId = "";
 	Button authenticate;
 	EditText username;
+	EditText txtDomain;
 	EditText password;
 	TextView txtLoadingEULA;
 	Activity activity;
@@ -76,10 +77,11 @@ public class AuthenticationActivity extends SherlockActivity {
 		this.activity = AuthenticationActivity.this;
 		this.context = AuthenticationActivity.this;
 		txtLoadingEULA = (TextView)findViewById(R.id.txtLoadingEULA);
+		txtDomain = (EditText) findViewById(R.id.txtDomain);
 		username = (EditText) findViewById(R.id.editText1);
 		password = (EditText) findViewById(R.id.editText2);
-		username.setFocusable(true);
-		username.requestFocus();
+		txtDomain.setFocusable(true);
+		txtDomain.requestFocus();
 		if(CommonUtilities.DEBUG_MODE_ENABLED){
 			Log.v("check first username", username.getText().toString());
 			Log.v("check first password", password.getText().toString());
@@ -105,6 +107,7 @@ public class AuthenticationActivity extends SherlockActivity {
 			if (!isAgreed.equals("1")) {
 				username.setVisibility(View.GONE);
 				password.setVisibility(View.GONE);
+				txtDomain.setVisibility(View.GONE);
 				authenticate.setVisibility(View.GONE);
 				txtLoadingEULA.setVisibility(View.VISIBLE);
 				if (eula != null && eula != "") {
@@ -184,14 +187,17 @@ public class AuthenticationActivity extends SherlockActivity {
 				}
 			}else{
 				username.setVisibility(View.VISIBLE);
-				username.requestFocus();
+				
+				txtDomain.setVisibility(View.VISIBLE);
+				txtDomain.requestFocus();
 				password.setVisibility(View.VISIBLE);
 				authenticate.setVisibility(View.VISIBLE);
 				txtLoadingEULA.setVisibility(View.GONE);
 			}
 		}else{
 			username.setVisibility(View.VISIBLE);
-			username.requestFocus();
+			txtDomain.setVisibility(View.VISIBLE);
+			txtDomain.requestFocus();
 			password.setVisibility(View.VISIBLE);
 			authenticate.setVisibility(View.VISIBLE);
 			txtLoadingEULA.setVisibility(View.GONE);
@@ -319,8 +325,9 @@ public class AuthenticationActivity extends SherlockActivity {
 		dialogButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				txtDomain.setVisibility(View.VISIBLE);
 				username.setVisibility(View.VISIBLE);
-				username.requestFocus();
+				txtDomain.requestFocus();
 				password.setVisibility(View.VISIBLE);
 				authenticate.setVisibility(View.VISIBLE);
 				txtLoadingEULA.setVisibility(View.GONE);
@@ -387,9 +394,16 @@ public class AuthenticationActivity extends SherlockActivity {
 
 			@Override
 			protected Void doInBackground(Void... params) {
-				state = ServerUtilities.isAuthenticate(username.getText()
-						.toString(), password.getText().toString(),
-						AuthenticationActivity.this);
+				if(txtDomain.getText()!=null && txtDomain.getText().toString()!=""){
+					state = ServerUtilities.isAuthenticate(username.getText()+"@"+txtDomain.getText().toString()
+							.toString(), password.getText().toString(),
+							AuthenticationActivity.this);
+				}else{
+					state = ServerUtilities.isAuthenticate(username.getText()
+							.toString(), password.getText().toString(),
+							AuthenticationActivity.this);
+				}
+				
 				return null;
 			}
 
