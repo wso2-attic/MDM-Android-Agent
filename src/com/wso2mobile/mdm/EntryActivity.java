@@ -214,7 +214,7 @@ public class EntryActivity extends Activity {
 	        	              //  boolean registered = ServerUtilities.register(context, regId);
 	        	            	String response="";
 	        	            	try{
-	        	            		response =ServerUtilities.getEULA(context);
+	        	            		response =ServerUtilities.getEULA(context,"");
 	        	            	}catch(Exception e){
 	        	            		e.printStackTrace();
 	        	            	}
@@ -236,7 +236,7 @@ public class EntryActivity extends Activity {
 
 	        	        };
 
-	        	        mLicenseTask.execute();
+	        	        //mLicenseTask.execute();
 	        			Intent intent = new Intent(EntryActivity.this,AuthenticationActivity.class);
 	        			intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
 	        			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

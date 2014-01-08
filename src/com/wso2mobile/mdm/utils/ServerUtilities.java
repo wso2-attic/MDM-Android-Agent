@@ -143,12 +143,12 @@ public final class ServerUtilities {
 		}
 	}
 	
-	public static String getEULA(Context context) {
+	public static String getEULA(Context context, String domain) {
 		Map<String, String> params = new HashMap<String, String>();
 		Map<String, String> response = new HashMap<String, String>();
 		String res="";
 		params.put("", null);
-		response = getRequest("devices/license", context);
+		response = getRequest("devices/license?domain="+domain, context);
 		String status = "";
 		try {
 			status = response.get("status");
@@ -222,7 +222,7 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-				endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+				endpoint = CommonUtilities.SERVER_PROTOCOL+ipSaved+":"+CommonUtilities.SERVER_PORT+CommonUtilities.SERVER_APP_ENDPOINT+ url;
 			}
 
 		        HttpClient client = getCertifiedHttpClient(context);
@@ -316,6 +316,12 @@ public final class ServerUtilities {
 	}
 
 	public static boolean unregister(String regId, Context context) {
+		
+		SharedPreferences mainPref = context.getSharedPreferences(
+				context.getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+		if(regId==null || regId.equals("")){
+			regId = mainPref.getString(context.getResources().getString(R.string.shared_pref_regId), "");
+		}
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
 		
@@ -370,7 +376,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
+			endpoint = CommonUtilities.SERVER_PROTOCOL+ipSaved+":"+CommonUtilities.SERVER_PORT+CommonUtilities.SERVER_APP_ENDPOINT+ url;
 		}
 		Log.v(TAG, "Posting '" + params.toString() + "' to " + endpoint);
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -491,7 +497,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-			endpoint = "https://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
+			endpoint = CommonUtilities.SERVER_PROTOCOL+ipSaved+":"+CommonUtilities.SERVER_PORT+CommonUtilities.SERVER_APP_ENDPOINT+ epPostFix;
 		}
 		
 		URL url;

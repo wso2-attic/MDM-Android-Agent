@@ -248,6 +248,8 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 								getResources().getString(
 										R.string.shared_pref_isagreed), "0");
 						editor.putString(
+								getResources().getString(R.string.shared_pref_regId), "");
+						editor.putString(
 								getResources().getString(
 										R.string.shared_pref_registered), "0");
 						editor.putString(
