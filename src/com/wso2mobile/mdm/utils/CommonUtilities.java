@@ -25,14 +25,15 @@ import android.content.SharedPreferences;
  */
 public class CommonUtilities {
 	public static boolean DEBUG_MODE_ENABLED = true;
-    /**
-     * Base URL of the Demo Server (such as http://my_host:8080/gcm-demo)
-     */
+
 	public static String SERVER_IP = "----ADD YOUR HOSTNAME HERE----";
 	public static String SERVER_PORT = "9443";
-	public static String SERVER_URL = "https://"+SERVER_IP+":"+SERVER_PORT+"/mdm/api/";
-    
-    public static String getSERVER_URL() {
+	public static String SERVER_PROTOCOL = "https://";
+	public static String SERVER_APP_ENDPOINT = "/mdm/api/";
+	public static String SERVER_URL = SERVER_PROTOCOL+SERVER_IP+":"+SERVER_PORT+SERVER_APP_ENDPOINT;
+    	public static final String TRUSTSTORE_PASSWORD = "----ADD YOUR TRUST STORE PASSWORD HERE----";
+
+    	public static String getSERVER_URL() {
 		return SERVER_URL;
 	}
 
@@ -47,7 +48,7 @@ public class CommonUtilities {
 
 	public static String SENDER_ID = "----ADD YOUR SENDER ID HERE----";
 	
-    public static String getSENDER_ID() {
+    	public static String getSENDER_ID() {
 		return SENDER_ID;
 	}
 
@@ -72,9 +73,9 @@ public class CommonUtilities {
 	public static final String EXTRA_MESSAGE = "message";
 	public static final int MESSAGE_MODE_GCM = 1;
 	public static final int MESSAGE_MODE_SMS = 2;
-	public static final String EULA_TITLE = "WSO2 License Agreement";
+	public static final String EULA_TITLE = "----ADD YOUR AGREEMENT TITLE HERE----";
 	public static final String EULA_TEXT = "----ADD YOUR LICENSE AGREEMENT HERE----";
-    public static final String TRUSTSTORE_PASSWORD = "----ADD YOUR TRUST STORE PASSWORD HERE----";
+    
 	/**
 	 * Status codes
 	 */

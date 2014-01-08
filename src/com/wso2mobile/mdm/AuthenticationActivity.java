@@ -31,6 +31,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -43,7 +44,9 @@ import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.view.Menu;
 
@@ -52,8 +55,11 @@ public class AuthenticationActivity extends SherlockActivity {
 	String regId = "";
 	Button authenticate;
 	EditText username;
+	EditText txtDomain;
 	EditText password;
-	TextView txtLoadingEULA;
+	//TextView txtLoadingEULA;
+	RadioButton radioBYOD, radioCOPE;
+	String deviceType;
 	Activity activity;
 	Context context;
 	String isAgreed = "";
@@ -75,11 +81,15 @@ public class AuthenticationActivity extends SherlockActivity {
 
 		this.activity = AuthenticationActivity.this;
 		this.context = AuthenticationActivity.this;
-		txtLoadingEULA = (TextView)findViewById(R.id.txtLoadingEULA);
+		deviceType = getResources().getString(R.string.device_enroll_type_byod);
+		//txtLoadingEULA = (TextView)findViewById(R.id.txtLoadingEULA);
+		txtDomain = (EditText) findViewById(R.id.txtDomain);
 		username = (EditText) findViewById(R.id.editText1);
 		password = (EditText) findViewById(R.id.editText2);
-		username.setFocusable(true);
-		username.requestFocus();
+		radioBYOD = (RadioButton)findViewById(R.id.radioBYOD);
+		radioCOPE = (RadioButton)findViewById(R.id.radioCOPE);
+		txtDomain.setFocusable(true);
+		txtDomain.requestFocus();
 		if(CommonUtilities.DEBUG_MODE_ENABLED){
 			Log.v("check first username", username.getText().toString());
 			Log.v("check first password", password.getText().toString());
@@ -90,112 +100,12 @@ public class AuthenticationActivity extends SherlockActivity {
 		authenticate.setTag(TAG_BTN_AUTHENTICATE);
 		authenticate.setOnClickListener(onClickListener_BUTTON_CLICKED);
 
-		txtLoadingEULA.setVisibility(View.VISIBLE);
+		/*txtLoadingEULA.setVisibility(View.VISIBLE);
 		username.setVisibility(View.GONE);
 		password.setVisibility(View.GONE);
-		authenticate.setVisibility(View.GONE);
+		authenticate.setVisibility(View.GONE);*/
 		
-		SharedPreferences mainPref = context.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
-				Context.MODE_PRIVATE);
-		isAgreed = mainPref.getString(getResources().getString(R.string.shared_pref_isagreed), "");
-		String eula = mainPref.getString(getResources().getString(R.string.shared_pref_eula), "");
-		String type = mainPref.getString(getResources().getString(R.string.shared_pref_reg_type), "");
-		
-		if(type.trim().equals(getResources().getString(R.string.device_enroll_type_byod))){
-			if (!isAgreed.equals("1")) {
-				username.setVisibility(View.GONE);
-				password.setVisibility(View.GONE);
-				authenticate.setVisibility(View.GONE);
-				txtLoadingEULA.setVisibility(View.VISIBLE);
-				if (eula != null && eula != "") {
-					showAlert(eula, CommonUtilities.EULA_TITLE);
-				} else {
-	
-					mLicenseTask = new AsyncTask<Void, Void, String>() {
-	
-						@Override
-						protected String doInBackground(Void... params) {
-							// boolean registered =
-							// ServerUtilities.register(context, regId);
-							String response = "";
-							try {
-								response = ServerUtilities.getEULA(context);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-							return response;
-						}
-	
-						/*
-						 * @Override protected void onPreExecute() { progressDialog=
-						 * ProgressDialog.show(AuthenticationActivity.this,
-						 * "Retrieving license agreement","Please wait", true);
-						 * progressDialog.setCancelable(true);
-						 * progressDialog.setOnCancelListener(cancelListener); //do
-						 * initialization of required objects objects here };
-						 */
-	
-						/*
-						 * OnCancelListener cancelListener=new OnCancelListener(){
-						 * 
-						 * @Override public void onCancel(DialogInterface arg0){
-						 * showAlert(
-						 * "Could not connect to server please check your internet connection and try again"
-						 * , "Connection Error"); //finish(); } };
-						 */
-	
-						@Override
-						protected void onPostExecute(String result) {
-							/*
-							 * Log.v("REG IDDDD",regId); if (progressDialog!=null &&
-							 * progressDialog.isShowing()){
-							 * progressDialog.dismiss(); }
-							 */
-							if (result != null) {
-								SharedPreferences mainPref = AuthenticationActivity.this
-										.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
-												Context.MODE_PRIVATE);
-								Editor editor = mainPref.edit();
-								editor.putString(getResources().getString(R.string.shared_pref_eula), result);
-								editor.commit();
-	
-								isAgreed = mainPref.getString(getResources().getString(R.string.shared_pref_isagreed), "");
-								String eula = mainPref.getString(getResources().getString(R.string.shared_pref_eula), "");
-								if (!isAgreed.equals("1")) {
-									if (eula != null && eula != "") {
-										showAlert(eula, CommonUtilities.EULA_TITLE);
-									} else {
-										showErrorMessage(
-												getResources().getString(R.string.error_connect_to_server),
-												getResources().getString(R.string.error_heading_connection));
-									}
-								}
-							} else {
-								showErrorMessage(
-										getResources().getString(R.string.error_connect_to_server),
-										getResources().getString(R.string.error_heading_connection));
-							}
-							mLicenseTask = null;
-						}
-	
-					};
-	
-					mLicenseTask.execute();
-				}
-			}else{
-				username.setVisibility(View.VISIBLE);
-				username.requestFocus();
-				password.setVisibility(View.VISIBLE);
-				authenticate.setVisibility(View.VISIBLE);
-				txtLoadingEULA.setVisibility(View.GONE);
-			}
-		}else{
-			username.setVisibility(View.VISIBLE);
-			username.requestFocus();
-			password.setVisibility(View.VISIBLE);
-			authenticate.setVisibility(View.VISIBLE);
-			txtLoadingEULA.setVisibility(View.GONE);
-		}
+
 		DeviceInfo deviceInfo = new DeviceInfo(AuthenticationActivity.this);
 
 		/*
@@ -265,7 +175,16 @@ public class AuthenticationActivity extends SherlockActivity {
 			switch (iTag) {
 
 			case TAG_BTN_AUTHENTICATE:
-				startAuthentication();
+				if(radioBYOD.isChecked()){
+					deviceType = getResources().getString(R.string.device_enroll_type_byod);
+				}else{
+					deviceType = getResources().getString(R.string.device_enroll_type_cope);
+				}
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						AuthenticationActivity.this);
+				builder.setMessage(getResources().getString(R.string.dialog_init_middle) + " " + deviceType + " " + getResources().getString(R.string.dialog_init_end))
+						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 				break;
 
 			case TAG_BTN_OPTIONS:
@@ -319,17 +238,22 @@ public class AuthenticationActivity extends SherlockActivity {
 		dialogButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				username.setVisibility(View.VISIBLE);
-				username.requestFocus();
-				password.setVisibility(View.VISIBLE);
-				authenticate.setVisibility(View.VISIBLE);
-				txtLoadingEULA.setVisibility(View.GONE);
 				SharedPreferences mainPref = AuthenticationActivity.this
 						.getSharedPreferences(getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
 				Editor editor = mainPref.edit();
 				editor.putString(getResources().getString(R.string.shared_pref_isagreed), "1");
 				editor.commit();
 				dialog.dismiss();
+				Intent intent = new Intent(AuthenticationActivity.this,
+						PinCodeActivity.class);
+				intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				if(txtDomain.getText()!=null && txtDomain.getText().toString().trim()!=""){
+					intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString().trim()+"@"+txtDomain.getText().toString().trim());
+				}else{
+					intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString().trim());
+				}
+				startActivity(intent);
 			}
 		});
 
@@ -379,17 +303,185 @@ public class AuthenticationActivity extends SherlockActivity {
 		startActivity(intentIP);
 
 	}
+	
+	DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch (which) {
+			case DialogInterface.BUTTON_POSITIVE:
+				startAuthentication();
+				break;
+
+			case DialogInterface.BUTTON_NEGATIVE:
+				dialog.dismiss();
+				break;
+			}
+		}
+	};
+	
+	public void showAlertSingle(String message, String title){
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(message);
+        builder.setTitle(title);
+        builder.setCancelable(true);
+        builder.setPositiveButton(getResources().getString(R.string.button_ok),
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            	//cancelEntry();
+                dialog.cancel();
+            }
+        });
+        /*builder1.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });*/
+
+        AlertDialog alert = builder.create();
+        alert.show();
+	}
+
+	
+	public void fetchLicense(){
+		SharedPreferences mainPref = context.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
+				Context.MODE_PRIVATE);
+		isAgreed = mainPref.getString(getResources().getString(R.string.shared_pref_isagreed), "");
+		String eula = mainPref.getString(getResources().getString(R.string.shared_pref_eula), "");
+		String type = mainPref.getString(getResources().getString(R.string.shared_pref_reg_type), "");
+		
+		if(type.trim().equals(getResources().getString(R.string.device_enroll_type_byod))){
+			if (!isAgreed.equals("1")) {
+				/*username.setVisibility(View.GONE);
+				password.setVisibility(View.GONE);
+				txtDomain.setVisibility(View.GONE);
+				authenticate.setVisibility(View.GONE);
+				txtLoadingEULA.setVisibility(View.VISIBLE);*/
+					mLicenseTask = new AsyncTask<Void, Void, String>() {
+	
+						@Override
+						protected String doInBackground(Void... params) {
+							// boolean registered =
+							// ServerUtilities.register(context, regId);
+							String response = "";
+							try {
+								response = ServerUtilities.getEULA(context, txtDomain.getText().toString().trim());
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							return response;
+						}
+	
+						
+						@Override
+						protected void onPreExecute() {
+							progressDialog = ProgressDialog.show(
+									AuthenticationActivity.this,
+									getResources().getString(R.string.dialog_license_agreement),
+									getResources().getString(R.string.dialog_please_wait), true);
+							progressDialog.setCancelable(true);
+							progressDialog.setOnCancelListener(cancelListener);
+						};
+
+						OnCancelListener cancelListener = new OnCancelListener() {
+
+							@Override
+							public void onCancel(DialogInterface arg0) {
+								showAlertSingle(
+										getResources().getString(R.string.error_connect_to_server),
+										getResources().getString(R.string.error_heading_connection));
+								//finish();
+							}
+						};
+						 
+	
+						@Override
+						protected void onPostExecute(String result) {
+							if (progressDialog != null
+									&& progressDialog.isShowing()) {
+								progressDialog.dismiss();
+							}
+
+							if (result != null) {
+								SharedPreferences mainPref = AuthenticationActivity.this
+										.getSharedPreferences(getResources().getString(R.string.shared_pref_package),
+												Context.MODE_PRIVATE);
+								Editor editor = mainPref.edit();
+								editor.putString(getResources().getString(R.string.shared_pref_eula), result);
+								editor.commit();
+	
+								isAgreed = mainPref.getString(getResources().getString(R.string.shared_pref_isagreed), "");
+								String eula = mainPref.getString(getResources().getString(R.string.shared_pref_eula), "");
+								if (!isAgreed.equals("1")) {
+									if (eula != null && eula != "") {
+										showAlert(eula, CommonUtilities.EULA_TITLE);
+									} else {
+										showErrorMessage(
+												getResources().getString(R.string.error_connect_to_server),
+												getResources().getString(R.string.error_heading_connection));
+									}
+								}
+							} else {
+								showErrorMessage(
+										getResources().getString(R.string.error_connect_to_server),
+										getResources().getString(R.string.error_heading_connection));
+							}
+							mLicenseTask = null;
+						}
+	
+					};
+	
+					mLicenseTask.execute();
+			}else{
+				Intent intent = new Intent(AuthenticationActivity.this,
+						PinCodeActivity.class);
+				intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				if(txtDomain.getText()!=null && txtDomain.getText().toString().trim()!=""){
+					intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString().trim()+"@"+txtDomain.getText().toString().trim());
+				}else{
+					intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString().trim());
+				}
+				
+				startActivity(intent);
+			}
+		}else{
+			Intent intent = new Intent(AuthenticationActivity.this,
+					PinCodeActivity.class);
+			intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			if(txtDomain.getText()!=null && txtDomain.getText().toString().trim()!=""){
+				intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString().trim()+"@"+txtDomain.getText().toString().trim());
+			}else{
+				intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString().trim());
+			}
+			startActivity(intent);
+		}
+	}
 
 	public void startAuthentication() {
 		final Context context = AuthenticationActivity.this;
+		SharedPreferences mainPref = context.getSharedPreferences(
+    			getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
+    	Editor editor = mainPref.edit();
+		editor.putString(getResources().getString(R.string.shared_pref_reg_type), deviceType);
+		editor.commit();
+		
 		mRegisterTask = new AsyncTask<Void, Void, Void>() {
 			boolean state = false;
 
 			@Override
 			protected Void doInBackground(Void... params) {
-				state = ServerUtilities.isAuthenticate(username.getText()
-						.toString(), password.getText().toString(),
-						AuthenticationActivity.this);
+				if(txtDomain.getText()!=null && txtDomain.getText().toString().trim()!=""){
+					state = ServerUtilities.isAuthenticate(username.getText().toString().trim()+"@"+txtDomain.getText().toString()
+							.trim(), password.getText().toString().trim(),
+							AuthenticationActivity.this);
+				}else{
+					state = ServerUtilities.isAuthenticate(username.getText()
+							.toString().trim(), password.getText().toString().trim(),
+							AuthenticationActivity.this);
+				}
+				
 				return null;
 			}
 
@@ -410,27 +502,8 @@ public class AuthenticationActivity extends SherlockActivity {
 					progressDialog.dismiss();
 				}
 				if (state) {
-					// String pin = null;
-					/*
-					 * SharedPreferences mainPref =
-					 * context.getSharedPreferences( "com.mdm",
-					 * Context.MODE_PRIVATE); String pinSaved =
-					 * mainPref.getString("pin", "");
-					 */
-					// if(pinSaved!=null && !pinSaved.equals("")){
-					Intent intent = new Intent(AuthenticationActivity.this,
-							PinCodeActivity.class);
-					intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
-					intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					intent.putExtra(getResources().getString(R.string.intent_extra_email), username.getText().toString());
-					startActivity(intent);
-					/*
-					 * }else{ Intent intent = new Intent(Authentication.this,
-					 * MainActivity.class); intent.putExtra("regid", regId);
-					 * intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-					 * intent.putExtra("email", username.getText().toString());
-					 * startActivity(intent); }
-					 */
+					fetchLicense();
+					
 				} else {
 					Intent intent = new Intent(AuthenticationActivity.this,
 							AuthenticationErrorActivity.class);

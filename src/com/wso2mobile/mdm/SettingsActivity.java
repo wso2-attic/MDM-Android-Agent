@@ -43,11 +43,10 @@ import android.widget.Toast;
 public class SettingsActivity extends Activity {
 	TextView ip;
 	Button optionBtn;
-	RadioButton radioBYOD, radioCOPE;
 	private String FROM_ACTIVITY = null;
 	private String REG_ID = "";
 	Context context;
-	String deviceType, senderID=null;
+	String senderID=null;
 	AsyncTask<Void, Void, String> mSenderIDTask;
 	ProgressDialog progressDialog;
 	@Override
@@ -56,7 +55,6 @@ public class SettingsActivity extends Activity {
 		setContentView(R.layout.activity_settings);
 		context = SettingsActivity.this;
 		Bundle extras = getIntent().getExtras();
-		deviceType = getResources().getString(R.string.device_enroll_type_byod);
 		if (extras != null) {
 			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
 				FROM_ACTIVITY = extras.getString(getResources().getString(R.string.intent_extra_from_activity));
@@ -66,15 +64,20 @@ public class SettingsActivity extends Activity {
 				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
-		
-		radioBYOD = (RadioButton)findViewById(R.id.radioBYOD);
-		radioCOPE = (RadioButton)findViewById(R.id.radioCOPE);
-		
+			
 		ip = (TextView)findViewById(R.id.editText1);
 		SharedPreferences mainPref = context.getSharedPreferences(
 				getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
-		String ipSaved = mainPref.getString(getResources().getString(R.string.shared_pref_ip), "");
+		String ipSaved = mainPref.getString(getResources().getString(R.string.shared_pref_ip), "");				
+		String success = mainPref.getString(getResources().getString(R.string.shared_pref_registered), "");
 		
+		if(success.trim().equals(getResources().getString(R.string.shared_pref_reg_success))){
+			Intent intent = new Intent(SettingsActivity.this,AlreadyRegisteredActivity.class);
+			intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+		}
+    	
 		if(ipSaved != null && ipSaved != ""){
 			ip.setText(ipSaved);
 			Intent intent = new Intent(SettingsActivity.this,EntryActivity.class);
@@ -90,17 +93,12 @@ public class SettingsActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				if(radioBYOD.isChecked()){
-					deviceType = getResources().getString(R.string.device_enroll_type_byod);
-				}else{
-					deviceType = getResources().getString(R.string.device_enroll_type_cope);
-				}
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						SettingsActivity.this);
 				builder.setMessage(
 						getResources().getString(R.string.dialog_init_confirmation) + " "
 								+ ip.getText().toString() + " "
-								+ getResources().getString(R.string.dialog_init_middle) + " " + deviceType + " " + getResources().getString(R.string.dialog_init_end))
+								+ getResources().getString(R.string.dialog_init_end_general))
 						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
 						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 			}
@@ -113,6 +111,7 @@ public class SettingsActivity extends Activity {
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
 				if(!ip.getText().toString().trim().equals("")){
+					CommonUtilities.setSERVER_URL(ip.getText().toString().trim());
 					getSenderID();
 					
 				}else{
@@ -200,7 +199,6 @@ public class SettingsActivity extends Activity {
 	            	Editor editor = mainPref.edit();
 	            	editor.putString(getResources().getString(R.string.shared_pref_sender_id), senderID);
 					editor.putString(getResources().getString(R.string.shared_pref_ip), ip.getText().toString().trim());
-					editor.putString(getResources().getString(R.string.shared_pref_reg_type), deviceType);
 					editor.commit();
 					
 					CommonUtilities.setSERVER_URL(ip.getText().toString().trim());

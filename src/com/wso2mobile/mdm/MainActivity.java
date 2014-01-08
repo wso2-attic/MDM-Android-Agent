@@ -17,6 +17,7 @@ package com.wso2mobile.mdm;
 import com.google.android.gcm.GCMRegistrar;
 
 import com.wso2mobile.mdm.services.WSO2MobileDeviceAdminReceiver;
+import com.wso2mobile.mdm.utils.CommonUtilities;
 import com.wso2mobile.mdm.utils.ServerUtilities;
 
 import android.os.AsyncTask;
@@ -42,6 +43,7 @@ public class MainActivity extends Activity {
 	 String regId = "";
 	 String email = "";
 	 TextView mDisplay;
+	 Context context;
 	 boolean regState = false;
 	 boolean successFlag = false;
 	 private final int TAG_BTN_UNREGISTER = 0;
@@ -61,7 +63,7 @@ public class MainActivity extends Activity {
         
         devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
 		demoDeviceAdmin = new ComponentName(this, WSO2MobileDeviceAdminReceiver.class);
-		
+		context = this;
 		
 		
 		Bundle extras = getIntent().getExtras();
@@ -74,9 +76,14 @@ public class MainActivity extends Activity {
 				email = extras.getString(getResources().getString(R.string.intent_extra_email));
 			}
 		}
-		if(regId == null || regId.equals("")){
-			regId = GCMRegistrar.getRegistrationId(this);
-		}
+		
+		if (regId.equals("") || regId == null) {
+            GCMRegistrar.register(this, CommonUtilities.SENDER_ID);
+            
+        } 
+        if (GCMRegistrar.isRegisteredOnServer(this)) {
+        	regId = GCMRegistrar.getRegistrationId(this);
+        }
 		
 		SharedPreferences mainPref = this.getSharedPreferences( getResources().getString(R.string.shared_pref_package), Context.MODE_PRIVATE);
 		Editor editor = mainPref.edit();

@@ -22,6 +22,16 @@
 
           <!-- Email Label -->
 
+		  <EditText
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="5dp"
+              android:singleLine="true"
+              android:id="@+id/txtDomain"
+              android:hint="Domain"
+              android:textColor="@android:color/black"
+              android:inputType="text" />
+		  
           <EditText
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
@@ -47,6 +57,31 @@
               <requestFocus />
           </EditText>
           
+          <RadioGroup
+	        android:id="@+id/radioGroupType"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginTop="5dp">
+	          <RadioButton
+		          android:id="@+id/radioBYOD"
+		          android:layout_width="wrap_content"
+		          android:layout_height="wrap_content"
+		          android:layout_margin="5dp"
+		   		  android:checked="true"
+		   		  android:button="@drawable/custom_checkbox"
+		          android:textColor="@android:color/black"
+		          android:text="  BYOD (This device is my own device)" />
+	
+		      <RadioButton
+		          android:id="@+id/radioCOPE"
+		          android:layout_width="wrap_content"
+		          android:layout_height="wrap_content"
+		          android:layout_margin="5dp"
+		          android:button="@drawable/custom_checkbox"
+		          android:textColor="@android:color/black"
+		          android:text="  COPE (This device is corporate owned)" />
+	  </RadioGroup>
+          
           <Button
           android:id="@+id/btnRegister"
           android:layout_width="fill_parent"
@@ -61,13 +96,13 @@
           
       </LinearLayout>
 
-      <TextView android:id="@+id/txtLoadingEULA"
+     <!-- <TextView android:id="@+id/txtLoadingEULA"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:layout_centerInParent="true"
               android:textColor="@android:color/black"
-              android:visibility="gone"
-              android:text="Loading the license agreement, please wait..."/>
+              android:visibility="visible"
+              android:text="Loading the license agreement, please wait..."/> -->
       
       <!-- Login Form Ends -->
 
