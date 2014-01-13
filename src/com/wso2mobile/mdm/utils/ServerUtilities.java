@@ -222,11 +222,7 @@ public final class ServerUtilities {
 			String ipSaved = mainPref.getString("ip", "");
 			
 			if(ipSaved != null && ipSaved != ""){
-<<<<<<< HEAD
-				endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
-=======
 				endpoint = CommonUtilities.SERVER_PROTOCOL+ipSaved+":"+CommonUtilities.SERVER_PORT+CommonUtilities.SERVER_APP_ENDPOINT+ url;
->>>>>>> rc1
 			}
 
 		        HttpClient client = getCertifiedHttpClient(context);
@@ -380,11 +376,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-<<<<<<< HEAD
-			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ url;
-=======
 			endpoint = CommonUtilities.SERVER_PROTOCOL+ipSaved+":"+CommonUtilities.SERVER_PORT+CommonUtilities.SERVER_APP_ENDPOINT+ url;
->>>>>>> rc1
 		}
 		Log.v(TAG, "Posting '" + params.toString() + "' to " + endpoint);
 		StringBuilder bodyBuilder = new StringBuilder();
@@ -505,11 +497,7 @@ public final class ServerUtilities {
 		String ipSaved = mainPref.getString("ip", "");
 		
 		if(ipSaved != null && ipSaved != ""){
-<<<<<<< HEAD
-			endpoint = "http://"+ipSaved+":"+CommonUtilities.SERVER_PORT+"/mdm/api/"+ epPostFix;
-=======
 			endpoint = CommonUtilities.SERVER_PROTOCOL+ipSaved+":"+CommonUtilities.SERVER_PORT+CommonUtilities.SERVER_APP_ENDPOINT+ epPostFix;
->>>>>>> rc1
 		}
 		
 		URL url;
