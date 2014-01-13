@@ -1,4 +1,3 @@
-
 /*
  ~ Copyright (c) 2013, WSO2Mobile Inc. (http://www.wso2mobile.com) All Rights Reserved.
  ~
