@@ -183,8 +183,8 @@ public class AuthenticationActivity extends SherlockActivity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(
 						AuthenticationActivity.this);
 				builder.setMessage(getResources().getString(R.string.dialog_init_middle) + " " + deviceType + " " + getResources().getString(R.string.dialog_init_end))
-						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
-						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
+						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 				break;
 
 			case TAG_BTN_OPTIONS:
@@ -309,11 +309,11 @@ public class AuthenticationActivity extends SherlockActivity {
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case DialogInterface.BUTTON_POSITIVE:
-				startAuthentication();
+				dialog.dismiss();
 				break;
 
 			case DialogInterface.BUTTON_NEGATIVE:
-				dialog.dismiss();
+				startAuthentication();
 				break;
 			}
 		}
