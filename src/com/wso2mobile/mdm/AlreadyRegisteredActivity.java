@@ -258,6 +258,9 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 						editor.putString(
 								getResources().getString(
 										R.string.shared_pref_sender_id), "");
+						editor.putString(
+								getResources().getString(
+										R.string.shared_pref_eula), "");
 						
 						editor.commit();
 					} catch (Exception e) {
@@ -521,3 +524,4 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 	 */
 
 }
+
