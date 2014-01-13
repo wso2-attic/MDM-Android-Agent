@@ -1,4 +1,3 @@
-
 /*
  ~ Copyright (c) 2013, WSO2Mobile Inc. (http://www.wso2mobile.com) All Rights Reserved.
  ~
@@ -56,12 +55,9 @@ public class EntryActivity extends Activity {
 		setContentView(R.layout.activity_entry);
 		checkNotNull(CommonUtilities.SERVER_URL, "SERVER_URL");
         checkNotNull(CommonUtilities.SENDER_ID, "SENDER_ID");
-<<<<<<< HEAD
-=======
         if(CommonUtilities.DEBUG_MODE_ENABLED){
         	Log.e("SENDER ID : ", CommonUtilities.SENDER_ID);
         }
->>>>>>> rc1
         info = new DeviceInfo(EntryActivity.this);       
         context = EntryActivity.this;
         
