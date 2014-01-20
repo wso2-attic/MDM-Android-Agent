@@ -112,6 +112,7 @@ public class CommonUtilities {
 	public static final String OPERATION_POLICY_BUNDLE = "500P";
 	public static final String OPERATION_POLICY_MONITOR = "501P";
 	public static final String OPERATION_BLACKLIST_APPS = "528B";
+	public static final String OPERATION_POLICY_REVOKE = "502P";
     
     /**
      * Notifies UI to display a message.

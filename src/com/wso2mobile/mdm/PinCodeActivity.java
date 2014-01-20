@@ -2,6 +2,7 @@ package com.wso2mobile.mdm;
 
 
 import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -31,6 +32,7 @@ public class PinCodeActivity extends Activity {
 	private String FROM_ACTIVITY = null;
 	private String MAIN_ACTIVITY = null;
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,6 +64,8 @@ public class PinCodeActivity extends Activity {
 		btnPin.setTag(TAG_BTN_SET_PIN);
 		btnPin.setOnClickListener(onClickListener_BUTTON_CLICKED);
 		btnPin.setEnabled(false);
+		btnPin.setBackground(getResources().getDrawable(R.drawable.btn_grey));
+		btnPin.setTextColor(getResources().getColor(R.color.black));
 		
 		if(FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())){
 			lblPin.setVisibility(View.GONE);
@@ -208,6 +212,7 @@ public class PinCodeActivity extends Activity {
 		}
 	}
 	
+	@SuppressLint("NewApi")
 	public void enableNewPINSubmitIfReady() {
 
 		boolean isReady = false;
@@ -230,8 +235,12 @@ public class PinCodeActivity extends Activity {
 		}
 		
 		if (isReady) {
+			btnPin.setBackground(getResources().getDrawable(R.drawable.btn_orange));
+			btnPin.setTextColor(getResources().getColor(R.color.white));
 			btnPin.setEnabled(true);
 		} else {
+			btnPin.setBackground(getResources().getDrawable(R.drawable.btn_grey));
+			btnPin.setTextColor(getResources().getColor(R.color.black));
 			btnPin.setEnabled(false);
 		}
 	}

@@ -25,6 +25,7 @@ import com.wso2mobile.mdm.utils.ServerUtilities;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -69,6 +70,7 @@ public class AuthenticationActivity extends SherlockActivity {
 	private final int TAG_BTN_AUTHENTICATE = 0;
 	private final int TAG_BTN_OPTIONS = 1;
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -99,7 +101,8 @@ public class AuthenticationActivity extends SherlockActivity {
 		authenticate.setEnabled(false);
 		authenticate.setTag(TAG_BTN_AUTHENTICATE);
 		authenticate.setOnClickListener(onClickListener_BUTTON_CLICKED);
-
+		authenticate.setBackground(getResources().getDrawable(R.drawable.btn_grey));
+		authenticate.setTextColor(getResources().getColor(R.color.black));
 		/*txtLoadingEULA.setVisibility(View.VISIBLE);
 		username.setVisibility(View.GONE);
 		password.setVisibility(View.GONE);
@@ -175,16 +178,24 @@ public class AuthenticationActivity extends SherlockActivity {
 			switch (iTag) {
 
 			case TAG_BTN_AUTHENTICATE:
-				if(radioBYOD.isChecked()){
-					deviceType = getResources().getString(R.string.device_enroll_type_byod);
+				if(username.getText()!=null && !username.getText().toString().trim().equals("") && password.getText()!=null && !password.getText().toString().trim().equals("")){
+					if(radioBYOD.isChecked()){
+						deviceType = getResources().getString(R.string.device_enroll_type_byod);
+					}else{
+						deviceType = getResources().getString(R.string.device_enroll_type_cope);
+					}
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							AuthenticationActivity.this);
+					builder.setMessage(getResources().getString(R.string.dialog_init_middle) + " " + deviceType + " " + getResources().getString(R.string.dialog_init_end))
+							.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+							.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 				}else{
-					deviceType = getResources().getString(R.string.device_enroll_type_cope);
+					if(username.getText()!=null && !username.getText().toString().trim().equals("")){
+						Toast.makeText(context, getResources().getString(R.string.toast_error_password), Toast.LENGTH_LONG).show();					
+					}else{
+						Toast.makeText(context, getResources().getString(R.string.toast_error_username), Toast.LENGTH_LONG).show();
+					}
 				}
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						AuthenticationActivity.this);
-				builder.setMessage(getResources().getString(R.string.dialog_init_middle) + " " + deviceType + " " + getResources().getString(R.string.dialog_init_end))
-						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
-						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 				break;
 
 			case TAG_BTN_OPTIONS:
@@ -534,18 +545,23 @@ public class AuthenticationActivity extends SherlockActivity {
 		startActivity(intent);
 	}
 
+	@SuppressLint("NewApi")
 	public void enableSubmitIfReady() {
 
 		boolean isReady = false;
 
-		if (username.getText().toString().length() >= 3
-				&& password.getText().toString().length() >= 3) {
+		if (username.getText().toString().length() >= 1
+				&& password.getText().toString().length() >= 1) {
 			isReady = true;
 		}
 
-		if (isReady) {
+		if (isReady) {			
+			authenticate.setBackground(getResources().getDrawable(R.drawable.btn_orange));
+			authenticate.setTextColor(getResources().getColor(R.color.white));
 			authenticate.setEnabled(true);
 		} else {
+			authenticate.setBackground(getResources().getDrawable(R.drawable.btn_grey));
+			authenticate.setTextColor(getResources().getColor(R.color.black));
 			authenticate.setEnabled(false);
 		}
 	}

@@ -95,6 +95,22 @@ public class WiFiConfig {
 		Log.d("WifiPreference", "enableNetwork returned " + b);
 		return saved;
 	}
+	
+	public boolean removeWiFiConfigurationBySSID(String ssid){
+		WifiManager wifi = (WifiManager) this.context.getSystemService(Context.WIFI_SERVICE);
+		List<WifiConfiguration> item = wifi.getConfiguredNetworks();
+
+		for(int i=0; i<item.size();i++){
+			WifiConfiguration config = item.get(0);
+			if(config.SSID.equals(ssid)){
+	           int networkId = config.networkId;
+	           wifi.removeNetwork(networkId);
+	           wifi.saveConfiguration();
+			}
+		}
+		
+		return true;
+	}
 
 	/**
 	 * Read WEP Configuration Profile

@@ -524,4 +524,3 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 	 */
 
 }
-

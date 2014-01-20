@@ -261,6 +261,86 @@ public class Operation {
 			editor.commit();
 		}
 	}
+	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+	public void revokePolicy() {
+		String policy;
+		JSONArray jArray = null;
+		devicePolicyManager = (DevicePolicyManager) context
+				.getSystemService(Context.DEVICE_POLICY_SERVICE);
+		ComponentName cameraAdmin = new ComponentName(context,
+				WSO2MobileDeviceAdminReceiver.class);
+		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+				Context.MODE_PRIVATE);
+
+		try {
+
+			policy = mainPref.getString("policy", "");
+			
+			jArray = new JSONArray(policy);
+			for (int i = 0; i < jArray.length(); i++) {
+				if(jArray.getJSONObject(i)!=null){
+					JSONObject policyObj = (JSONObject) jArray.getJSONObject(i);
+					if (policyObj.getString("data") != null
+							&& policyObj.getString("data") != "") {
+
+						if(policyObj.getString("code").trim().equals(CommonUtilities.OPERATION_WIFI)){
+							JSONObject jobj = new JSONObject(policyObj.getString("data"));
+							if (!jobj.isNull("ssid")) {
+								String rev_ssid = (String) jobj.get("ssid");
+								WiFiConfig config = new WiFiConfig(context);
+								config.removeWiFiConfigurationBySSID(rev_ssid);
+							}
+						}else if(policyObj.getString("code").trim().equals(CommonUtilities.OPERATION_DISABLE_CAMERA)){
+							if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+								devicePolicyManager.setCameraDisabled(cameraAdmin, false);
+							}
+						}else if(policyObj.getString("code").trim().equals(CommonUtilities.OPERATION_ENCRYPT_STORAGE)){
+							JSONObject jobj = new JSONObject(policyObj.getString("data"));
+							boolean encryptFunc=false;
+							if (!jobj.isNull("function")
+									&& jobj.get("function").toString()
+											.equalsIgnoreCase("encrypt")) {
+								encryptFunc = true;
+							} else if (!jobj.isNull("function")
+									&& jobj.get("function").toString()
+											.equalsIgnoreCase("decrypt")) {
+								encryptFunc = false;
+							} else if (!jobj.isNull("function")) {
+								encryptFunc = Boolean.parseBoolean(jobj.get("function")
+										.toString());
+							}
+							if(encryptFunc){
+								if (devicePolicyManager.getStorageEncryptionStatus() != devicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED) {
+									if (devicePolicyManager.getStorageEncryptionStatus() == devicePolicyManager.ENCRYPTION_STATUS_ACTIVE
+											|| devicePolicyManager.getStorageEncryptionStatus() == devicePolicyManager.ENCRYPTION_STATUS_ACTIVATING) {
+										if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+											devicePolicyManager.setStorageEncryption(cameraAdmin,
+													false);
+										}
+									}
+								}
+							}
+						}else if(policyObj.getString("code").trim().equals(CommonUtilities.OPERATION_PASSWORD_POLICY)){
+							devicePolicyManager.setPasswordQuality(cameraAdmin,
+									DevicePolicyManager.PASSWORD_QUALITY_UNSPECIFIED);
+						}
+					}
+				}
+			}
+
+			Editor editor = mainPref.edit();
+			editor.putString("policy_applied", "1");
+			editor.commit();
+			this.data = policy;
+			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
+					REQUEST_MODE_NORMAL);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			Editor editor = mainPref.edit();
+			editor.putString("policy_applied", "0");
+			editor.commit();
+		}
+	}
 
 	@SuppressWarnings("static-access")
 	@TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
@@ -1322,7 +1402,26 @@ public class Operation {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (code_input
+		} else if (code_input.equals(CommonUtilities.OPERATION_POLICY_REVOKE)) {
+			try {
+				Map<String, String> inparams = new HashMap<String, String>();
+				// data = intent.getStringExtra("data");
+				
+				inparams.put("code", code_input);
+				inparams.put("msgID", token);
+				inparams.put("status", "200");
+				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
+					ServerUtilities.pushData(inparams, context);
+				} else if (mode == CommonUtilities.MESSAGE_MODE_SMS) {
+					smsManager.sendTextMessage(recepient, null,
+							"Lock code changed Successfully", null, null);
+				}
+				revokePolicy();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else if (code_input
 				.equals(CommonUtilities.OPERATION_BLACKLIST_APPS)) {
 			ArrayList<PInfo> apps = appList.getInstalledApps(false); /*
 																	 * false =

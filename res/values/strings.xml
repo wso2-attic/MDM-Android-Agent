@@ -54,6 +54,8 @@
     <string name="toast_message_pin_change_success">PIN Code changed successfully</string>
     <string name="toast_message_pin_change_failed">Old pincode you entered is wrong, please try again</string>
     <string name="toast_message_enter_server_address">Please enter Server Address, i.e : www.abc.com</string>
+    <string name="toast_error_username">Please enter username</string>
+    <string name="toast_error_password">Please enter password</string>
     
     <!-- INTENT EXTRAS -->
     <string name="intent_extra_from_activity">from_activity_name</string>
