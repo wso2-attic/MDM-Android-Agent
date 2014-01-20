@@ -197,6 +197,7 @@ public class PinCodeActivity extends Activity {
 		}
 	}
 
+	@SuppressLint("NewApi")
 	public void enableSubmitIfReady() {
 
 		boolean isReady = false;
@@ -206,8 +207,12 @@ public class PinCodeActivity extends Activity {
 		}
 
 		if (isReady) {
+			btnPin.setBackground(getResources().getDrawable(R.drawable.btn_orange));
+			btnPin.setTextColor(getResources().getColor(R.color.white));
 			btnPin.setEnabled(true);
 		} else {
+			btnPin.setBackground(getResources().getDrawable(R.drawable.btn_grey));
+			btnPin.setTextColor(getResources().getColor(R.color.black));
 			btnPin.setEnabled(false);
 		}
 	}
@@ -272,3 +277,4 @@ public class PinCodeActivity extends Activity {
 	}
 
 }
+
