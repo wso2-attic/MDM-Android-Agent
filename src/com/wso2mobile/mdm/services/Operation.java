@@ -252,8 +252,8 @@ public class Operation {
 			editor.putString("policy_applied", "1");
 			editor.commit();
 			this.data = policy;
-			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
-					REQUEST_MODE_NORMAL);
+			/*doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
+					REQUEST_MODE_NORMAL);*/
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Editor editor = mainPref.edit();
@@ -328,17 +328,17 @@ public class Operation {
 				}
 			}
 
-			Editor editor = mainPref.edit();
+			/*Editor editor = mainPref.edit();
 			editor.putString("policy_applied", "1");
 			editor.commit();
 			this.data = policy;
 			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
-					REQUEST_MODE_NORMAL);
+					REQUEST_MODE_NORMAL);*/
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			/*ex.printStackTrace();
 			Editor editor = mainPref.edit();
 			editor.putString("policy_applied", "0");
-			editor.commit();
+			editor.commit();*/
 		}
 	}
 
@@ -1441,8 +1441,9 @@ public class Operation {
 				jArray = new JSONArray(data_input);
 				int appcount = 1;
 				for (int i = 0; i < jArray.length(); i++) {
-					JSONObject appObj = (JSONObject) jArray
+					JSONObject appsObj = (JSONObject) jArray
 							.getJSONObject(i);
+					JSONObject appObj = (JSONObject) appsObj.get("data");
 					String identity = (String) appObj.get("identity");
 					
 					for (int j = 0; j < max; j++) {

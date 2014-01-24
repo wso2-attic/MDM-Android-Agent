@@ -87,6 +87,8 @@
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_unregistration_failed">Unregistration failed</string>
     <string name="error_authorization_failed">Unregistration failed</string>
+    <string name="error_enrollment_failed">Enrollment failed</string>
+    <string name="error_enrollment_failed_detail">Enrollment failed, please contact administrator</string>
     
     <!-- DIALOG TITLES AND MESSAGES -->
     <string name="dialog_authenticate">Authenticating</string>

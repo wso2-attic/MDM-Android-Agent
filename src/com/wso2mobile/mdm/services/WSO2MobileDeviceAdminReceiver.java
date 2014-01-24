@@ -19,6 +19,8 @@ package com.wso2mobile.mdm.services;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONArray;
+
 import com.google.android.gcm.GCMRegistrar;
 import com.wso2mobile.mdm.AlreadyRegisteredActivity;
 import com.wso2mobile.mdm.AuthenticationErrorActivity;
@@ -46,14 +48,30 @@ public class WSO2MobileDeviceAdminReceiver extends DeviceAdminReceiver {
 	static final String TAG = "DemoDeviceAdminReceiver";
 	AsyncTask<Void, Void, Void> mRegisterTask;
 	String regId="";
+	Operation operation;
 	boolean unregState=false;
 	/** Called when this application is approved to be a device administrator. */
 	@Override
 	public void onEnabled(Context context, Intent intent) {
 		super.onEnabled(context, intent);
+		String policy;
+		JSONArray jArray = null;
+		operation = new Operation(context);
+		SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
+				Context.MODE_PRIVATE);
+
+		try {
+			policy = mainPref.getString("policy", "");
+			if(policy!=null && !policy.equals("")){
+				operation.executePolicy();
+			}
+		}catch(Exception ex){
+			
+		}
 		Toast.makeText(context, R.string.device_admin_enabled,
 				Toast.LENGTH_LONG).show();
 		Log.d(TAG, "onEnabled");
+		
 	}
 
 	/** Called when this application is no longer the device administrator. */

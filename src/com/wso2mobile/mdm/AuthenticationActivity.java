@@ -399,8 +399,8 @@ public class AuthenticationActivity extends SherlockActivity {
 							@Override
 							public void onCancel(DialogInterface arg0) {
 								showAlertSingle(
-										getResources().getString(R.string.error_connect_to_server),
-										getResources().getString(R.string.error_heading_connection));
+										getResources().getString(R.string.error_enrollment_failed_detail),
+										getResources().getString(R.string.error_enrollment_failed));
 								//finish();
 							}
 						};
@@ -428,14 +428,14 @@ public class AuthenticationActivity extends SherlockActivity {
 										showAlert(eula, CommonUtilities.EULA_TITLE);
 									} else {
 										showErrorMessage(
-												getResources().getString(R.string.error_connect_to_server),
-												getResources().getString(R.string.error_heading_connection));
+												getResources().getString(R.string.error_enrollment_failed_detail),
+												getResources().getString(R.string.error_enrollment_failed));
 									}
 								}
 							} else {
 								showErrorMessage(
-										getResources().getString(R.string.error_connect_to_server),
-										getResources().getString(R.string.error_heading_connection));
+										getResources().getString(R.string.error_enrollment_failed_detail),
+										getResources().getString(R.string.error_enrollment_failed));
 							}
 							mLicenseTask = null;
 						}
