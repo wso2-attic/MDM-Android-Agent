@@ -18,6 +18,7 @@
 import com.google.android.gcm.GCMRegistrar;
 import com.wso2mobile.mdm.api.DeviceInfo;
 import com.wso2mobile.mdm.utils.CommonUtilities;
+import com.wso2mobile.mdm.utils.LoggerCustom;
 import com.wso2mobile.mdm.utils.ServerUtilities;
 
 import android.os.AsyncTask;
@@ -56,6 +57,7 @@ public class EntryActivity extends Activity {
 		setContentView(R.layout.activity_entry);
 		checkNotNull(CommonUtilities.SERVER_URL, "SERVER_URL");
         checkNotNull(CommonUtilities.SENDER_ID, "SENDER_ID");
+        
         if(CommonUtilities.DEBUG_MODE_ENABLED){
         	Log.e("SENDER ID : ", CommonUtilities.SENDER_ID);
         }

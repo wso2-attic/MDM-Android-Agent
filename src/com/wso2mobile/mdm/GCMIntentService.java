@@ -16,6 +16,10 @@
 package com.wso2mobile.mdm;
 
 
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -23,6 +27,7 @@ import android.app.admin.DevicePolicyManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -79,11 +84,11 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
     protected void onMessage(Context context, Intent intent) {
 		String code = intent.getStringExtra(getResources().getString(R.string.intent_extra_message)).trim();
+		//String message = intent.getStringExtra("message");
+       // Log.e(TAG, "GCMMessage: " + message);  
         Config.context = this;
         //devicePolicyManager = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
     	processMsg = new ProcessMessage(Config.context, CommonUtilities.MESSAGE_MODE_GCM, intent);
-    	
-          	
     }
 	    
 

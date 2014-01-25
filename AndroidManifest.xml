@@ -175,16 +175,20 @@
         </activity>
         <activity
             android:name="com.wso2mobile.mdm.Notification"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_notification" >
+            android:label="@string/title_activity_notification"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.wso2mobile.mdm.AlertActivity"
-            android:theme="@android:style/Theme.Dialog"
+            android:label="@string/title_activity_alert"
             android:screenOrientation="portrait"
-            android:label="@string/title_activity_alert" >
+            android:theme="@android:style/Theme.Dialog" >
         </activity>
-
+        <activity
+            android:name="com.wso2mobile.mdm.LogActivity"
+            android:label="@string/title_activity_log"
+            android:screenOrientation="portrait" >
+        </activity>
     </application>
 
 </manifest>

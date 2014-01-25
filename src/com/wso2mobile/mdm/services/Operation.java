@@ -36,6 +36,7 @@ import com.wso2mobile.mdm.api.TrackCallSMS;
 import com.wso2mobile.mdm.api.WiFiConfig;
 import com.wso2mobile.mdm.models.PInfo;
 import com.wso2mobile.mdm.utils.CommonUtilities;
+import com.wso2mobile.mdm.utils.LoggerCustom;
 import com.wso2mobile.mdm.utils.ServerUtilities;
 
 import android.annotation.TargetApi;
@@ -54,6 +55,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.SmsManager;
+import android.text.format.Time;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -74,6 +76,7 @@ public class Operation {
 	GPSTracker gps;
 	String recepient = "";
 	int mode = 1;
+	LoggerCustom logger = null;
 	private static final String TAG = "Operation Handler";
 	static final int ACTIVATION_REQUEST = 47;
 	static final int REQUEST_CODE_START_ENCRYPTION = 1;
@@ -94,7 +97,21 @@ public class Operation {
 		this.intent = intent;
 		this.mode = mode;
 		
-		
+		logger = new LoggerCustom(context);
+		Time now = new Time();
+		now.setToNow();
+        String log_in = logger.readFileAsString("wso2log.txt");
+        String to_write="";
+        if(CommonUtilities.DEBUG_MODE_ENABLED){
+	        if(log_in!=null && !log_in.equals("") && !log_in.equals("null")){
+	        	to_write="<br> SERVER TO AGENT AT "+now.hour+":"+now.minute+" : <br> CODE : "+intent.getStringExtra("message").trim()+"<br> MSG ID : "+intent.getStringExtra("token").trim()+"<br> DATA : "+intent.getStringExtra("data")+"<br>==========================================================<br>"+log_in;
+	        }else{
+	        	to_write="<br> SERVER TO AGENT AT "+now.hour+":"+now.minute+": <br> CODE : "+intent.getStringExtra("message").trim()+"<br> MSG ID : "+intent.getStringExtra("token").trim()+"<br> DATA : "+intent.getStringExtra("data")+"<br>==========================================================<br>";
+	        }
+	        
+	        
+	        logger.writeStringAsFile(to_write, "wso2log.txt");
+        }
 
 		if(intent.getStringExtra("message").trim().equals(CommonUtilities.OPERATION_POLICY_MONITOR)){
 			policy_token = intent.getStringExtra("token").trim();
@@ -196,23 +213,8 @@ public class Operation {
 				editor.putString("policy", data);
 				editor.commit();
 
-				/*if (mainPref.getString("policy_applied", "") == null
-						|| mainPref.getString("policy_applied", "").trim()
-								.equals("0")
-						|| mainPref.getString("policy_applied", "").trim()
-								.equals("")) {*/
-					executePolicy();
-				//}
-				/*
-				 * JSONArray jArray = new JSONArray(data); for(int i = 0;
-				 * i<jArray.length(); i++){ JSONObject policyObj =
-				 * (JSONObject)jArray.getJSONObject(i);
-				 * if(policyObj.getString("data")!=null &&
-				 * policyObj.getString("data")!=""){
-				 * doTask(policyObj.getString("code"),
-				 * policyObj.getString("data"), REQUEST_MODE_BUNDLE); } }
-				 * doTask(code, "", REQUEST_MODE_NORMAL);
-				 */
+				executePolicy();
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -252,8 +254,6 @@ public class Operation {
 			editor.putString("policy_applied", "1");
 			editor.commit();
 			this.data = policy;
-			/*doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
-					REQUEST_MODE_NORMAL);*/
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			Editor editor = mainPref.edit();
@@ -328,17 +328,8 @@ public class Operation {
 				}
 			}
 
-			/*Editor editor = mainPref.edit();
-			editor.putString("policy_applied", "1");
-			editor.commit();
-			this.data = policy;
-			doTask(CommonUtilities.OPERATION_POLICY_MONITOR, "",
-					REQUEST_MODE_NORMAL);*/
 		} catch (Exception ex) {
-			/*ex.printStackTrace();
-			Editor editor = mainPref.edit();
-			editor.putString("policy_applied", "0");
-			editor.commit();*/
+			ex.printStackTrace();
 		}
 	}
 
@@ -372,11 +363,9 @@ public class Operation {
 			try {
 				latitude = gps.getLatitude();
 				longitude = gps.getLongitude();
-				// obj.put("ip",phoneState.getIpAddress());
-				// obj.put("battery_scale",battery.getScale()+"");
+
 				battery_obj.put("level", phoneState.getBatteryLevel());
-				// obj.put("battery_voltage",battery.getVoltage()+"");
-				// obj.put("battery_temp", battery.getTemp()+"");
+
 				inmemory_obj.put("total",
 						deviceInfo.getTotalInternalMemorySize());
 				inmemory_obj.put("available",
@@ -441,10 +430,6 @@ public class Operation {
 				longitude = gps.getLongitude();
 				obj.put("latitude", latitude);
 				obj.put("longitude", longitude);
-				/*
-				 * obj.put("latitude",ls.getLatitude());
-				 * obj.put("longitude",ls.getLongitude());
-				 */
 
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("code", CommonUtilities.OPERATION_DEVICE_LOCATION);
@@ -471,12 +456,10 @@ public class Operation {
 																	 * no system
 																	 * packages
 																	 */
-			// String apps[] = appList.getApplicationListasArray();
+
 			JSONArray jsonArray = new JSONArray();
 			int max = apps.size();
-			if (max > 10) {
-				//max = 10;
-			}
+
 			String apz = "";
 			Log.e("APP TOTAL : ", "" + max);
 			for (int i = 0; i < max; i++) {
@@ -492,9 +475,7 @@ public class Operation {
 				}
 				jsonArray.put(jsonObj);
 			}
-			/*
-			 * for(int i=0;i<apps.length;i++){ jsonArray.add(apps[i]); }
-			 */
+
 			JSONObject appsObj = new JSONObject();
 			try {
 				appsObj.put("apps", jsonArray);
@@ -521,8 +502,6 @@ public class Operation {
 
 		} else if (code_input.equals(CommonUtilities.OPERATION_LOCK_DEVICE)) {
 
-			// Toast.makeText(this, "Locking device...",
-			// Toast.LENGTH_LONG).show();
 			Log.d(TAG, "Locking device now");
 			try {
 				Map<String, String> params = new HashMap<String, String>();
@@ -552,8 +531,7 @@ public class Operation {
 
 		} else if (code_input.equals(CommonUtilities.OPERATION_WIPE_DATA)) {
 
-			// Toast.makeText(this, "Locking device...",
-			// Toast.LENGTH_LONG).show();
+
 			Log.d(TAG,
 					"RESETing device now - all user data will be ERASED to factory settings");
 			String pin = null;
@@ -603,7 +581,6 @@ public class Operation {
 			ComponentName demoDeviceAdmin = new ComponentName(context,
 					WSO2MobileDeviceAdminReceiver.class);
 
-			// data = intent.getStringExtra("data");
 			try {
 				Map<String, String> params = new HashMap<String, String>();
 				params.put("code", code_input);
@@ -663,7 +640,7 @@ public class Operation {
 					smsManager.sendTextMessage(recepient, null,
 							"Notification Receieved Successfully", null, null);
 				}
-				//generateNotification(context, notification);
+
 				Intent intent = new Intent(context, AlertActivity.class);
 				intent.putExtra("message", notification);
 				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -675,7 +652,7 @@ public class Operation {
 
 		} else if (code_input.equals(CommonUtilities.OPERATION_WIFI)) {
 			boolean wifistatus = false;
-			// data = intent.getStringExtra("data");
+
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -694,7 +671,6 @@ public class Operation {
 			inparams.put("msgID", token);
 			WiFiConfig config = new WiFiConfig(context);
 			try {
-				//wifistatus = setWifi(ssid, password);
 				wifistatus = config.saveWEPConfig(ssid, password);
 				if (wifistatus) {
 					inparams.put("status", "200");
@@ -723,7 +699,6 @@ public class Operation {
 		} else if (code_input.equals(CommonUtilities.OPERATION_DISABLE_CAMERA)) {
 
 			boolean camFunc = false;
-			// data = intent.getStringExtra("data");
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -805,7 +780,6 @@ public class Operation {
 				.equals(CommonUtilities.OPERATION_UNINSTALL_APPLICATION)) {
 
 			String packageName = "";
-			// data = intent.getStringExtra("data");
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -831,11 +805,10 @@ public class Operation {
 		} else if (code_input.equals(CommonUtilities.OPERATION_ENCRYPT_STORAGE)) {
 			boolean encryptFunc = true;
 			String pass = "";
-			// data = intent.getStringExtra("data");
+
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
-				// pass = (String)jobj.get("password");
 				if (!jobj.isNull("function")
 						&& jobj.get("function").toString()
 								.equalsIgnoreCase("encrypt")) {
@@ -849,8 +822,6 @@ public class Operation {
 							.toString());
 				}
 
-				// ComponentName cameraAdmin = new ComponentName(this,
-				// DemoDeviceAdminReceiver.class);
 				ComponentName admin = new ComponentName(context,
 						WSO2MobileDeviceAdminReceiver.class);
 				Map<String, String> params = new HashMap<String, String>();
@@ -860,8 +831,6 @@ public class Operation {
 				if (encryptFunc
 						&& devicePolicyManager.getStorageEncryptionStatus() != devicePolicyManager.ENCRYPTION_STATUS_UNSUPPORTED) {
 					if (devicePolicyManager.getStorageEncryptionStatus() == devicePolicyManager.ENCRYPTION_STATUS_INACTIVE) {
-						// devicePolicyManager.resetPassword(pass,
-						// DevicePolicyManager.RESET_PASSWORD_REQUIRE_ENTRY);
 						if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
 							devicePolicyManager.setStorageEncryption(admin,
 									encryptFunc);
@@ -1053,7 +1022,7 @@ public class Operation {
 		} else if (code_input.equals(CommonUtilities.OPERATION_WEBCLIP)) {
 			String appUrl = "";
 			String title = "";
-			// data = intent.getStringExtra("data");
+
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -1085,7 +1054,7 @@ public class Operation {
 			boolean b_alphanumeric, b_complex;
 			long timout;
 			Map<String, String> inparams = new HashMap<String, String>();
-			// data = intent.getStringExtra("data");
+
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -1169,14 +1138,6 @@ public class Operation {
 						Context.MODE_PRIVATE);
 				String policy = mainPref.getString("policy", "");
 				
-				/*if(!devicePolicyManager.isActivePasswordSufficient()){
-					if(policy!=null && policy!=""){
-						Intent intent = new Intent(context, AlertActivity.class);
-						intent.putExtra("message", "Your screen lock password doesn't meet current policy requirement. Please reset your passcode");
-						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-						context.startActivity(intent);
-					}
-				}*/
 				
 				inparams.put("code", code_input);
 				inparams.put("msgID", token);
@@ -1212,7 +1173,7 @@ public class Operation {
 			String emailname="", emailtype="", ic_username="", ic_password="", ic_hostname="";
 			long timout;
 			Map<String, String> inparams = new HashMap<String, String>();
-			// data = intent.getStringExtra("data");
+
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -1282,7 +1243,6 @@ public class Operation {
 				.equals(CommonUtilities.OPERATION_INSTALL_GOOGLE_APP)) {
 
 			String packageName = "";
-			// data = intent.getStringExtra("data");
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -1315,7 +1275,7 @@ public class Operation {
 			devicePolicyManager.setPasswordMinimumLength(demoDeviceAdmin, 3);
 			String pass = "";
 			Map<String, String> inparams = new HashMap<String, String>();
-			// data = intent.getStringExtra("data");
+
 			JSONParser jp = new JSONParser();
 			try {
 				JSONObject jobj = new JSONObject(data_input);
@@ -1385,14 +1345,14 @@ public class Operation {
 				JSONObject jobj = new JSONObject(this.data);
 				
 				sendjArray = jobj.getJSONArray("policies");
-				//sendjArray = new JSONArray(this.data);
+
 				int type = Integer.parseInt((String) jobj.get("type")
 						.toString().trim());
 				
 				if(type!=1 && type!=2 && type!=3){
 					type = 1;
 				}
-				//int type = 1;
+
 				Log.e("PASSING MSG ID : ",policy_token);
 				Log.e("PASSING CODE : ",code_input);
 				Log.e("PASSING TYPE : ",String.valueOf(type));
@@ -1405,7 +1365,7 @@ public class Operation {
 		} else if (code_input.equals(CommonUtilities.OPERATION_POLICY_REVOKE)) {
 			try {
 				Map<String, String> inparams = new HashMap<String, String>();
-				// data = intent.getStringExtra("data");
+
 				
 				inparams.put("code", code_input);
 				inparams.put("msgID", token);
@@ -1428,7 +1388,7 @@ public class Operation {
 																	 * no system
 																	 * packages
 																	 */
-			// String apps[] = appList.getApplicationListasArray();
+
 			JSONArray jsonArray = new JSONArray();
 			int max = apps.size();
 			if (max > 10) {
@@ -1436,13 +1396,10 @@ public class Operation {
 			}
 			String apz = "";
 			
-			JSONArray jArray = null;
+
 			try{
-				jArray = new JSONArray(data_input);
-				int appcount = 1;
-				for (int i = 0; i < jArray.length(); i++) {
-					JSONObject appsObj = (JSONObject) jArray
-							.getJSONObject(i);
+
+					JSONObject appsObj = new JSONObject(data_input);
 					JSONObject appObj = (JSONObject) appsObj.get("data");
 					String identity = (String) appObj.get("identity");
 					
@@ -1454,18 +1411,6 @@ public class Operation {
 							if(identity.trim().equals(apps.get(j).pname)){
 								jsonObj.put("notviolated", false);
 								jsonObj.put("package", apps.get(j).pname);
-								if(i<(jArray.length()-1)){
-									if(apps.get(j).appname!=null){
-										apz += appcount+". "+apps.get(j).appname + "\n";
-										appcount++;
-									}
-										
-								}else{
-									if(apps.get(j).appname!=null){
-										apz += appcount+". "+apps.get(j).appname;
-										appcount++;
-									}
-								}
 							}else{
 								jsonObj.put("notviolated", true);
 							}
@@ -1476,14 +1421,11 @@ public class Operation {
 						}
 						jsonArray.put(jsonObj);
 					}
-				}
 			}catch(Exception ex){
 				ex.printStackTrace();
 			}
 			
-			/*
-			 * for(int i=0;i<apps.length;i++){ jsonArray.add(apps[i]); }
-			 */
+
 			JSONObject appsObj = new JSONObject();
 			try {
 				appsObj.put("apps", jsonArray);
@@ -1506,10 +1448,7 @@ public class Operation {
 				String policy = mainPref.getString("policy", "");
 					if(policy!=null && policy!=""){
 						if(apz!=null || !apz.trim().equals("")){
-							/*Intent intent = new Intent(context, AlertActivity.class);
-							intent.putExtra("message", "Following apps are blacklisted by your MDM Admin, please remove them \n\n"+apz);
-							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
-							context.startActivity(intent);*/
+
 					}
 				}
 			} catch (JSONException e1) {
@@ -1520,42 +1459,6 @@ public class Operation {
 		}
 	}
 
-	/**
-	 * Set WiFi
-	 */
-	/*public boolean setWifi(String SSID, String password) {
-
-		WifiConfiguration wc = new WifiConfiguration();
-
-		wc.SSID = "\"{SSID}\"".replace("{SSID}", SSID);
-		wc.preSharedKey = "\"{PRESHAREDKEY}\"".replace("{PRESHAREDKEY}",
-				password);
-
-		wc.status = WifiConfiguration.Status.ENABLED;
-		wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-		wc.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-		wc.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-		wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-		wc.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-		wc.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-		wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-
-		WifiManager wifi = (WifiManager) context
-				.getSystemService(Context.WIFI_SERVICE);
-
-		int netId = wifi.addNetwork(wc);
-		wifi.enableNetwork(netId, true);
-
-		if (wifi.getConnectionInfo().getSSID() != null
-				&& wifi.getConnectionInfo().getSSID().equals(SSID)) {
-			Log.i("Hub", "WiFi is enabled AND active !");
-			Log.i("Hub", "SSID = " + wifi.getConnectionInfo().getSSID());
-			return true;
-		} else {
-			Log.i("Hub", "NO WiFi");
-			return false;
-		}
-	}*/
 
 	/**
 	 * Install an Application
@@ -1563,7 +1466,7 @@ public class Operation {
 	private void installApplication(JSONObject data_input, String code_input) {
 		String appUrl = "";
 		String type = "enterprise";
-		// data = intent.getStringExtra("data");
+	
 		JSONParser jp = new JSONParser();
 		try {
 			JSONObject jobj = data_input;

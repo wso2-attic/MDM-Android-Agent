@@ -301,7 +301,11 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getSupportMenuInflater().inflate(R.menu.sherlock_menu, menu);
+		if(CommonUtilities.DEBUG_MODE_ENABLED){
+			getSupportMenuInflater().inflate(R.menu.sherlock_menu_debug, menu);
+		}else{
+			getSupportMenuInflater().inflate(R.menu.sherlock_menu, menu);
+		}
 		return true;
 	}
 
@@ -362,6 +366,11 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 					getResources().getString(R.string.intent_extra_regid),
 					regId);
 			startActivity(intentIP);
+			return true;
+		case R.id.debug_log:
+			Intent intentDebug = new Intent(AlreadyRegisteredActivity.this,
+					LogActivity.class);
+			startActivity(intentDebug);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

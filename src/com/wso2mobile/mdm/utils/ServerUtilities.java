@@ -24,6 +24,7 @@ import com.wso2mobile.mdm.api.DeviceInfo;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.format.Time;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -94,7 +95,7 @@ public final class ServerUtilities {
 	private static final int MAX_ATTEMPTS = 2;
 	private static final int BACKOFF_MILLI_SECONDS = 2000;
 	private static final Random random = new Random();
-
+	private static LoggerCustom logger = null;
 	public static boolean isAuthenticate(String username, String password,
 			Context context) {
 		Map<String, String> params = new HashMap<String, String>();
@@ -353,7 +354,21 @@ public final class ServerUtilities {
 		for(Entry<String, String> entry : params_in.entrySet()){
 			params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));	
 		}*/
-		
+			
+		logger = new LoggerCustom(context);
+		Time now = new Time();
+		now.setToNow();
+		String log_in = logger.readFileAsString("wso2log.txt");
+		String to_write="";
+		if(CommonUtilities.DEBUG_MODE_ENABLED){
+	        if(log_in!=null && !log_in.equals("") && !log_in.equals("null")){
+	        	to_write="<br> AGENT TO SERVER AT "+now.hour+":"+now.minute+": <br> CODE : "+params_in.get("code").toString()+"<br>MSG ID : "+params_in.get("msgID").toString()+"<br>==========================================================<br>"+log_in;
+	        }else{
+	        	to_write="<br> AGENT TO SERVER AT "+now.hour+":"+now.minute+": <br> CODE : "+params_in.get("code").toString()+"<br>MSG ID : "+params_in.get("msgID").toString()+"<br>==========================================================<br>";
+	        }
+	        
+	        logger.writeStringAsFile(to_write, "wso2log.txt");
+		}
 		response = sendWithTimeWait("notifications", params_in, "POST",
 				context).get("response");
 		

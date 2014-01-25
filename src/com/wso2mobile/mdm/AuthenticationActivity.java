@@ -483,7 +483,7 @@ public class AuthenticationActivity extends SherlockActivity {
 
 			@Override
 			protected Void doInBackground(Void... params) {
-				if(txtDomain.getText()!=null && txtDomain.getText().toString().trim()!=""){
+				if(txtDomain.getText()!=null && !txtDomain.getText().toString().trim().equals("")){
 					state = ServerUtilities.isAuthenticate(username.getText().toString().trim()+"@"+txtDomain.getText().toString()
 							.trim(), password.getText().toString().trim(),
 							AuthenticationActivity.this);
