@@ -652,7 +652,7 @@ public class PolicyTester {
 								jsonObj.put("package", apps.get(j).pname);
 								if(apps.get(j).appname!=null){
 									appcount++;
-									apz = appcount+". "+apps.get(j).appname + "\n";									
+									apz = appcount+". "+apps.get(j).appname;									
 								}
 								
 								if(apz!=null || !apz.trim().equals("")){
