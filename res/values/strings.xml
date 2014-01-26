@@ -87,7 +87,7 @@
     <string name="error_heading_connection">Connection Error</string>
     <string name="error_registration_failed">Registration failed</string>
     <string name="error_unregistration_failed">Unregistration failed</string>
-    <string name="error_authorization_failed">Unregistration failed</string>
+    <string name="error_authorization_failed">Access Denied</string>
     <string name="error_enrollment_failed">Enrollment failed</string>
     <string name="error_enrollment_failed_detail">Enrollment failed, please contact administrator</string>
 

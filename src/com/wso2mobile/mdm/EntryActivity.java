@@ -83,6 +83,7 @@ public class EntryActivity extends Activity {
 		errorMessage.setText(getString(R.string.device_not_compatible_error));
 		if(!accessFlag){
 			errorMessage.setVisibility(View.VISIBLE);
+			showAlert(getResources().getString(R.string.device_not_compatible_error), getResources().getString(R.string.error_authorization_failed));
 		}
 
 		/*optionBtn.setOnClickListener(new OnClickListener() {
