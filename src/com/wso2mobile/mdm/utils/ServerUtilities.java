@@ -102,9 +102,6 @@ public final class ServerUtilities {
 		params.put("username", username);
 		params.put("password", password);
 		
-		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("username", username)); 
-		params.add(new BasicNameValuePair("password", password)); */
 		String response = "";
 		try {
 			response = sendWithTimeWait("users/authenticate", params,
@@ -191,7 +188,7 @@ public final class ServerUtilities {
 	public static HttpClient getCertifiedHttpClient(Context context) {
 	     try {
 	    	 KeyStore localTrustStore = KeyStore.getInstance("BKS");
-	    	 InputStream in = context.getResources().openRawResource(R.raw.mytruststore);
+	    	 InputStream in = context.getResources().openRawResource(R.raw.emm_truststore);
 	    	 localTrustStore.load(in, CommonUtilities.TRUSTSTORE_PASSWORD.toCharArray());
 
 	    	 SchemeRegistry schemeRegistry = new SchemeRegistry();
@@ -277,17 +274,6 @@ public final class ServerUtilities {
 			jsObject.put("imei", deviceInfo.getDeviceId());
 			jsObject.put("imsi", deviceInfo.getIMSINumber());
 			jsObject.put("model", deviceInfo.getDeviceModel());
-			//jsObject.put("email", deviceInfo.getEmail());
-			//jsObject.put("sdkversion", deviceInfo.getSdkVersion());
-
-		
-		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("regid", regId));	
-		params.add(new BasicNameValuePair("properties", jsObject.toString()));	
-		params.add(new BasicNameValuePair("email", deviceInfo.getEmail()));	
-		params.add(new BasicNameValuePair("osversion", osVersion));	
-		params.add(new BasicNameValuePair("platform", "Android"));	
-		params.add(new BasicNameValuePair("vendor", deviceInfo.getDeviceManufacturer()));	*/
 		
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
@@ -325,10 +311,7 @@ public final class ServerUtilities {
 		}
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("regid", regId);
-		
-		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("regid", regId));	*/
-		
+
 		String response = "";
 		boolean state=false;
 		try{
@@ -349,11 +332,6 @@ public final class ServerUtilities {
 	public static String pushData(Map<String, String> params_in, Context context) {
 		String response="";
 		try{
-		/*ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-
-		for(Entry<String, String> entry : params_in.entrySet()){
-			params.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));	
-		}*/
 			
 		logger = new LoggerCustom(context);
 		Time now = new Time();
@@ -452,28 +430,20 @@ public final class ServerUtilities {
 				GCMRegistrar.setRegisteredOnServer(context, true);
 				String message = context.getString(R.string.server_registered);
 				Log.v("Check Reg Success", message.toString());
-				// displayMessage(context, message);
+
 				return responseFinal;
 			} catch (Exception e) {
 				Log.e(TAG, "Failed to register on attempt " + i, e);
 				if (i == MAX_ATTEMPTS) {
 					break;
 				}
-				/*
-				 * try { Log.d(TAG, "Sleeping for " + backoff +
-				 * " ms before retry"); Thread.sleep(backoff); } catch
-				 * (InterruptedException e1) { // Activity finished before we
-				 * complete - exit. Log.d(TAG,
-				 * "Thread interrupted: abort remaining retries!");
-				 * Thread.currentThread().interrupt(); return null; } //
-				 * increase backoff exponentially backoff *= 2;
-				 */
+
 				return responseFinal;
 			}
 		}
 		String message = context.getString(R.string.server_register_error,
 				MAX_ATTEMPTS);
-		// CommonUtilities.displayMessage(context, message);
+
 		return responseFinal;
 	}
 	
@@ -523,7 +493,7 @@ public final class ServerUtilities {
 		}
 		StringBuilder bodyBuilder = new StringBuilder();
 		Iterator<Entry<String, String>> iterator = params.entrySet().iterator();
-		// constructs the POST body using the parameters
+
 		while (iterator.hasNext()) {
 			Entry<String, String> param = iterator.next();
 			bodyBuilder.append(param.getKey()).append('=')
@@ -540,7 +510,7 @@ public final class ServerUtilities {
 		try {
 
 			if (url.getProtocol().toLowerCase().equals("https")) {
-				//trustAllHosts();
+
 				sConn = (HttpsURLConnection) url.openConnection();
 				sConn = getTrustedConnection(context, sConn);
 				sConn.setHostnameVerifier(WSO2MOBILE_HOST);
@@ -549,14 +519,14 @@ public final class ServerUtilities {
 			} else {
 				conn = (HttpURLConnection) url.openConnection();
 			}
-			// conn = (HttpURLConnection) url.openConnection();
+
 			conn.setDoOutput(true);
 			conn.setUseCaches(false);
 			conn.setFixedLengthStreamingMode(bytes.length);
 			conn.setRequestMethod(option);
 			conn.setRequestProperty("Content-Type",
 					"application/x-www-form-urlencoded;charset=UTF-8");
-			// conn.setRequestProperty("User-Agent","Mozilla/5.0 ( compatible ) ");
+
 			conn.setRequestProperty("Accept", "*/*");
 			conn.setRequestProperty("Connection", "close");
 			// post the request
@@ -643,7 +613,7 @@ public final class ServerUtilities {
 			localTrustStore = KeyStore.getInstance("BKS");
 
 			InputStream in = context.getResources().openRawResource(
-					R.raw.mytruststore);
+					R.raw.emm_truststore);
 
 			localTrustStore.load(in, CommonUtilities.TRUSTSTORE_PASSWORD.toCharArray());
 
