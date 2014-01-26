@@ -421,7 +421,7 @@ public class PolicyTester {
 			JSONObject jobjx = new JSONObject();
 			int attempts, length, history, specialChars;
 			String alphanumeric, complex;
-			boolean b_alphanumeric=false, b_complex=false;
+			boolean b_alphanumeric=false, b_complex=false, is_comply=true, comply_fac1=true, comply_fac2=true, comply_fac3=true, comply_fac4=true, comply_fac5=true, comply_fac6=true, comply_fac7=true;
 			long timout;
 			Map<String, String> inparams = new HashMap<String, String>();
 			// data = intent.getStringExtra("data");
@@ -431,19 +431,10 @@ public class PolicyTester {
 				jobjpass.put("code", CommonUtilities.OPERATION_CHANGE_LOCK_CODE);
 				
 				if(devicePolicyManager.isActivePasswordSufficient()){
-					jobjpass.put("status", true);
+					is_comply=true;
 					//finalArray.put(jobjpass);
 				}else{
-					jobjpass.put("status", false);
-					//finalArray.put(jobjpass);
-					if(usermessage!=null && usermessage!=""){
-						 usermessage+="\nYour screen lock password doesn't meet current policy requirement. Please reset your passcode \n";
-					}else{
-						 usermessage+="Your screen lock password doesn't meet current policy requirement. Please reset your passcode \n";
-					}
-							/*Intent intent = new Intent(context, AlertActivity.class);
-							intent.putExtra("message", "Your screen lock password doesn't meet current policy requirement. Please reset your passcode");
-							intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);*/
+					is_comply=false;
 				}
 				
 				JSONObject jobj = new JSONObject(data);
@@ -454,12 +445,12 @@ public class PolicyTester {
 					if(IS_ENFORCE){
 					devicePolicyManager.setMaximumFailedPasswordsForWipe(
 							demoDeviceAdmin, attempts);
-					jobjx.put("status", true);
+					comply_fac1=true;
 					}else{
 						if(devicePolicyManager.getMaximumFailedPasswordsForWipe(demoDeviceAdmin) != attempts){
-							jobjx.put("status", false);
+							comply_fac1=false;
 						}else{
-							jobjx.put("status", true);
+							comply_fac1=true;
 						}
 					}
 				}
@@ -469,12 +460,12 @@ public class PolicyTester {
 					if(IS_ENFORCE){
 					devicePolicyManager.setPasswordMinimumLength(
 							demoDeviceAdmin, length);
-					jobjx.put("status", true);
+					comply_fac2=true;
 					}else{
 						if(devicePolicyManager.getPasswordMinimumLength(demoDeviceAdmin) != length){
-							jobjx.put("status", false);
+							comply_fac2=false;
 						}else{
-							jobjx.put("status", true);
+							comply_fac2=true;
 						}
 					}
 				}
@@ -485,12 +476,12 @@ public class PolicyTester {
 					if(IS_ENFORCE){
 					devicePolicyManager.setPasswordHistoryLength(
 							demoDeviceAdmin, history);
-					jobjx.put("status", true);
+					comply_fac3=true;
 					}else{
 						if(devicePolicyManager.getPasswordHistoryLength(demoDeviceAdmin) != history){
-							jobjx.put("status", false);
+							comply_fac3=false;
 						}else{
-							jobjx.put("status", true);
+							comply_fac3=true;
 						}
 					}
 				}
@@ -502,12 +493,12 @@ public class PolicyTester {
 					if(IS_ENFORCE){
 					devicePolicyManager.setPasswordMinimumSymbols(
 							demoDeviceAdmin, specialChars);
-					jobjx.put("status", true);
+					comply_fac4=true;
 					}else{
 						if(devicePolicyManager.getPasswordMinimumSymbols(demoDeviceAdmin) != specialChars){
-							jobjx.put("status", false);
+							comply_fac4=false;
 						}else{
-							jobjx.put("status", true);
+							comply_fac4=true;
 						}
 					}
 				}
@@ -531,19 +522,19 @@ public class PolicyTester {
 								.setPasswordQuality(
 										demoDeviceAdmin,
 										DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC);
-						jobjx.put("status", true);
+						comply_fac5=true;
 						}else{
 							if(devicePolicyManager.getPasswordQuality(demoDeviceAdmin) != DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC){
-								jobjx.put("status", false);
+								comply_fac5=false;
 							}else{
-								jobjx.put("status", true);
+								comply_fac5=true;
 							}
 						}
 					}else{
 						if(devicePolicyManager.getPasswordQuality(demoDeviceAdmin) == DevicePolicyManager.PASSWORD_QUALITY_ALPHANUMERIC){
-							jobjx.put("status", false);
+							comply_fac5=false;
 						}else{
-							jobjx.put("status", true);
+							comply_fac5=true;
 						}
 					}
 				}
@@ -566,19 +557,19 @@ public class PolicyTester {
 						if(IS_ENFORCE){
 						devicePolicyManager.setPasswordQuality(demoDeviceAdmin,
 								DevicePolicyManager.PASSWORD_QUALITY_COMPLEX);
-						jobjx.put("status", true);
+						comply_fac6=true;
 						}else{
 							if(devicePolicyManager.getPasswordQuality(demoDeviceAdmin) != DevicePolicyManager.PASSWORD_QUALITY_COMPLEX){
-								jobjx.put("status", false);
+								comply_fac6=false;
 							}else{
-								jobjx.put("status", true);
+								comply_fac6=true;
 							}
 						}
 					}else{
 						if(devicePolicyManager.getPasswordQuality(demoDeviceAdmin) == DevicePolicyManager.PASSWORD_QUALITY_COMPLEX){
-							jobjx.put("status", false);
+							comply_fac6=false;
 						}else{
-							jobjx.put("status", true);
+							comply_fac6=true;
 						}
 					}
 				}
@@ -591,20 +582,25 @@ public class PolicyTester {
 					if(IS_ENFORCE){
 					devicePolicyManager.setPasswordExpirationTimeout(
 							demoDeviceAdmin, timout);
-					jobjx.put("status", true);
+					comply_fac7=true;
 					}else{
-						if(devicePolicyManager.getPasswordExpirationTimeout(demoDeviceAdmin) != timout){
-							jobjx.put("status", false);
-						}else{
-							jobjx.put("status", true);
+						if(devicePolicyManager.getPasswordExpirationTimeout(demoDeviceAdmin) != timout){							
+							comply_fac7=false;
+						}else{							
+							comply_fac7=true;
 						}
 					}
 				}
 				
-				if(devicePolicyManager.isActivePasswordSufficient()){
-					jobjx.put("status", true);
-				}else{
+				if(!is_comply || !comply_fac1 || !comply_fac2 || !comply_fac3 || !comply_fac4 || !comply_fac5 || !comply_fac6 || !comply_fac7){
 					jobjx.put("status", false);
+					if(usermessage!=null && usermessage!=""){
+						 usermessage+="\nYour screen lock password doesn't meet current policy requirement. Please reset your passcode \n";
+					}else{
+						 usermessage+="Your screen lock password doesn't meet current policy requirement. Please reset your passcode \n";
+					}
+				}else{
+					jobjx.put("status", true);
 				}
 				
 				
