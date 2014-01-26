@@ -279,11 +279,11 @@ public class PolicyTester {
 							jobj.put("status", true);
 						}else{
 							jobj.put("status", false);
-							if(usermessage!=null && usermessage!=""){
+							/*if(usermessage!=null && usermessage!=""){
 								usermessage+="\nYour camera should be deactivated according to the policy, please deactivate your camera\n";
 							}else{
 								usermessage+="Your camera should be deactivated according to the policy, please deactivate your camera \n";
-							}
+							}*/
 						}
 					}
 				}else{
