@@ -1036,7 +1036,7 @@ public class Operation {
 			try {
 				JSONObject jobj = new JSONObject(data_input);
 				Log.v("WEBCLIP DATA : ", data.toString());
-				appUrl = (String) jobj.get("url");
+				appUrl = (String) jobj.get("identity");
 				title = (String) jobj.get("title");
 				Log.v("Web App URL : ", appUrl);
 				Map<String, String> params = new HashMap<String, String>();
