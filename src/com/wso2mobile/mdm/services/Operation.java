@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.google.android.gcm.GCMRegistrar;
 import com.wso2mobile.mdm.AlertActivity;
 import com.wso2mobile.mdm.NotifyActivity;
 import com.wso2mobile.mdm.R;
@@ -53,6 +54,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.telephony.SmsManager;
 import android.text.format.Time;
@@ -80,7 +82,7 @@ public class Operation {
 	private static final String TAG = "Operation Handler";
 	static final int ACTIVATION_REQUEST = 47;
 	static final int REQUEST_CODE_START_ENCRYPTION = 1;
-
+	AsyncTask<Void, Void, Void> mRegisterTask;
 	static final int REQUEST_MODE_BUNDLE = 0;
 	static final int REQUEST_MODE_NORMAL = 1;
 	Intent intent;
@@ -566,6 +568,13 @@ public class Operation {
 				if (pin.trim().equals(pinSaved.trim())) {
 					Toast.makeText(context, "Device is being wiped",
 							Toast.LENGTH_LONG).show();
+					startUnRegistration(context);
+					try {
+	    				Thread.sleep(4000);
+	    			} catch (InterruptedException e) {
+	    				// TODO Auto-generated catch block
+	    				e.printStackTrace();
+	    			}
 					devicePolicyManager.wipeData(ACTIVATION_REQUEST);
 				} else {
 					Toast.makeText(context,
@@ -1517,6 +1526,97 @@ public class Operation {
 		Log.v("VOLUME AFTER: ",
 				"" + audioManager.getStreamVolume(AudioManager.STREAM_RING));
 
+	}
+	
+	public void startUnRegistration(Context app_context){
+		final Context context = app_context;
+		try{
+		mRegisterTask = new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+            	 Map<String, String> paramss = new HashMap<String, String>();
+            	 SharedPreferences mainPref = context
+         				.getSharedPreferences(
+         						context
+         						.getResources().getString(
+         								R.string.shared_pref_package),
+         						Context.MODE_PRIVATE);
+            	 String regId="";
+            	 regId = mainPref.getString(context
+								.getResources().getString(R.string.shared_pref_regId), "");
+            	 if(regId == null || regId.equals("")){
+         			regId = GCMRegistrar.getRegistrationId(context);
+         		}
+                 paramss.put("regid", regId);
+            	//ServerUtilities.sendToServer(context, "/UNRegister", paramss);
+                 boolean unregState=ServerUtilities.unregister(regId, context);
+                return null;
+            }
+            
+            //ProgressDialog progressDialog;
+            //declare other objects as per your need
+            @Override
+            protected void onPreExecute()
+            {
+                //progressDialog= ProgressDialog.show(context, "Unregistering Device","Please wait", true);
+
+                //do initialization of required objects objects here                
+            };    
+
+
+            @Override
+            protected void onPostExecute(Void result) {
+	            	try {
+	            		SharedPreferences mainPref = context
+								.getSharedPreferences(
+										context
+										.getResources().getString(
+												R.string.shared_pref_package),
+										Context.MODE_PRIVATE);
+						Editor editor = mainPref.edit();
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_policy), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_isagreed), "0");
+						editor.putString(
+								context
+								.getResources().getString(R.string.shared_pref_regId), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_registered), "0");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_ip), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_sender_id), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_eula), "");
+						
+						editor.commit();
+	        		} catch (Exception e) {
+	        			// TODO Auto-generated catch block
+	        			e.printStackTrace();
+	        		}
+                mRegisterTask = null;
+                //progressDialog.dismiss();
+            }
+
+        };
+        mRegisterTask.execute(null, null, null);
+		}catch(Exception ex){
+			ex.printStackTrace();
+		}
 	}
 
 	/**

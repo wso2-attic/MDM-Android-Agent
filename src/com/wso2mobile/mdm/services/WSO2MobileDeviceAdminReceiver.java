@@ -118,14 +118,42 @@ public class WSO2MobileDeviceAdminReceiver extends DeviceAdminReceiver {
             @Override
             protected void onPostExecute(Void result) {
 	            	try {
-	        			SharedPreferences mainPref = context.getSharedPreferences("com.mdm",
-	        					Context.MODE_PRIVATE);
-	        			Editor editor = mainPref.edit();
-	        			editor.putString("policy", "");
-	        			editor.putString("isAgreed", "0");
-	        			editor.putString("registered","0");	
-	        			editor.putString("ip","");
-	        			editor.commit();
+	            		SharedPreferences mainPref = context
+								.getSharedPreferences(
+										context
+										.getResources().getString(
+												R.string.shared_pref_package),
+										Context.MODE_PRIVATE);
+						Editor editor = mainPref.edit();
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_policy), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_isagreed), "0");
+						editor.putString(
+								context
+								.getResources().getString(R.string.shared_pref_regId), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_registered), "0");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_ip), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_sender_id), "");
+						editor.putString(
+								context
+								.getResources().getString(
+										R.string.shared_pref_eula), "");
+						
+						editor.commit();
 	        		} catch (Exception e) {
 	        			// TODO Auto-generated catch block
 	        			e.printStackTrace();
