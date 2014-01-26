@@ -125,6 +125,16 @@ public class SettingsActivity extends Activity {
 			}
 		}
 	};
+	
+	@Override
+	public void onBackPressed() {
+		Intent i = new Intent();
+		i.setAction(Intent.ACTION_MAIN);
+		i.addCategory(Intent.CATEGORY_HOME);
+		this.startActivity(i);
+		// finish();
+		super.onBackPressed();
+	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

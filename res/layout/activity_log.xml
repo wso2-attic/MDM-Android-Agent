@@ -9,13 +9,9 @@
     <LinearLayout android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-    <TextView
-        android:id="@+id/txtLog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"/>
     <LinearLayout android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:orientation="horizontal">
     <Button
         android:id="@+id/btnRefresh"
@@ -31,7 +27,11 @@
         android:text="Reset"
         android:textColorHint="@color/black" />
     </LinearLayout>
-
+    <TextView
+        android:id="@+id/txtLog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"/>
     </LinearLayout>
   
 </ScrollView>
