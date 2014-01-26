@@ -104,6 +104,7 @@
     <string name="dialog_init_middle">Your device is a </string>
     <string name="dialog_init_end"> device, are you sure you want to proceed ?</string>
     <string name="dialog_init_end_general"> are you sure you want to proceed ?</string>
+    <string name="dialog_unregister">You are trying to unregister from MDM. Are you sure you want to proceed ?</string>
 
     <!-- REGISTRATION -->
     <string name="register_button_text">Register</string>

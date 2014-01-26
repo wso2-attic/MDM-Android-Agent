@@ -147,10 +147,22 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 			e.printStackTrace();
 		}
 
-		// optionBtn = (ImageView) findViewById(R.id.option_button);
-		// optionBtn.setTag(TAG_BTN_OPTIONS);
-		// optionBtn.setOnClickListener(onClickListener_BUTTON_CLICKED);
 	}
+	
+	DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			switch (which) {
+			case DialogInterface.BUTTON_POSITIVE:
+				dialog.dismiss();
+				break;
+
+			case DialogInterface.BUTTON_NEGATIVE:
+				startUnRegistration();
+				break;
+			}
+		}
+	};
 
 	OnClickListener onClickListener_BUTTON_CLICKED = new OnClickListener() {
 
@@ -163,11 +175,14 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 			switch (iTag) {
 
 			case TAG_BTN_UNREGISTER:
-				startUnRegistration();
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						AlreadyRegisteredActivity.this);
+				builder.setMessage(getResources().getString(R.string.dialog_unregister))
+						.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+						.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
 				break;
 
 			case TAG_BTN_OPTIONS:
-				// startOptionActivity();
 				break;
 			case TAG_BTN_RE_REGISTER:
 				Intent intent = new Intent(AlreadyRegisteredActivity.this,
