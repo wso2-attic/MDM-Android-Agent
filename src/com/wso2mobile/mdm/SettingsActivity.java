@@ -139,10 +139,11 @@ public class SettingsActivity extends Activity {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AlreadyRegisteredActivity.class.getSimpleName())) {
-    		Intent intent = new Intent(SettingsActivity.this,AlreadyRegisteredActivity.class);
-    		intent.putExtra(getResources().getString(R.string.intent_extra_from_activity), SettingsActivity.class.getSimpleName());
-    		intent.putExtra(getResources().getString(R.string.intent_extra_regid), REG_ID);
-    		startActivity(intent);
+			Intent i = new Intent();
+	    	i.setAction(Intent.ACTION_MAIN);
+	    	i.addCategory(Intent.CATEGORY_HOME);
+	    	this.startActivity(i);
+	    	this.finish();
     		return true;
 	    }else if (keyCode == KeyEvent.KEYCODE_BACK && FROM_ACTIVITY != null && FROM_ACTIVITY.equals(AuthenticationActivity.class.getSimpleName())) {
     		/*Intent intent = new Intent(SettingsActivity.this,AuthenticationActivity.class);

@@ -488,7 +488,7 @@ public class Operation {
 						CommonUtilities.OPERATION_GET_APPLICATION_LIST);
 				params.put("msgID", token);
 				params.put("status", "200");
-				params.put("data", jsonArray.toString());
+				params.put("data", Uri.encode(jsonArray.toString()));
 				Log.e("PASSING MSG ID : ",token);
 				Log.e("PASSING CODE : ",code_input);
 				if (mode == CommonUtilities.MESSAGE_MODE_GCM) {
