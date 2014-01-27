@@ -512,7 +512,7 @@ public class AlreadyRegisteredActivity extends SherlockActivity {
 		builder.setPositiveButton(getResources().getString(R.string.button_ok),
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {
-						cancelEntry();
+						//cancelEntry();
 						dialog.cancel();
 					}
 				});
