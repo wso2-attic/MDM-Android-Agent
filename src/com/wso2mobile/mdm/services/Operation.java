@@ -1475,6 +1475,7 @@ public class Operation {
 	private void installApplication(JSONObject data_input, String code_input) {
 		String appUrl = "";
 		String type = "enterprise";
+		String os = null;
 	
 		JSONParser jp = new JSONParser();
 		try {
@@ -1483,6 +1484,11 @@ public class Operation {
 			if (jobj.get("type") != null) {
 				type = (String) jobj.get("type");
 			}
+			
+			if (jobj.get("os") != null) {
+				os = (String) jobj.get("os");
+			}
+			
 			Log.v("App URL : ", appUrl);
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("code", code_input);
@@ -1496,14 +1502,36 @@ public class Operation {
 			}
 
 			if (type.equalsIgnoreCase("Enterprise")) {
-				appList.installApp(appUrl);
+				if(os!=null){
+					if(os.equalsIgnoreCase("android")){
+						appList.installApp(appUrl);
+					}
+				}else{
+					appList.installApp(appUrl);
+				}			
 			} else if (type.equalsIgnoreCase("Market")) {
-				Intent intent = new Intent(Intent.ACTION_VIEW);
-				intent.setData(Uri.parse("market://details?id=" + appUrl));
-				intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				context.startActivity(intent);
+				if(os!=null){
+					if(os.equalsIgnoreCase("android")){
+						Intent intent = new Intent(Intent.ACTION_VIEW);
+						intent.setData(Uri.parse("market://details?id=" + appUrl));
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						context.startActivity(intent);
+					}
+				}else{
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse("market://details?id=" + appUrl));
+					intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					context.startActivity(intent);
+				}	
+				
 			} else {
-				appList.installApp(appUrl);
+				if(os!=null){
+					if(os.equalsIgnoreCase("android")){
+						appList.installApp(appUrl);
+					}
+				}else{
+					appList.installApp(appUrl);
+				}
 			}
 
 		} catch (Exception e) {
