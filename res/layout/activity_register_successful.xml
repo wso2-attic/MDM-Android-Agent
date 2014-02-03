@@ -32,22 +32,6 @@
 		</RelativeLayout>
 	</RelativeLayout> -->
 	
-  		<!--  Header  Starts-->
-  		<LinearLayout android:id="@+id/header"
-  				android:layout_width="fill_parent"
-  				android:layout_height="wrap_content"
-  				android:background="@layout/header_gradient" 
-  				android:paddingTop="5dip"
-  				android:visibility="gone"
-  				android:paddingBottom="5dip">
-  				<!-- Logo Start-->
-  				<ImageView android:src="@drawable/logo"
-  							android:layout_width="wrap_content"
-  							android:layout_height="wrap_content"
-  							android:layout_marginLeft="10dip"/>
-  				<!-- Logo Ends -->
-  		</LinearLayout>
-  		<!--  Header Ends -->  
   		<!-- Footer Start 
   		<LinearLayout android:id="@+id/footer"
   				android:layout_width="wrap_content"

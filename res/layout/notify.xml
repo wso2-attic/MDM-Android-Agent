@@ -31,28 +31,6 @@
                   android:contentDescription="@string/string_content" />
           </RelativeLayout>
       </RelativeLayout>
-
-      <!-- Header  Starts -->
-
-      <LinearLayout
-          android:id="@+id/header"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content"
-          android:background="@layout/header_gradient"
-          android:paddingBottom="5dip"
-          android:paddingTop="5dip"
-          android:visibility="gone" >
-
-          <!-- Logo Start -->
-
-          <ImageView
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_marginLeft="10dip"
-              android:src="@drawable/logo" />
-          <!-- Logo Ends -->
-      </LinearLayout>
-      <!-- Header Ends -->
       <!-- Footer Start -->
 
       <LinearLayout
@@ -61,6 +39,7 @@
           android:layout_height="wrap_content"
           android:layout_alignParentBottom="true"
           android:layout_centerHorizontal="true"
+          android:orientation="vertical"
           android:layout_margin="10dp"
           android:background="@drawable/repeat_bg" >
       </LinearLayout>
