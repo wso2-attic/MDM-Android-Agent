@@ -45,7 +45,7 @@ import android.widget.Toast;
  * method onEnabled().
  */
 public class WSO2DeviceAdminReceiver extends DeviceAdminReceiver {
-	static final String TAG = "DemoDeviceAdminReceiver";
+	static final String TAG = "WSO2DeviceAdminReceiver";
 	AsyncTask<Void, Void, Void> mRegisterTask;
 	String regId="";
 	Operation operation;

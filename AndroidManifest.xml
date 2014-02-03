@@ -107,7 +107,7 @@
             <!-- This is required this receiver to become device admin component. -->
             <meta-data
                 android:name="android.app.device_admin"
-                android:resource="@xml/wso2mobile_device_admin" >
+                android:resource="@xml/wso2_device_admin" >
             </meta-data>
         </receiver>
         <receiver android:name="com.wso2.mobile.mdm.services.SMSReceiver" >
