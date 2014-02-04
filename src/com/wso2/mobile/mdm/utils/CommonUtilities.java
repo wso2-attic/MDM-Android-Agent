@@ -13,7 +13,7 @@
  ~ See the License for the specific language governing permissions and
  ~ limitations under the License.
 */
-package com.wso2mobile.mdm.utils;
+package com.wso2.mobile.mdm.utils;
 
 import android.content.Context;
 import android.content.Intent;
