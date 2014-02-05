@@ -1481,11 +1481,11 @@ public class Operation {
 		try {
 			JSONObject jobj = data_input;
 			appUrl = (String) jobj.get("identity");
-			if (jobj.get("type") != null) {
+			if (!jobj.isNull("type")) {
 				type = (String) jobj.get("type");
 			}
 			
-			if (jobj.get("os") != null) {
+			if (!jobj.isNull("os")) {
 				os = (String) jobj.get("os");
 			}
 			
@@ -1502,7 +1502,7 @@ public class Operation {
 			}
 
 			if (type.equalsIgnoreCase("Enterprise")) {
-				if(os!=null){
+				if(os != null){
 					if(os.equalsIgnoreCase("android")){
 						appList.installApp(appUrl);
 					}
@@ -1510,7 +1510,7 @@ public class Operation {
 					appList.installApp(appUrl);
 				}			
 			} else if (type.equalsIgnoreCase("Market")) {
-				if(os!=null){
+				if(os != null){
 					if(os.equalsIgnoreCase("android")){
 						Intent intent = new Intent(Intent.ACTION_VIEW);
 						intent.setData(Uri.parse("market://details?id=" + appUrl));
@@ -1525,7 +1525,7 @@ public class Operation {
 				}	
 				
 			} else {
-				if(os!=null){
+				if(os != null){
 					if(os.equalsIgnoreCase("android")){
 						appList.installApp(appUrl);
 					}
