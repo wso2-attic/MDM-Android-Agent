@@ -27,9 +27,12 @@
     <string name="title_activity_register_successful">RegisterSuccessful</string>
     <string name="title_activity_entry">Entry</string>
     <string name="title_activity_all_ready_registered">AllReadyRegistered</string>
+    <string name="title_head_authentication_error">Authentication Failed</string>
     <string name="device_admin_enabled">Device Admin Enabled</string>
     <string name="device_admin_disabled">Device Admin Disabled</string>
-    <string name="device_not_compatible_error">Your device should not be a rooted device and your OS version should be greater than Android 2.2 in order to run this application</string>
+    <string name="device_not_compatible_error">You are not allowed to enroll because your device is rooted and device OS version is older than 4.0.3</string>
+    <string name="device_not_compatible_error_os">You are not allowed to enroll because your device is rooted</string>
+    <string name="device_not_compatible_error_root">You are not allowed to enroll because your device OS version is older than 4.0.3</string>
     <string name="title_activity_authentication">Authentication</string>
     <string name="title_activity_authentication_error">AuthenticationError</string>
     <string name="title_activity_notification">NotificationActivity</string>
@@ -90,13 +93,14 @@
     <string name="error_authorization_failed">Access Denied</string>
     <string name="error_enrollment_failed">Enrollment failed</string>
     <string name="error_enrollment_failed_detail">Enrollment failed, please contact administrator</string>
+    <string name="error_auth_failed_detail">Authentication failed due to a connection failure please check your network connection and try again.</string>
 
     <!-- DIALOG TITLES AND MESSAGES -->
     <string name="dialog_authenticate">Authenticating</string>
     <string name="dialog_please_wait">Please wait</string>
     <string name="dialog_checking_reg">Checking Registration Info</string>
     <string name="dialog_sender_id">Retrieving server settings</string>
-    <string name="dialog_license_agreement">Retrieving license agreement</string>
+    <string name="dialog_license_agreement">Retrieving policy agreement</string>
     <string name="dialog_enrolling">Enrolling Device</string>
     <string name="dialog_pin_confirmation">Are you sure you want to set </string>
     <string name="dialog_pin_confirmation_end"> as your PIN code?</string>

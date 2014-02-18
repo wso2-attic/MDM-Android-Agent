@@ -96,8 +96,10 @@ public final class ServerUtilities {
 	private static final int BACKOFF_MILLI_SECONDS = 2000;
 	private static final Random random = new Random();
 	private static LoggerCustom logger = null;
-	public static boolean isAuthenticate(String username, String password,
+	
+	public static Map<String, String> isAuthenticate(String username, String password,
 			Context context) {
+		Map<String, String> _response = new HashMap<String, String>();
 		Map<String, String> params = new HashMap<String, String>();
 		params.put("username", username);
 		params.put("password", password);
@@ -107,13 +109,19 @@ public final class ServerUtilities {
 			response = sendWithTimeWait("users/authenticate", params,
 					"POST", context).get("response");
 			if (response.trim().contains(CommonUtilities.REQUEST_SUCCESSFUL)) {
-				return true;
+				_response.put("status", "1");
+				_response.put("message", "Authentication Successful");
+				return _response;
 			} else {
-				return false;
+				_response.put("status", "2");
+				_response.put("message", "Authentication failed, please check your credentials and try again.");
+				return _response;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			return false;
+			_response.put("status", "0");
+			_response.put("message", "Authentication failed due to a connection failure do you want to try again?");
+			return _response;
 		}
 	}
 

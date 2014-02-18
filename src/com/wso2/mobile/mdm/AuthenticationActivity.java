@@ -15,6 +15,8 @@
 */
 package com.wso2.mobile.mdm;
 
+import java.util.Map;
+
 import com.actionbarsherlock.app.SherlockActivity;
 import com.actionbarsherlock.view.MenuItem;
 import com.google.android.gcm.GCMRegistrar;
@@ -470,6 +472,27 @@ public class AuthenticationActivity extends SherlockActivity {
 			startActivity(intent);
 		}
 	}
+	
+	public void showAuthErrorMessage(String message, String title) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(context);
+		builder.setMessage(message);
+		builder.setTitle(title);
+		builder.setCancelable(true);
+		builder.setPositiveButton(getResources().getString(R.string.button_ok), new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				dialog.dismiss();
+			}
+		});
+		/*
+		 * builder1.setNegativeButton("No", new
+		 * DialogInterface.OnClickListener() { public void
+		 * onClick(DialogInterface dialog, int id) { dialog.cancel(); } });
+		 */
+
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+
 
 	public void startAuthentication() {
 		final Context context = AuthenticationActivity.this;
@@ -480,7 +503,7 @@ public class AuthenticationActivity extends SherlockActivity {
 		editor.commit();
 		
 		mRegisterTask = new AsyncTask<Void, Void, Void>() {
-			boolean state = false;
+			Map<String, String> state = null;
 
 			@Override
 			protected Void doInBackground(Void... params) {
@@ -513,16 +536,30 @@ public class AuthenticationActivity extends SherlockActivity {
 				if (progressDialog != null && progressDialog.isShowing()) {
 					progressDialog.dismiss();
 				}
-				if (state) {
+				if (state!=null && state.get("status").trim().equals("1")) {
 					fetchLicense();
 					
 				} else {
-					Intent intent = new Intent(AuthenticationActivity.this,
-							AuthenticationErrorActivity.class);
-					intent.putExtra(getResources().getString(R.string.intent_extra_from_activity),
-							AuthenticationActivity.class.getSimpleName());
-					intent.putExtra(getResources().getString(R.string.intent_extra_regid), regId);
-					startActivity(intent);
+					if(state!=null && !state.get("message").trim().equals("")){
+						if(state.get("status").trim().equals("0")){
+							AlertDialog.Builder builder = new AlertDialog.Builder(
+									AuthenticationActivity.this);
+							builder.setTitle(getResources().getString(R.string.title_head_authentication_error));
+							builder.setMessage(state.get("message"))
+									.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+									.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
+						}else{
+							showAuthErrorMessage(state.get("message"), getResources().getString(R.string.title_head_authentication_error));
+						}
+					}else{
+						AlertDialog.Builder builder = new AlertDialog.Builder(
+								AuthenticationActivity.this);
+						builder.setTitle(getResources().getString(R.string.title_head_authentication_error));
+						builder.setMessage(getResources().getString(R.string.error_auth_failed_detail))
+								.setNegativeButton(getResources().getString(R.string.info_label_rooted_answer_yes), dialogClickListener)
+								.setPositiveButton(getResources().getString(R.string.info_label_rooted_answer_no), dialogClickListener).show();
+					}
+
 				}
 				mRegisterTask = null;
 				progressDialog.dismiss();

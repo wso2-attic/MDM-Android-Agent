@@ -105,6 +105,17 @@
           android:background="@drawable/btn_orange"
           android:layout_below="@+id/editText1"
           android:text="Start Registration" />
+      
+      <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:layout_margin="10dp"
+        android:textColor="@android:color/background_dark"
+        android:gravity="center"
+        android:text="Welcome" />
 
   </RelativeLayout>
 

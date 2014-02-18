@@ -15,6 +15,7 @@
 */
 package com.wso2.mobile.mdm;
 
+import com.wso2.mobile.mdm.api.DeviceInfo;
 import com.wso2.mobile.mdm.utils.CommonUtilities;
 import com.wso2.mobile.mdm.utils.ServerUtilities;
 import com.wso2.mobile.mdm.R;
@@ -48,6 +49,10 @@ public class SettingsActivity extends Activity {
 	private String REG_ID = "";
 	Context context;
 	String senderID=null;
+	DeviceInfo info = null;
+	boolean accessFlag = true;
+	TextView errorMessage;
+	String error = "";
 	AsyncTask<Void, Void, String> mSenderIDTask;
 	ProgressDialog progressDialog;
 	@Override
@@ -55,6 +60,7 @@ public class SettingsActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_settings);
 		context = SettingsActivity.this;
+		info = new DeviceInfo(SettingsActivity.this);     
 		Bundle extras = getIntent().getExtras();
 		if (extras != null) {
 			if(extras.containsKey(getResources().getString(R.string.intent_extra_from_activity))){
@@ -65,6 +71,25 @@ public class SettingsActivity extends Activity {
 				REG_ID = extras.getString(getResources().getString(R.string.intent_extra_regid));
 			}
 		}
+		
+		if((info.getSdkVersion() >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) && !info.isRooted()){
+        	accessFlag = true;
+        }else{
+        	accessFlag = false;
+        }
+		
+        if(!(info.getSdkVersion() >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) && info.isRooted()){
+        	error = getString(R.string.device_not_compatible_error);
+        }else if(info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO){
+        	error = getString(R.string.device_not_compatible_error_os);
+        }else if(info.isRooted()){
+        	error = getString(R.string.device_not_compatible_error_root);
+        }
+        
+        errorMessage = (TextView) findViewById(R.id.textView1);
+		errorMessage.setText(error);
+		
+		
 			
 		ip = (TextView)findViewById(R.id.editText1);
 		SharedPreferences mainPref = context.getSharedPreferences(
@@ -88,6 +113,17 @@ public class SettingsActivity extends Activity {
 			ip.setText(CommonUtilities.SERVER_IP);
 		}
 		optionBtn = (Button) findViewById(R.id.button1);	
+		
+		if(!accessFlag){
+			optionBtn.setVisibility(View.GONE);
+			ip.setVisibility(View.GONE);
+			errorMessage.setVisibility(View.VISIBLE);	
+			showAlert(error, getResources().getString(R.string.error_authorization_failed));
+		}else{
+			optionBtn.setVisibility(View.VISIBLE);
+			ip.setVisibility(View.VISIBLE);
+			errorMessage.setVisibility(View.GONE);	
+		}
 		
 		optionBtn.setOnClickListener(new OnClickListener() {
 			

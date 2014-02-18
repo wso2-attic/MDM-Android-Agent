@@ -78,7 +78,7 @@
 		      android:layout_centerHorizontal="true"
 		      android:layout_margin="10dp"
 		      android:gravity="center"
-		      android:text="Device successfully registered, click to un-register from the MDM"
+		      android:text="Device successfully registered, click to unregister from the MDM"
 		      android:textSize="16sp"
         	  android:textColor="#372c24" />
 		  

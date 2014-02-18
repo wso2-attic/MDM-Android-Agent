@@ -31,9 +31,9 @@ public class CommonUtilities {
 	public static String SERVER_PROTOCOL = "https://";
 	public static String SERVER_APP_ENDPOINT = "/mdm/api/";
 	public static String SERVER_URL = SERVER_PROTOCOL+SERVER_IP+":"+SERVER_PORT+SERVER_APP_ENDPOINT;
-    	public static final String TRUSTSTORE_PASSWORD = "----ADD YOUR TRUST STORE PASSWORD HERE----";
+    public static final String TRUSTSTORE_PASSWORD = "----ADD YOUR TRUST STORE PASSWORD HERE----";
 	public static final String EULA_TITLE = "----ADD YOUR AGREEMENT TITLE HERE----";
-	public static final String EULA_TEXT = "----ADD YOUR LICENSE AGREEMENT HERE----";
+	public static final String EULA_TEXT = "----ADD YOUR POLICY AGREEMENT HERE----";
 
     	public static String getSERVER_URL() {
 		return SERVER_URL;

@@ -52,6 +52,7 @@ public class EntryActivity extends Activity {
 	boolean state = false;
 	TextView errorMessage;
 	Context context;
+	String error="";
 	ProgressDialog progressDialog;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +67,18 @@ public class EntryActivity extends Activity {
         info = new DeviceInfo(EntryActivity.this);       
         context = EntryActivity.this;
         
-        if((info.getSdkVersion() > android.os.Build.VERSION_CODES.FROYO) && !info.isRooted()){
+		if((info.getSdkVersion() >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) && !info.isRooted()){
         	accessFlag = true;
         }else{
-        	accessFlag = true;
+        	accessFlag = false;
+        }
+		
+		if(!(info.getSdkVersion() > android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) && info.isRooted()){
+        	error = getString(R.string.device_not_compatible_error);
+        }else if(info.getSdkVersion() > android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1){
+        	error = getString(R.string.device_not_compatible_error_os);
+        }else if(info.isRooted()){
+        	error = getString(R.string.device_not_compatible_error_root);
         }
 		
         // Make sure the device has the proper dependencies.
@@ -82,10 +91,10 @@ public class EntryActivity extends Activity {
                 new IntentFilter(CommonUtilities.DISPLAY_MESSAGE_ACTION));
         //ImageView optionBtn = (ImageView) findViewById(R.id.option_button);	
 		errorMessage = (TextView) findViewById(R.id.textView1);
-		errorMessage.setText(getString(R.string.device_not_compatible_error));
+		errorMessage.setText(error);
 		if(!accessFlag){
 			errorMessage.setVisibility(View.VISIBLE);
-			showAlert(getResources().getString(R.string.device_not_compatible_error), getResources().getString(R.string.error_authorization_failed));
+			showAlert(error, getResources().getString(R.string.error_authorization_failed));
 		}
 
 		/*optionBtn.setOnClickListener(new OnClickListener() {
